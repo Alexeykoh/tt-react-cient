@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import LoginForm from '../LoginForm';
-import { useLoginMutation } from '@/shared/api/authApi';
+import { useLoginMutation } from '@/shared/api/auth.service';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 

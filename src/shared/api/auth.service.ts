@@ -1,10 +1,12 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 
-interface User {
+export interface User {
   id: string;
   name: string;
   role: "admin" | "user";
+  email?: string;
+  avatar?: string;
 }
 
 interface AuthResponse {
@@ -15,6 +17,7 @@ interface AuthResponse {
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithErrorHandling,
+  tagTypes: ["User"],
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, { email: string; password: string }>({
       query: ({ email, password }) => ({
@@ -23,6 +26,7 @@ export const authApi = createApi({
         body: { email, password },
       }),
       transformResponse: (response: { data: AuthResponse }) => response.data,
+      invalidatesTags: ["User"],
     }),
     register: builder.query<
       AuthResponse,
@@ -35,7 +39,15 @@ export const authApi = createApi({
       }),
       transformResponse: (response: { data: AuthResponse }) => response.data,
     }),
+    getCurrentUser: builder.query<User, void>({
+      query: () => ({
+        url: "auth/me",
+        method: "GET",
+      }),
+      transformResponse: (response: { data: User }) => response.data,
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterQuery } = authApi;
+export const { useLoginMutation, useRegisterQuery, useGetCurrentUserQuery } = authApi;

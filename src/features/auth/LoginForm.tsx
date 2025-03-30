@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useLoginMutation } from "@/shared/api/authApi";
+import { useLoginMutation } from "@/shared/api/auth.service";
 
 const loginSchema = z.object({
   email: z.string().email("Неверный формат email").min(1, "Email обязателен"),
