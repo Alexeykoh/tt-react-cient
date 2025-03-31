@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "../shared/api/baseApi";
 import { authApi } from "../shared/api/auth.service";
-import { UserService } from "@/shared/api/user.service";
+import { userService } from "@/shared/api/user.service";
 
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
-    [UserService.reducerPath]: UserService.reducer,
+    [userService.reducerPath]: userService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       baseApi.middleware,
       authApi.middleware,
-      UserService.middleware
+      userService.middleware
     ),
 });
 

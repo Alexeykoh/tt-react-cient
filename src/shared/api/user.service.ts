@@ -11,14 +11,14 @@ export interface User {
   updated_at: "2025-03-30T19:26:05.080Z";
 }
 
-export const UserService = createApi({
+export const userService = createApi({
   reducerPath: "user-service",
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["user-service"],
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
       query: () => ({
-        url: "users/me",
+        url: "projects/me",
         method: "GET",
       }),
       transformResponse: (response: { data: User }) => response.data,
@@ -27,4 +27,4 @@ export const UserService = createApi({
   }),
 });
 
-export const {useGetUserQuery} = UserService;
+export const { useGetUserQuery } = userService;
