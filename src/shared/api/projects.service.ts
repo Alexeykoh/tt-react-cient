@@ -22,8 +22,15 @@ export const projectsService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["project-service"],
   endpoints: (builder) => ({
+    getProjectById: builder.query<PaginatedResponse<Project>, { id: string }>({
+      query: ({ id }) => ({
+        url: `projects/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["project-service"],
+    }),
     getProjects: builder.query<PaginatedResponse<Project>, { page: number }>({
-      query: ({page}) => ({
+      query: ({ page }) => ({
         url: `projects/me?page=${page || 1}`,
         method: "GET",
       }),
@@ -37,7 +44,10 @@ export const projectsService = createApi({
       }),
       invalidatesTags: ["project-service"],
     }),
-    updateProject: builder.mutation<Project, { id: string; data: UpdateProjectRequest }>({
+    updateProject: builder.mutation<
+      Project,
+      { id: string; data: UpdateProjectRequest }
+    >({
       query: ({ id, data }) => ({
         url: `projects/${id}`,
         method: "PATCH",
@@ -55,9 +65,10 @@ export const projectsService = createApi({
   }),
 });
 
-export const { 
+export const {
   useGetProjectsQuery,
+  useGetProjectByIdQuery,
   useCreateProjectMutation,
   useUpdateProjectMutation,
-  useDeleteProjectMutation
+  useDeleteProjectMutation,
 } = projectsService;

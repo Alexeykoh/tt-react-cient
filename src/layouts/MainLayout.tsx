@@ -15,6 +15,7 @@ import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
 import { Separator } from "@radix-ui/react-separator";
+import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -22,6 +23,8 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
+
+  useGetCurrenciesQuery()
 
   return (
     <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1679416092238-a69cf0a0023a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">

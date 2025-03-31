@@ -15,13 +15,31 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useGetProjectsQuery } from "@/shared/api/projects.service";
+import {
+  useGetProjectsQuery,
+  useDeleteProjectMutation,
+} from "@/shared/api/projects.service";
+import { Project } from "@/shared/interfaces/project.interface";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import CreateProjectForm from "@/features/project/CreateProjectForm";
+import EditProjectForm from "@/features/project/EditProjectForm";
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from "lucide-react";
 import React, { useState } from "react";
 
 const ProjectsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useGetProjectsQuery({ page: currentPage });
+  const [deleteProject] = useDeleteProjectMutation();
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+  const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
   const formatDate = (dateString: string): string => {
     if (!dateString) return "";
@@ -42,6 +60,22 @@ const ProjectsPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
       <h1 className="text-2xl font-bold mb-4">Проекты</h1>
+      <div className="flex justify-end mb-4">
+        <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+          <DialogTrigger asChild>
+            <Button>Добавить проект</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новый проект</DialogTitle>
+            </DialogHeader>
+            <CreateProjectForm
+              onSuccess={() => setDialogIsOpen(false)}
+              onClose={() => {}}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
       <Card className="flex-1 flex flex-col">
         <CardContent className="flex-1 flex flex-col p-0">
           <Table className="flex-1 w-full">
@@ -55,55 +89,61 @@ const ProjectsPage: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody className="flex-1">
-              {data?.data.map((el) => {
-                return (
-                  <TableRow key={el.project_id}>
-                    <TableCell className="font-medium w-[30%]">
-                      {el?.name}
-                    </TableCell>
-                    <TableCell className="w-[20%]">{el?.client.name}</TableCell>
-                    <TableCell className="w-[20%]">{`${el?.currency.symbol}${el?.rate}`}</TableCell>
-                    <TableCell className="w-[15%]">
-                      {formatDate(el?.created_at)}
-                    </TableCell>
-                    <TableCell className="w-[15%] p-0 text-right">
-                      <div className="flex justify-end pr-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-                              size="icon"
-                            >
-                              <MoreVerticalIcon />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem>
-                              <PencilIcon className="mr-2 size-4" />
-                              <span>Редактировать</span>
-                            </DropdownMenuItem>
-                            {/* <DropdownMenuItem>
-                              <CopyIcon className="mr-2 size-4" />
-                              <span>Копировать</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <StarIcon className="mr-2 size-4" />
-                              <span>В избранное</span>
-                            </DropdownMenuItem> */}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive focus:text-destructive">
-                              <TrashIcon className="mr-2 size-4" />
-                              <span>Удалить</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {data?.data &&
+                data?.data.map((el) => {
+                  return (
+                    <TableRow key={el.project_id}>
+                      <TableCell className="font-medium w-[30%]">
+                        {el?.name}
+                      </TableCell>
+                      <TableCell className="w-[20%]">
+                        {el?.client?.name}
+                      </TableCell>
+                      <TableCell className="w-[20%]">{`${el?.currency?.symbol}${el?.rate}`}</TableCell>
+                      <TableCell className="w-[15%]">
+                        {formatDate(el?.created_at)}
+                      </TableCell>
+                      <TableCell className="w-[15%] p-0 text-right">
+                        <div className="flex justify-end pr-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                                size="icon"
+                              >
+                                <MoreVerticalIcon />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setProjectToEdit(el);
+                                  setEditDialogIsOpen(true);
+                                }}
+                              >
+                                <PencilIcon className="mr-2 size-4" />
+                                <span>Редактировать</span>
+                              </DropdownMenuItem>
+
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() =>
+                                  setProjectToDelete(el.project_id)
+                                }
+                              >
+                                <TrashIcon className="mr-2 size-4" />
+                                <span>Удалить</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
 
@@ -140,6 +180,66 @@ const ProjectsPage: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {projectToDelete && (
+        <Dialog
+          open={true}
+          onOpenChange={() => setProjectToDelete(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Подтверждение удаления
+              </DialogTitle>
+            </DialogHeader>
+            <p>
+              Вы уверены, что хотите удалить этот проект?
+            </p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setProjectToDelete(null)}
+              >
+                Отмена
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  await deleteProject(projectToDelete);
+                  setProjectToDelete(null);
+                }}
+              >
+                Удалить
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {projectToEdit && (
+        <Dialog
+          open={editDialogIsOpen}
+          onOpenChange={setEditDialogIsOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Редактировать проект</DialogTitle>
+            </DialogHeader>
+            <EditProjectForm
+              projectId={projectToEdit.project_id}
+              initialData={{
+                name: projectToEdit.name,
+                currency_id: projectToEdit.currency.code,
+                rate: parseFloat(projectToEdit.rate),
+                client_id: projectToEdit.client.client_id,
+                tag_ids: [],
+              }}
+              onSuccess={() => setEditDialogIsOpen(false)}
+              onClose={() => setEditDialogIsOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
