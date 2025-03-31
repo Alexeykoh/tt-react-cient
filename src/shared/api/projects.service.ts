@@ -13,6 +13,20 @@ export interface Project {
   updated_at: string;
 }
 
+export interface CreateProjectRequest {
+  name: string;
+  currency_id: string;
+  rate: number;
+  tag_ids: string[];
+  client_id: string | null;
+}
+
+export interface UpdateProjectRequest {
+  name: string;
+  currency_id: string;
+  rate: number;
+}
+
 export const projectsService = createApi({
   reducerPath: "project-service",
   baseQuery: baseQueryWithErrorHandling,
@@ -25,7 +39,35 @@ export const projectsService = createApi({
       }),
       providesTags: ["project-service"],
     }),
+    createProject: builder.mutation<Project, CreateProjectRequest>({
+      query: (data) => ({
+        url: "projects/create",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["project-service"],
+    }),
+    updateProject: builder.mutation<Project, { id: string; data: UpdateProjectRequest }>({
+      query: ({ id, data }) => ({
+        url: `projects/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["project-service"],
+    }),
+    deleteProject: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `projects/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["project-service"],
+    }),
   }),
 });
 
-export const { useGetProjectsQuery } = projectsService;
+export const { 
+  useGetProjectsQuery,
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
+  useDeleteProjectMutation
+} = projectsService;

@@ -1,3 +1,4 @@
+import CanvasMap from "@/components/map";
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
 
@@ -8,6 +9,7 @@ const NotesPage: React.FC = () => {
       <Card>
         <CardContent>
           <p>Страница заметок</p>
+          <CanvasMap></CanvasMap>
         </CardContent>
       </Card>
     </div>
