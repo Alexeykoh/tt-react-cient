@@ -1,7 +1,7 @@
 import React, { JSX } from "react";
 import Cookies from "js-cookie";
 import { Navigate } from "react-router-dom";
-import { Routes } from ".";
+import { ROUTES } from "./routes";
 
 type Role = "admin" | "user";
 
@@ -15,7 +15,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const isDevMode = import.meta.env.MODE === "dev";
   if (!isDevMode) {
     if (!token) {
-      return <Navigate to={Routes.AUTH + "/" + Routes.LOGIN} />;
+      return <Navigate to={ROUTES.AUTH + "/" + ROUTES.LOGIN} />;
     }
   }
   return children;

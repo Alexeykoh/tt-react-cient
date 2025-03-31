@@ -14,6 +14,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
+import { Separator } from "@radix-ui/react-separator";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -93,8 +94,26 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </div>
           </SidebarFooter>
         </Sidebar>
-        <main>
-          <SidebarTrigger />
+        <main className="w-full">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b w-full">
+            <div className="flex items-center gap-2 px-3 w-full">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              {/* <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="#">
+                      Building Your Application
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb> */}
+            </div>
+          </header>
           {children}
         </main>
       </SidebarProvider>

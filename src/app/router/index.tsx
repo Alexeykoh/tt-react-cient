@@ -10,20 +10,11 @@ import RegisterPage from "@/pages/RegisterPage";
 import ProjectsPage from "@/pages/ProjectsPage";
 import ClientsPage from "@/pages/ClientsPage";
 import NotesPage from "@/pages/NotesPage";
-
-export enum Routes {
-  HOME = "/",
-  AUTH = "/auth",
-  LOGIN = "sign-in",
-  REGISTER = "sign-up",
-  PROJECTS = "projects",
-  CLIENTS = "clients",
-  NOTES = "notes",
-}
+import { ROUTES } from "./routes";
 
 const router = createBrowserRouter([
   {
-    path: Routes.AUTH,
+    path: ROUTES.AUTH,
     element: (
       <AuthLayout>
         <Outlet />
@@ -31,17 +22,17 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: Routes.LOGIN,
+        path: ROUTES.LOGIN,
         element: <LoginPage />,
       },
       {
-        path: Routes.REGISTER,
+        path: ROUTES.REGISTER,
         element: <RegisterPage />,
       },
     ],
   },
   {
-    path: Routes.HOME,
+    path: ROUTES.HOME,
     element: (
       <MainLayout>
         <Outlet />
@@ -57,7 +48,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: Routes.PROJECTS,
+        path: ROUTES.PROJECTS,
         element: (
           <PrivateRoute roles={["admin", "user"]}>
             <ProjectsPage />
@@ -65,7 +56,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: Routes.CLIENTS,
+        path: ROUTES.CLIENTS,
         element: (
           <PrivateRoute roles={["admin", "user"]}>
             <ClientsPage />
@@ -73,7 +64,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: Routes.NOTES,
+        path: ROUTES.NOTES,
         element: (
           <PrivateRoute roles={["admin", "user"]}>
             <NotesPage />

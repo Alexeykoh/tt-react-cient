@@ -4,7 +4,6 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Cookies from "js-cookie";
-import { Routes } from "@/app/router";
 import { z } from "zod";
 
 import {
@@ -17,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLoginMutation } from "@/shared/api/auth.service";
+import { ROUTES } from "@/app/router/routes";
 
 const loginSchema = z.object({
   email: z.string().email("Неверный формат email").min(1, "Email обязателен"),
@@ -39,7 +39,7 @@ const LoginForm: React.FC = () => {
   useEffect(() => {
     if (data) {
       Cookies.set("authToken", data.token);
-      navigate(Routes.HOME);
+      navigate(ROUTES.HOME);
     }
   }, [data, error]);
 
