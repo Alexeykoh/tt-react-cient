@@ -25,8 +25,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1679416092238-a69cf0a0023a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
-      <SidebarProvider>
-        <Sidebar>
+      <SidebarProvider >
+        <Sidebar >
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
               <Clock className="h-6 w-6" />
@@ -95,7 +95,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </SidebarFooter>
         </Sidebar>
         <main className="w-full">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b w-full">
+          <header className="backdrop-blur-sm flex h-16 shrink-0 items-center gap-2 border-b w-full">
             <div className="flex items-center gap-2 px-3 w-full">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />

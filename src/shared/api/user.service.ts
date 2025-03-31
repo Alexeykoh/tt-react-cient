@@ -18,7 +18,7 @@ export const userService = createApi({
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
       query: () => ({
-        url: "projects/me",
+        url: "users/me",
         method: "GET",
       }),
       transformResponse: (response: { data: User }) => response.data,

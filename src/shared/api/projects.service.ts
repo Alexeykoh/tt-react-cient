@@ -18,9 +18,9 @@ export const projectsService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["project-service"],
   endpoints: (builder) => ({
-    getProjects: builder.query<PaginatedResponse<Project>, void>({
-      query: () => ({
-        url: "projects/me",
+    getProjects: builder.query<PaginatedResponse<Project>, { page: number }>({
+      query: ({page}) => ({
+        url: `projects/me?page=${page || 1}`,
         method: "GET",
       }),
       providesTags: ["project-service"],
