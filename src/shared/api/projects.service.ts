@@ -1,17 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import { PaginatedResponse } from "../interfaces/api.interface";
-
-export interface Project {
-  project_id: string;
-  name: string;
-  client_id: string | null;
-  user_owner_id: string;
-  currency_id: number;
-  rate: number;
-  created_at: string;
-  updated_at: string;
-}
+import { Project } from "../interfaces/project.interface";
 
 export interface CreateProjectRequest {
   name: string;

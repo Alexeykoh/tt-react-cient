@@ -61,9 +61,9 @@ const ProjectsPage: React.FC = () => {
                     <TableCell className="font-medium w-[30%]">
                       {el?.name}
                     </TableCell>
-                    <TableCell className="w-[20%]">{el?.client_id}</TableCell>
-                    <TableCell className="w-[20%]">{`${el?.currency_id} ${el?.rate}`}</TableCell>
-                    <TableCell className="text-right w-[15%]">
+                    <TableCell className="w-[20%]">{el?.client.name}</TableCell>
+                    <TableCell className="w-[20%]">{`${el?.currency.symbol}${el?.rate}`}</TableCell>
+                    <TableCell className="w-[15%]">
                       {formatDate(el?.created_at)}
                     </TableCell>
                     <TableCell className="w-[15%] p-0 text-right">
