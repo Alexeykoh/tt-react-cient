@@ -1,15 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
+import { User } from "../interfaces/user.unterface";
 
-export interface User {
-  user_id: string;
-  name: string;
-  email: string;
-  password: "string";
-  subscriptionType: "free";
-  created_at: "2025-03-30T19:26:05.080Z";
-  updated_at: "2025-03-30T19:26:05.080Z";
-}
+
 
 export const userService = createApi({
   reducerPath: "user-service",
