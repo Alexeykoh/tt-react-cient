@@ -1,10 +1,11 @@
 export interface Task {
-  id: string;
-  title: string;
+  task_id: string;
+  name: string;
   description: string;
-  status: TaskStatus;
-  assignedTo?: string;
-  dueDate?: Date;
+  is_paid: boolean;
+  payment_type: PAYMENT;
+  rate: number | string;
+  created_at: string;
 }
 
 export interface AssignUserDto {
@@ -12,23 +13,33 @@ export interface AssignUserDto {
   userId: string;
 }
 
+export enum PAYMENT{
+  FIXED = 'fixed',
+  HOURLY = 'hourly'
+}
 export interface CreateTaskDto {
-  title: string;
+  name: string;
+  project_id: string;
   description: string;
-  dueDate?: Date;
+  is_paid: boolean;
+  payment_type: PAYMENT;
+  rate: number | string;
+  currency_id: string;
+  tag_ids: Array<string>;
 }
 
 export interface UpdateTaskDto {
-  id: string;
-  title?: string;
+  task_id: string;
+  name?: string;
   description?: string;
-  status?: TaskStatus;
-  assignedTo?: string;
-  dueDate?: Date;
+  is_paid?: boolean;
+  payment_type?: PAYMENT;
+  rate?: string;
+  created_at?: string;
 }
 
 export enum TaskStatus {
-  TODO = 'TODO',
-  IN_PROGRESS = 'IN_PROGRESS',
-  DONE = 'DONE'
+  TODO = "TODO",
+  IN_PROGRESS = "IN_PROGRESS",
+  DONE = "DONE",
 }

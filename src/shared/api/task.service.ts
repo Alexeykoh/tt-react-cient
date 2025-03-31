@@ -18,6 +18,7 @@ export const taskService = createApi({
         url: `tasks/${projectId}/tasks`,
         method: "GET",
       }),
+      transformResponse: (response: { data: Task[] }) => response.data,
       providesTags: ["task"],
     }),
     getTaskById: builder.query<Task, string>({
