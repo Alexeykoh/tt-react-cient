@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useGetProjectsQuery } from "@/shared/api/projects.service";
-import { MoreVerticalIcon, PencilIcon, CopyIcon, StarIcon, TrashIcon } from "lucide-react";
+import { MoreVerticalIcon, PencilIcon, TrashIcon } from "lucide-react";
 import React, { useState } from "react";
 
 const ProjectsPage: React.FC = () => {
@@ -25,17 +25,17 @@ const ProjectsPage: React.FC = () => {
 
   const formatDate = (dateString: string): string => {
     if (!dateString) return "";
-    
+
     const date = new Date(dateString);
-    
+
     // Проверка на валидность даты
     if (isNaN(date.getTime())) return dateString;
-    
+
     // Форматирование даты в формат "ДД.ММ.ГГГГ"
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear();
-    
+
     return `${day}.${month}.${year}`;
   };
 
@@ -58,7 +58,9 @@ const ProjectsPage: React.FC = () => {
               {data?.data.map((el) => {
                 return (
                   <TableRow key={el.project_id}>
-                    <TableCell className="font-medium w-[30%]">{el?.name}</TableCell>
+                    <TableCell className="font-medium w-[30%]">
+                      {el?.name}
+                    </TableCell>
                     <TableCell className="w-[20%]">{el?.client_id}</TableCell>
                     <TableCell className="w-[20%]">{`${el?.currency_id} ${el?.rate}`}</TableCell>
                     <TableCell className="text-right w-[15%]">
