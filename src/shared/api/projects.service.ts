@@ -22,7 +22,7 @@ export const projectsService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["project-service"],
   endpoints: (builder) => ({
-    getProjectById: builder.query<PaginatedResponse<Project>, { id: string }>({
+    getProjectById: builder.query<{ data: Project }, { id: string }>({
       query: ({ id }) => ({
         url: `projects/${id}`,
         method: "GET",

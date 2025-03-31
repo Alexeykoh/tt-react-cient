@@ -1,5 +1,4 @@
 import React from "react";
-
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
@@ -10,6 +9,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import ProjectsPage from "@/pages/ProjectsPage";
 import ClientsPage from "@/pages/ClientsPage";
 import NotesPage from "@/pages/NotesPage";
+import ProjectDetailPage from "@/pages/ProjectDetailPage";
 import { ROUTES } from "./routes";
 
 const router = createBrowserRouter([
@@ -56,6 +56,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: ROUTES.PROJECTS + "/:id",
+        element: (
+          <PrivateRoute roles={["admin", "user"]}>
+            <ProjectDetailPage />
+          </PrivateRoute>
+        ),
+      },
+      {
         path: ROUTES.CLIENTS,
         element: (
           <PrivateRoute roles={["admin", "user"]}>
@@ -75,6 +83,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-export const AppRouter: React.FC = () => {
+const AppRouter: React.FC = () => {
   return <RouterProvider router={router} />;
 };
+
+export default AppRouter;

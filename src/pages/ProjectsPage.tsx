@@ -29,10 +29,18 @@ import {
 } from "@/components/ui/dialog";
 import CreateProjectForm from "@/features/project/CreateProjectForm";
 import EditProjectForm from "@/features/project/EditProjectForm";
-import { MoreVerticalIcon, PencilIcon, TrashIcon } from "lucide-react";
+import {
+  MoreVerticalIcon,
+  PanelTop,
+  PencilIcon,
+  TrashIcon,
+} from "lucide-react";
 import React, { useState } from "react";
+import { formatDate } from "@/lib/dateUtils";
+import { useNavigate } from "react-router-dom";
 
 const ProjectsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useGetProjectsQuery({ page: currentPage });
   const [deleteProject] = useDeleteProjectMutation();
@@ -41,26 +49,10 @@ const ProjectsPage: React.FC = () => {
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
-  const formatDate = (dateString: string): string => {
-    if (!dateString) return "";
-
-    const date = new Date(dateString);
-
-    // Проверка на валидность даты
-    if (isNaN(date.getTime())) return dateString;
-
-    // Форматирование даты в формат "ДД.ММ.ГГГГ"
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}.${month}.${year}`;
-  };
-
   return (
     <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
-      <h1 className="text-2xl font-bold mb-4">Проекты</h1>
-      <div className="flex justify-end mb-4">
+      <div className="flex flex-wrap justify-between gap-2">
+        <h1 className="text-2xl font-bold mb-4">Проекты</h1>
         <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
           <DialogTrigger asChild>
             <Button>Добавить проект</Button>
@@ -76,6 +68,7 @@ const ProjectsPage: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
+
       <Card className="flex-1 flex flex-col">
         <CardContent className="flex-1 flex flex-col p-0">
           <Table className="flex-1 w-full">
@@ -93,7 +86,15 @@ const ProjectsPage: React.FC = () => {
                 data?.data.map((el) => {
                   return (
                     <TableRow key={el.project_id}>
-                      <TableCell className="font-medium w-[30%]">
+                      <TableCell className="font-medium w-[30%] flex items-center">
+                        <Button
+                          variant="ghost"
+                          className="mr-2"
+                          onClick={() => navigate(`/projects/${el.project_id}`)}
+                        >
+                          <span className="sr-only">Перейти к проекту</span>
+                          <PanelTop />
+                        </Button>
                         {el?.name}
                       </TableCell>
                       <TableCell className="w-[20%]">
@@ -182,19 +183,12 @@ const ProjectsPage: React.FC = () => {
       </Card>
 
       {projectToDelete && (
-        <Dialog
-          open={true}
-          onOpenChange={() => setProjectToDelete(null)}
-        >
+        <Dialog open={true} onOpenChange={() => setProjectToDelete(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                Подтверждение удаления
-              </DialogTitle>
+              <DialogTitle>Подтверждение удаления</DialogTitle>
             </DialogHeader>
-            <p>
-              Вы уверены, что хотите удалить этот проект?
-            </p>
+            <p>Вы уверены, что хотите удалить этот проект?</p>
             <div className="flex justify-end space-x-2 mt-4">
               <Button
                 variant="outline"
@@ -217,10 +211,7 @@ const ProjectsPage: React.FC = () => {
       )}
 
       {projectToEdit && (
-        <Dialog
-          open={editDialogIsOpen}
-          onOpenChange={setEditDialogIsOpen}
-        >
+        <Dialog open={editDialogIsOpen} onOpenChange={setEditDialogIsOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Редактировать проект</DialogTitle>
