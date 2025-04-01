@@ -1,15 +1,16 @@
-export interface User {
+export interface TimeLog {
+  log_id: string;
+  task_id: string;
   user_id: string;
-  name: string;
-  email: string;
-  password: string;
-  subscriptionType: SubscriptionType;
+  start_time: string;
+  end_time: string;
+  status: TIMELOGSTATUS;
+  duration: number | string;
   created_at: string;
   updated_at: string;
 }
 
-export enum SubscriptionType {
-    FREE = 'free',
-    BASIC = 'basic',
-    PREMIUM = 'premium',
-  }
+export enum TIMELOGSTATUS {
+  PROGRESS = "in-progress",
+  COMPLETED = "completed",
+}

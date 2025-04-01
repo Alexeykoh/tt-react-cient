@@ -6,6 +6,7 @@ import { projectsService } from "@/shared/api/projects.service";
 import { currencyService } from "@/shared/api/currency.service";
 import { clientService } from "@/shared/api/client.service";
 import { taskService } from "@/shared/api/task.service";
+import { timeLogService } from "@/shared/api/time-log.service";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [currencyService.reducerPath]: currencyService.reducer,
     [clientService.reducerPath]: clientService.reducer,
     [taskService.reducerPath]: taskService.reducer,
+    [timeLogService.reducerPath]: timeLogService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,7 +27,8 @@ export const store = configureStore({
       projectsService.middleware,
       currencyService.middleware,
       clientService.middleware,
-      taskService.middleware
+      taskService.middleware,
+      timeLogService.middleware
     ),
 });
 

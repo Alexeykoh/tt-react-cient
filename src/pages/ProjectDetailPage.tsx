@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import TaskItem from "@/components/task-item";
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,7 +57,7 @@ const ProjectDetailPage: React.FC = () => {
                   return (
                     <TableRow key={el.task_id}>
                       <TableCell className="font-medium w-[30%] flex items-center">
-                        {el?.name}
+                        <TaskItem task_id={el.task_id} />
                       </TableCell>
                       <TableCell className="w-[20%]">
                         {el?.description}
