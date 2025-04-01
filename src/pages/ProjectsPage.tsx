@@ -85,11 +85,7 @@ const ProjectsPage: React.FC = () => {
               {data?.data &&
                 data?.data.map((el) => {
                   return (
-                    <TableRow
-                      className="cursor-pointer"
-                      key={el.project_id}
-                      onClick={() => navigate(`/projects/${el.project_id}`)}
-                    >
+                    <TableRow className="cursor-pointer" key={el.project_id}>
                       <TableCell className="font-medium w-[30%] flex items-center">
                         <Button
                           variant="ghost"

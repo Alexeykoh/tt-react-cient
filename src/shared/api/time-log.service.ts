@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { TimeLog } from "../interfaces/user.unterface";
+import { LatestLog, TimeLog } from "../interfaces/user.unterface";
 import { PaginatedResponse } from "../interfaces/api.interface";
 
 export const timeLogService = createApi({
@@ -41,13 +41,13 @@ export const timeLogService = createApi({
         response.data,
       providesTags: ["time-log-service-list"],
     }),
-    getTimeLoglatest: builder.query<TimeLog, void>({
+    getTimeLogLatest: builder.query<LatestLog, void>({
       query: () => ({
         url: `time-logs/latest`,
         method: "GET",
-        providesTags: ["time-log-service-latest"],
       }),
-      transformResponse: (response: { data: TimeLog }) => response.data,
+      transformResponse: (response: { data: LatestLog }) => response.data,
+      providesTags: ["time-log-service-latest"],
     }),
     postTimeLogStart: builder.mutation<TimeLog, { task_id: string }>({
       query: ({ task_id }) => ({
@@ -56,7 +56,10 @@ export const timeLogService = createApi({
         providesTags: ["ttime-log-service-lates-task"],
       }),
       transformResponse: (response: { data: TimeLog }) => response.data,
-      invalidatesTags: ["time-log-service-lates-task"],
+      invalidatesTags: [
+        "time-log-service-lates-task",
+        "time-log-service-latest",
+      ],
     }),
     postTimeLogStop: builder.mutation<TimeLog, { task_id: string }>({
       query: ({ task_id }) => ({
@@ -65,7 +68,10 @@ export const timeLogService = createApi({
         providesTags: ["ttime-log-service-lates-task"],
       }),
       transformResponse: (response: { data: TimeLog }) => response.data,
-      invalidatesTags: ["time-log-service-lates-task"],
+      invalidatesTags: [
+        "time-log-service-lates-task",
+        "time-log-service-latest",
+      ],
     }),
   }),
 });
@@ -73,7 +79,7 @@ export const timeLogService = createApi({
 export const {
   useGetTimeLogByIdQuery,
   useGetTimeLogLogsQuery,
-  useGetTimeLoglatestQuery,
+  useGetTimeLogLatestQuery,
   usePostTimeLogStartMutation,
   usePostTimeLogStopMutation,
   useGetTimeLogLatestTaskQuery,

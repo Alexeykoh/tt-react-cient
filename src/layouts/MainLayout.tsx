@@ -14,8 +14,11 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
-import { Separator } from "@radix-ui/react-separator";
 import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
+import { useGetTimeLogLatestQuery } from "@/shared/api/time-log.service";
+import { Card, CardContent } from "@/components/ui/card";
+import TaskItem from "@/components/task-item";
+import { Separator } from "@/components/ui/separator";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -24,12 +27,13 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
 
-  useGetCurrenciesQuery()
+  useGetCurrenciesQuery();
+  const { data: latestTaskLog } = useGetTimeLogLatestQuery();
 
   return (
     <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1679416092238-a69cf0a0023a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
-      <SidebarProvider >
-        <Sidebar >
+      <SidebarProvider>
+        <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2 px-2">
               <Clock className="h-6 w-6" />
@@ -98,10 +102,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </SidebarFooter>
         </Sidebar>
         <main className="w-full">
-          <header className="backdrop-blur-sm flex h-16 shrink-0 items-center gap-2 border-b w-full">
+          <header className="flex shrink-0 items-center  gap-2 p-2 w-full">
             <div className="flex items-center gap-2 px-3 w-full">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
+              <div className="flex justify-center w-full">
+                {latestTaskLog && (
+                  <Card className="flex flex-row items-start p-2">
+                    <CardContent>
+                      <div className="px-0 flex-row flex gap-6">
+                        <div className="flex flex-col">
+                          <h6 className="text-xl font-semibold">
+                            {latestTaskLog?.task?.name}
+                          </h6>
+                          <p className="text-xs font-light">
+                            {latestTaskLog?.task?.project?.name}
+                          </p>
+                        </div>
+                        <Separator orientation="vertical" className="h-4" />
+                        <TaskItem
+                          task_id={latestTaskLog?.task?.task_id || ""}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
               {/* <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">

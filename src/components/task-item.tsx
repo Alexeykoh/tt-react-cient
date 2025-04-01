@@ -5,6 +5,8 @@ import {
   usePostTimeLogStopMutation,
 } from "@/shared/api/time-log.service";
 import { TIMELOGSTATUS } from "@/shared/interfaces/user.unterface";
+import TimerComponent from "./timer";
+import { LoaderCircle } from "lucide-react";
 
 interface Props {
   task_id: string;
@@ -25,12 +27,20 @@ export default function TaskItem({ task_id }: Props) {
   }
 
   return (
-    <div>
+    <div className="flex gap-4 items-center">
       <PlayPauseButton
         onClick={logToggleHandler}
         isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
         isLoading={logIsLoading || startIsLoading || stopIsLoading}
       />
+      {logIsLoading ? (
+        <LoaderCircle className="animate-spin" />
+      ) : (
+        <TimerComponent
+          time={latestLog?.common_duration || ""}
+          isActive={latestLog?.status === TIMELOGSTATUS.PROGRESS}
+        />
+      )}
     </div>
   );
 }
