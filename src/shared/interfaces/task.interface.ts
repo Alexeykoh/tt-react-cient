@@ -43,6 +43,7 @@ export interface UpdateTaskDto {
   payment_type?: PAYMENT;
   rate?: string;
   created_at?: string;
+  currency_id?: string;
 }
 
 export enum TaskStatus {

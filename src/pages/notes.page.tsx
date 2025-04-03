@@ -46,83 +46,87 @@ const NotesPage: React.FC = () => {
         <Button onClick={createNotesHandler}>Добавить заметку</Button>
       </div>
 
+      {/* Диалог удаления вынесен ВНЕ цикла */}
+      <Dialog
+        open={notesDelete !== null}
+        onOpenChange={() => setNotesToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Подтверждение удаления</DialogTitle>
+          </DialogHeader>
+          <p>Вы уверены, что хотите удалить заметку?</p>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setNotesToDelete(null)}>
+              Отмена
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                if (notesDelete) {
+                  await deleteNotes({ id: notesDelete });
+                  setNotesToDelete(null);
+                }
+              }}
+            >
+              Удалить
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-wrap gap-4 w-full">
         {notes?.data.map((el) => (
-          <>
-            <Dialog
-              open={notesDelete !== null}
-              onOpenChange={() => setNotesToDelete(null)}
-            >
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Подтверждение удаления</DialogTitle>
-                </DialogHeader>
-                <p>Вы уверены, что хотите удалить заметку?</p>
-                <div className="flex justify-end space-x-2 mt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setNotesToDelete(null)}
-                  >
-                    Отмена
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={async () => {
-                      await deleteNotes({ id: el?.notes_id || "" });
-                      setNotesToDelete(null);
-                    }}
-                  >
-                    Удалить
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Card key={el?.notes_id} className="min-w-64 w-full md:w-fit">
-              <CardHeader>
-                <div className="flex items-center gap-2 w-full">
-                  <CardTitle className="w-full">
-                    <div className="flex flex-row justify-between w-full">
-                      <div className="flex flex-col">
-                        <p className="text-xl font-semibold">{el?.name}</p>
-                        <p className="text-xs opacity-70">
-                          {formatDate(el?.updated_at)}
-                        </p>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-                            size="icon"
-                          >
-                            <MoreVerticalIcon />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => setNotesToDelete(el.notes_id || "")}
-                          >
-                            <TrashIcon className="mr-2 size-4" />
-                            <span>Удалить</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+          <Card
+            key={el?.notes_id} // Ключ должен быть здесь
+            className="min-w-64 w-full md:w-fit max-w-64 max-h-96"
+          >
+            <CardHeader>
+              <div className="flex items-center gap-2 w-full">
+                <CardTitle className="w-full">
+                  <div className="flex flex-row justify-between w-full">
+                    <div className="flex flex-col">
+                      <p className="text-xl font-semibold">{el?.name}</p>
+                      <p className="text-xs opacity-70">
+                        {formatDate(el?.updated_at)}
+                      </p>
                     </div>
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs font-light">{el.text_content}</div>
-              </CardContent>
-              <CardFooter className="space-x-2">
-                <Button onClick={() => navigate("/notes/" + el?.notes_id)}>
-                  Перейти
-                </Button>
-              </CardFooter>
-            </Card>
-          </>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                          size="icon"
+                        >
+                          <MoreVerticalIcon />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => setNotesToDelete(el.notes_id || "")}
+                        >
+                          <TrashIcon className="mr-2 size-4" />
+                          <span>Удалить</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="flex">
+              <div className="text-xs font-light min-h-32 max-h-32 overflow-clip">
+                {el.text_content}
+              </div>
+            </CardContent>
+            <CardFooter className="space-x-2">
+              <Button onClick={() => navigate("/notes/" + el?.notes_id)}>
+                Перейти
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>

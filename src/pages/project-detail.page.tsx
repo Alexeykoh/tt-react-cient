@@ -10,32 +10,28 @@ import { useGetTasksByProjectQuery } from "@/shared/api/task.service";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TaskItem from "@/components/task-item";
+
 import { Button } from "@/components/ui/button";
 import {
   CalendarDays,
-  Check,
   ChevronLeft,
   HandCoins,
-  Loader,
   MoreVerticalIcon,
-  PanelTopOpen,
   PencilIcon,
   TrashIcon,
   User,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -45,13 +41,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditProjectForm from "@/features/project/EditProjectForm";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import PrivateComponent from "@/widgets/private-component";
+import CreateTaskForm from "@/features/tasks/create-task.form";
+import TaskTableRowFeature from "@/features/tasks/task-table-row.feature";
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const [deleteProject] = useDeleteProjectMutation();
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
@@ -83,7 +79,7 @@ const ProjectDetailPage: React.FC = () => {
                   name: project?.name,
                   currency_id: project?.currency.code,
                   rate: parseFloat(project?.rate),
-                  client_id: project?.client.client_id,
+                  client_id: project?.client?.client_id,
                   tag_ids: [],
                 }}
                 onSuccess={() => setEditDialogIsOpen(false)}
@@ -192,6 +188,24 @@ const ProjectDetailPage: React.FC = () => {
         </Card>
         <Card className="flex-1 flex flex-col">
           <CardContent className="flex-1 flex flex-col p-4">
+            {project && (
+              <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-fit">Добавить задачу</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Создать новый проект</DialogTitle>
+                  </DialogHeader>
+                  <CreateTaskForm
+                    onSuccess={() => setDialogIsOpen(false)}
+                    onClose={() => {}}
+                    projectId={project?.project_id}
+                  />
+                </DialogContent>
+              </Dialog>
+            )}
+
             <Table className="flex-1 w-full ">
               <TableHeader>
                 <TableRow>
@@ -209,48 +223,7 @@ const ProjectDetailPage: React.FC = () => {
                   tasks?.map((el) => {
                     return (
                       <TableRow key={el.task_id}>
-                        <TableCell className="font-medium w-[1/6] flex items-center gap-4">
-                          <PrivateComponent
-                            subscriptions={[
-                              SUNSCRIPTION.BASIC,
-                              SUNSCRIPTION.PREMIUM,
-                            ]}
-                          >
-                            <Button
-                              size={"icon"}
-                              onClick={() => navigate(`/tasks/${el.task_id}`)}
-                              variant={"default"}
-                            >
-                              <PanelTopOpen />
-                            </Button>
-                          </PrivateComponent>
-                          <TaskItem task_id={el.task_id} />
-                        </TableCell>
-                        <TableCell className="w-[1/6] ">
-                          <p>{el?.name}</p>
-                        </TableCell>
-                        <TableCell className="w-[1/6]">{el?.rate}</TableCell>
-                        <TableCell className="w-[1/6]">
-                          {el?.description}
-                        </TableCell>
-                        <TableCell className="w-[1/6]">
-                          {el?.payment_type}
-                        </TableCell>
-                        <TableCell className="w-[1/6]">
-                          {el?.is_paid ? (
-                            <Badge
-                              className="bg-emerald-400"
-                              variant={"default"}
-                            >
-                              <Check /> Оплачен
-                            </Badge>
-                          ) : (
-                            <Badge variant={"destructive"}>
-                              <Loader />
-                              не оплачен
-                            </Badge>
-                          )}
-                        </TableCell>
+                        <TaskTableRowFeature {...el} />
                       </TableRow>
                     );
                   })}

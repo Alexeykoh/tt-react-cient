@@ -17,7 +17,7 @@ export default function TaskItem({ task_id, showTime = true }: Props) {
   const { data: latestLog, isLoading: logIsLoading } =
     useGetTimeLogLatestTaskQuery(
       { task_id },
-      { refetchOnMountOrArgChange: true }
+      { skip: !task_id, refetchOnMountOrArgChange: true }
     );
   const [start, { isLoading: startIsLoading }] = usePostTimeLogStartMutation();
   const [stop, { isLoading: stopIsLoading }] = usePostTimeLogStopMutation();

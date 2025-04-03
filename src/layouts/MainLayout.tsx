@@ -28,6 +28,7 @@ import {
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import PrivateComponent from "@/widgets/private-component";
 import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { useGetUserQuery } from "@/shared/api/user.service";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -38,10 +39,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
 
   useGetCurrenciesQuery();
+  const { data: user } = useGetUserQuery();
   const { data: latestTaskLog } = useGetTimeLogLatestQuery();
 
   return (
-    <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1679416092238-a69cf0a0023a?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
+    <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1732732291583-af1deca63038?q=80&w=2063&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
@@ -114,7 +116,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
-        <NavUser name="shadcn" email="m@example.com" avatar="/avatars/shadcn.jpg" />
+            <NavUser
+              name={user?.name || "user"}
+              email={user?.email || "email"}
+              avatar="/avatars/shadcn.jpg"
+            />
             <div className="px-2 py-2 text-xs text-muted-foreground">
               © 2025 TimeTracker B415
             </div>
@@ -137,11 +143,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         <PopoverTrigger asChild>
                           <Card className="flex flex-row items-start p-1 cursor-pointer">
                             <CardContent>
-                              <div className="flex flex-col min-w-16">
-                                <p className="text-xs font-light opacity-75">
+                              <div className="flex flex-col min-w-16 ">
+                                <p className="text-sm/3 font-light opacity-75">
                                   {"Задача:"}
                                 </p>
-                                <h6 className="text-sm font-semibold">
+                                <h6 className="text-md/3 font-semibold">
                                   {latestTaskLog?.task?.name}
                                 </h6>
                               </div>

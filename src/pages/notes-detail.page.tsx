@@ -1,19 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Save, Loader } from "lucide-react";
+import { ChevronLeft, Loader } from "lucide-react";
 import {
   useEditNotesMutation,
   useGetNotesByIdQuery,
 } from "@/shared/api/notes.service";
-import TiptapEditor from "@/components/TiptapEditor";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 const NotesDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,17 +18,26 @@ const NotesDetailPage: React.FC = () => {
     isLoading,
     isError,
   } = useGetNotesByIdQuery({ note_id: id || "" }, { skip: !id });
-  const [update, { isLoading: isSaving }] = useEditNotesMutation();
+  const [update] = useEditNotesMutation();
 
-  const [content, setContent] = useState<string>("");
+  const [content, setContent] = useState<{ name: string; text: string }>({
+    name: "",
+    text: "",
+  });
 
   const handleSave = async () => {
     if (id) {
       try {
+        if (
+          content.name === note?.name &&
+          content.text === note?.text_content
+        ) {
+          return;
+        }
         await update({
           note_id: id,
-          name: note?.name || "Без названия",
-          text_content: content,
+          name: content.name || "Без названия",
+          text_content: content.text,
         }).unwrap();
       } catch (error) {
         console.error("Ошибка при сохранении заметки:", error);
@@ -41,9 +45,12 @@ const NotesDetailPage: React.FC = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+  useEffect(() => {
+    if (!note) {
+      return;
+    }
+    setContent({ name: note?.name, text: note?.text_content });
+  }, [note]);
 
   if (isLoading)
     return (
@@ -59,42 +66,50 @@ const NotesDetailPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 flex flex-col gap-4">
-      <Button
-        variant="ghost"
-        className="w-fit flex items-center gap-2"
-        onClick={handleBack}
-      >
-        <ChevronLeft size={16} />
-        Назад
-      </Button>
-
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{note?.name || "Без названия"}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2 p-4 bg-black rounded-xl">
-            {/* <TiptapEditor
-              initialContent={note?.text_content || ""}
-              onChange={setContent}
-            /> */}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex items-center gap-2"
-          >
-            {isSaving ? (
-              <Loader size={16} className="animate-spin" />
-            ) : (
-              <Save size={16} />
-            )}
-            Сохранить
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="flex items-center gap-4">
+        <Button
+          size={"icon"}
+          variant={"default"}
+          onClick={() => navigate("/notes")}
+        >
+          <ChevronLeft />
+        </Button>
+        <Input
+          value={content.name}
+          className="text-2xl font-semibold border-none"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setContent((el) => {
+              return { ...el, name: e.target.value };
+            });
+          }}
+          onBlur={handleSave}
+        />
+      </div>
+      <div className="flex flex-col gap-2 rounded-2xl bg-stone-900">
+        <Textarea
+          placeholder="Ваша заметка начинается здесь"
+          className="resize-none min-h-96 h-full border-none p-4 rounded-2xl"
+          value={content.text}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+            setContent((el) => {
+              return { ...el, text: e.target.value };
+            });
+          }}
+          onBlur={handleSave}
+        />
+        {/* <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex items-center gap-2 w-fit"
+        >
+          {isSaving ? (
+            <Loader size={16} className="animate-spin" />
+          ) : (
+            <Save size={16} />
+          )}
+          Сохранить
+        </Button> */}
+      </div>
     </div>
   );
 };
