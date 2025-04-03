@@ -1,3 +1,6 @@
+import { Currency } from "./currency.interface";
+import { PAYMENT } from "./task.interface";
+
 export interface TimeLog {
   log_id: string;
   task_id: string;
@@ -18,6 +21,9 @@ export interface LatestLog {
   task: {
     task_id: string;
     name: string;
+    is_paid: boolean;
+    rate: string;
+    payment_type: PAYMENT;
     project: {
       project_id: string;
       name: string;
@@ -26,6 +32,7 @@ export interface LatestLog {
         role: string;
       }>;
     };
+    currency: Currency;
   };
 }
 

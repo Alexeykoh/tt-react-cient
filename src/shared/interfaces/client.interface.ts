@@ -3,3 +3,9 @@ export interface Client {
   name: string;
   contact_info: string;
 }
+
+export interface CreateClientDTO {
+  name: string;
+  contact_info: string;
+}
+export type EditClientDTO = CreateClientDTO;

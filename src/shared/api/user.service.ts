@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { User } from "../interfaces/user.unterface";
+import { User } from "../interfaces/user.interface";
 
 
 

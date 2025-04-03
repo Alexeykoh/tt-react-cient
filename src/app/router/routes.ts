@@ -6,4 +6,6 @@ export enum ROUTES {
   PROJECTS = "projects",
   CLIENTS = "clients",
   NOTES = "notes",
+  TASKS = 'tasks',
+  NO_ACCESS = 'no-access'
 }

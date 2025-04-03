@@ -26,6 +26,7 @@ export const taskService = createApi({
         url: `tasks/${taskId}`,
         method: "GET",
       }),
+      transformResponse: (response: { data: Task }) => response.data,
       providesTags: ["task"],
     }),
     createTask: builder.mutation<Task, CreateTaskDto>({

@@ -3,14 +3,18 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import LoginPage from "@/pages/LoginPage";
-import HomePage from "@/pages/HomePage";
-import RegisterPage from "@/pages/RegisterPage";
-import ProjectsPage from "@/pages/ProjectsPage";
-import ClientsPage from "@/pages/ClientsPage";
-import NotesPage from "@/pages/NotesPage";
-import ProjectDetailPage from "@/pages/ProjectDetailPage";
+import LoginPage from "@/pages/login.page";
+import HomePage from "@/pages/home.page";
+import RegisterPage from "@/pages/register.page";
+import ProjectsPage from "@/pages/projects.page";
+import ClientsPage from "@/pages/clients.page";
+import NotesPage from "@/pages/notes.page";
+import ProjectDetailPage from "@/pages/project-detail.page";
+import NoAccessPage from "@/pages/no-access.page";
 import { ROUTES } from "./routes";
+import TaskDetailPage from "@/pages/task-detail.page";
+import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import NotesDetailPage from "@/pages/notes-detail.page";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +33,10 @@ const router = createBrowserRouter([
         path: ROUTES.REGISTER,
         element: <RegisterPage />,
       },
+      {
+        path: ROUTES.NO_ACCESS,
+        element: <NoAccessPage />,
+      },
     ],
   },
   {
@@ -42,7 +50,13 @@ const router = createBrowserRouter([
       {
         path: "",
         element: (
-          <PrivateRoute roles={["admin", "user"]}>
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
             <HomePage />
           </PrivateRoute>
         ),
@@ -50,7 +64,13 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PROJECTS,
         element: (
-          <PrivateRoute roles={["admin", "user"]}>
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
             <ProjectsPage />
           </PrivateRoute>
         ),
@@ -58,15 +78,55 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PROJECTS + "/:id",
         element: (
-          <PrivateRoute roles={["admin", "user"]}>
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
             <ProjectDetailPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ROUTES.TASKS + "/:id",
+        element: (
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              // SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
+            <TaskDetailPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ROUTES.NOTES + "/:id",
+        element: (
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
+            <NotesDetailPage />
           </PrivateRoute>
         ),
       },
       {
         path: ROUTES.CLIENTS,
         element: (
-          <PrivateRoute roles={["admin", "user"]}>
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
             <ClientsPage />
           </PrivateRoute>
         ),
@@ -74,7 +134,13 @@ const router = createBrowserRouter([
       {
         path: ROUTES.NOTES,
         element: (
-          <PrivateRoute roles={["admin", "user"]}>
+          <PrivateRoute
+            roles={[
+              SUNSCRIPTION.BASIC,
+              SUNSCRIPTION.FREE,
+              SUNSCRIPTION.PREMIUM,
+            ]}
+          >
             <NotesPage />
           </PrivateRoute>
         ),

@@ -15,7 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getAvatarUrl } from "@/lib/get-avatar-url";
 
 const registerSchema = z
   .object({
@@ -55,6 +57,15 @@ const RegisterForm: React.FC = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <Avatar className="h-8 w-8 rounded-lg">
+          <AvatarImage
+            src={getAvatarUrl(form.watch("username"))}
+            alt={"avatar"}
+          />
+          <AvatarFallback className="rounded-lg">
+            <Loader className="animate-spin" />
+          </AvatarFallback>
+        </Avatar>
         <FormField
           control={form.control}
           name="username"

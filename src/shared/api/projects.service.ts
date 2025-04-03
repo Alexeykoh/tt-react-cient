@@ -12,9 +12,9 @@ export interface CreateProjectRequest {
 }
 
 export interface UpdateProjectRequest {
-  name: string;
-  currency_id: string;
-  rate: number;
+  name?: string;
+  currency_id?: string;
+  rate?: number;
 }
 
 export const projectsService = createApi({
@@ -22,11 +22,12 @@ export const projectsService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["project-service"],
   endpoints: (builder) => ({
-    getProjectById: builder.query<{ data: Project }, { id: string }>({
+    getProjectById: builder.query<Project, { id: string }>({
       query: ({ id }) => ({
         url: `projects/${id}`,
         method: "GET",
       }),
+      transformResponse: (response: { data: Project }) => response.data,
       providesTags: ["project-service"],
     }),
     getProjects: builder.query<PaginatedResponse<Project>, { page: number }>({

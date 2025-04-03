@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { LatestLog, TimeLog } from "../interfaces/user.unterface";
+import { LatestLog, TimeLog } from "../interfaces/time-log.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
 
 export const timeLogService = createApi({
@@ -8,6 +8,7 @@ export const timeLogService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: [
     "time-log-service",
+    "time-log-service-logs",
     "time-log-service-list",
     "time-log-service-latest",
     "time-log-service-lates-task",
@@ -37,9 +38,9 @@ export const timeLogService = createApi({
         url: `time-logs/${id}/logs`,
         method: "GET",
       }),
-      transformResponse: (response: { data: PaginatedResponse<TimeLog> }) =>
-        response.data,
-      providesTags: ["time-log-service-list"],
+      // transformResponse: (response: { data: PaginatedResponse<TimeLog> }) =>
+      //   response.data,
+      providesTags: ["time-log-service-logs"],
     }),
     getTimeLogLatest: builder.query<LatestLog, void>({
       query: () => ({

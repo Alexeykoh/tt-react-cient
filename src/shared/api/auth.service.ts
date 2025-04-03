@@ -1,13 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
+import { User } from "../interfaces/user.interface";
 
-export interface User {
-  id: string;
-  name: string;
-  role: "admin" | "user";
-  email?: string;
-  avatar?: string;
-}
+
 
 interface AuthResponse {
   user: User;

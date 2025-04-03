@@ -1,3 +1,5 @@
+import { Currency } from "./currency.interface";
+
 export interface Task {
   task_id: string;
   name: string;
@@ -6,6 +8,11 @@ export interface Task {
   payment_type: PAYMENT;
   rate: number | string;
   created_at: string;
+  currency: Currency;
+  project: {
+    project_id: string;
+    name: string;
+  };
 }
 
 export interface AssignUserDto {
@@ -13,9 +20,9 @@ export interface AssignUserDto {
   userId: string;
 }
 
-export enum PAYMENT{
-  FIXED = 'fixed',
-  HOURLY = 'hourly'
+export enum PAYMENT {
+  FIXED = "fixed",
+  HOURLY = "hourly",
 }
 export interface CreateTaskDto {
   name: string;
