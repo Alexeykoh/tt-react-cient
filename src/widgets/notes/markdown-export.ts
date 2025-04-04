@@ -1,4 +1,4 @@
-import { Block } from './note-page';
+import { Block } from './note-editor';
 
 export const exportToMarkdown = (blocks: Block[]): string => {
   return blocks.map(block => {

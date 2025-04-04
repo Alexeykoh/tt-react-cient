@@ -118,3 +118,73 @@
     @apply bg-background text-foreground;
   }
 }
+
+.ProseMirror ul, 
+.ProseMirror ol {
+  padding-left: 1.5rem;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+}
+
+/* Чекбоксы для task list */
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: center;
+}
+
+.ProseMirror ul[data-type="taskList"] li label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+}
+
+/* Подсветка активных элементов */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.ProseMirror h1 { font-size: 1.8rem; }
+.ProseMirror h2 { font-size: 1.5rem; }
+
+.ProseMirror code {
+  width: 100%;
+  background-color: #404040;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+}
+
+.ProseMirror a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+/* Стили для таблиц */
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid ;
+  padding: 0.5rem 1rem;
+}
+
+.ProseMirror th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
