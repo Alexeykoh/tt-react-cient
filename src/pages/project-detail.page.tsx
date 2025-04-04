@@ -212,8 +212,6 @@ const ProjectDetailPage: React.FC = () => {
                   <TableHead className="w-[1/6]"></TableHead>
                   <TableHead className="w-[1/6]">Наименование</TableHead>
                   <TableHead className="w-[1/6]">Ставка</TableHead>
-                  <TableHead className="w-[1/6]">Описание</TableHead>
-                  <TableHead className="w-[1/6]">Тип оплаты</TableHead>
                   <TableHead className="w-[1/6]">Статус</TableHead>
                   {/* <TableHead className="w-[15%]"></TableHead> */}
                 </TableRow>

@@ -36,7 +36,6 @@ export interface CreateTaskDto {
 }
 
 export interface UpdateTaskDto {
-  task_id: string;
   name?: string;
   description?: string;
   is_paid?: boolean;

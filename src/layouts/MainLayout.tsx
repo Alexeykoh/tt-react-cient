@@ -10,25 +10,17 @@ import {
   SidebarMenuButton,
   Sidebar,
 } from "@/components/ui/sidebar";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
 import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
-import { useGetTimeLogLatestQuery } from "@/shared/api/time-log.service";
-import { Card, CardContent } from "@/components/ui/card";
-import TaskItem from "@/components/task-item";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { PAYMENT } from "@/shared/interfaces/task.interface";
+
 import PrivateComponent from "@/widgets/private-component";
 import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
+import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -36,11 +28,9 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   useGetCurrenciesQuery();
   const { data: user } = useGetUserQuery();
-  const { data: latestTaskLog } = useGetTimeLogLatestQuery();
 
   return (
     <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1732732291583-af1deca63038?q=80&w=2063&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
@@ -132,74 +122,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <div className="flex justify-center w-full">
-                {latestTaskLog && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <TaskItem
-                        showTime={false}
-                        task_id={latestTaskLog?.task?.task_id || ""}
-                      />
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Card className="flex flex-row items-start p-1 cursor-pointer">
-                            <CardContent>
-                              <div className="flex flex-col min-w-16 ">
-                                <p className="text-sm/3 font-light opacity-75">
-                                  {"Задача:"}
-                                </p>
-                                <h6 className="text-md/3 font-semibold">
-                                  {latestTaskLog?.task?.name}
-                                </h6>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 space-y-2">
-                          <div className="flex flex-col">
-                            <p className="text-xs font-light opacity-75">
-                              {"Проект:"}
-                            </p>
-                            <h6 className="text-md font-semibold">
-                              {latestTaskLog?.task?.project?.name}
-                            </h6>
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-xs font-light opacity-75">
-                              {"Задача:"}
-                            </p>
-                            <h6 className="text-md font-semibold">
-                              {latestTaskLog?.task?.name}
-                            </h6>
-                          </div>
-                          <div className="flex flex-col">
-                            <p className="text-xs font-light opacity-75">
-                              {"Ставка:"}
-                            </p>
-                            <h6 className="text-md font-semibold">
-                              {`${latestTaskLog?.task?.currency?.symbol}${latestTaskLog?.task?.rate} / ${
-                                latestTaskLog?.task?.payment_type ===
-                                PAYMENT.HOURLY
-                                  ? "почасовая"
-                                  : "фиксированная"
-                              }`}
-                            </h6>
-                          </div>
-                          <div className="flex flex-col mt-4">
-                            <Button
-                              onClick={() =>
-                                navigate(
-                                  `/projects/${latestTaskLog?.task?.project?.project_id}`
-                                )
-                              }
-                            >
-                              Перейти к задаче
-                            </Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </>
-                )}
+                <TaskFloatBarWidget />
               </div>
             </div>
           </header>

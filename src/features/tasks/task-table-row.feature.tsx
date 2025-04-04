@@ -32,6 +32,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UpdateTaskForm from "./update-task.form";
+import RateItem from "@/components/rate-item";
 
 export default function TaskTableRowFeature(task: Task) {
   const navigate = useNavigate();
@@ -47,14 +48,12 @@ export default function TaskTableRowFeature(task: Task) {
           <Dialog open={editDialogIsOpen} onOpenChange={setEditDialogIsOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Редактировать проект</DialogTitle>
+                <DialogTitle>Обновить задачу</DialogTitle>
               </DialogHeader>
               <UpdateTaskForm
                 onSuccess={() => setEditDialogIsOpen(false)}
                 onClose={() => setEditDialogIsOpen(false)}
-                projectId={task.task_id}
                 defaults={{
-                  task_id: task.task_id,
                   name: task.name,
                   description: task.description,
                   is_paid: task.is_paid,
@@ -62,6 +61,8 @@ export default function TaskTableRowFeature(task: Task) {
                   rate: String(task.rate),
                   currency_id: String(task.currency.currency_id || ""),
                 }}
+                taskId={task?.task_id}
+                currency={task?.currency}
               />
             </DialogContent>
           </Dialog>
@@ -112,16 +113,20 @@ export default function TaskTableRowFeature(task: Task) {
       <TableCell className="w-[1/6] ">
         <p>{task?.name}</p>
       </TableCell>
-      <TableCell className="w-[1/6]">{`${task?.currency?.symbol}${task?.rate}`}</TableCell>
-      <TableCell className="w-[1/6]">{task?.description}</TableCell>
-      <TableCell className="w-[1/6]">{task?.payment_type}</TableCell>
+      <TableCell className="w-[1/6]">
+        <RateItem
+          symbol={task.currency.symbol}
+          rate={task.rate}
+          payment_type={task.payment_type}
+        />
+      </TableCell>
       <TableCell className="w-[1/6]">
         {task && (
           <Button
             onClick={() => {
               updateTask({
                 taskId: task.task_id,
-                updateData: { task_id: task.task_id, is_paid: !task?.is_paid },
+                updateData: { is_paid: !task?.is_paid },
               });
             }}
             variant={task?.is_paid ? "default" : "destructive"}

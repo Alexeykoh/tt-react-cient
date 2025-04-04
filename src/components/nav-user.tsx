@@ -4,6 +4,7 @@ import {
   ChevronsUpDown,
   Loader,
   LogOut,
+  Settings,
   Sparkles,
 } from "lucide-react";
 import Cookies from "js-cookie";
@@ -113,10 +114,10 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
                 <BadgeCheck />
                 Аккаунт
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-                <CreditCard />
-                Счет
-              </DropdownMenuItem> */}
+              <DropdownMenuItem>
+                <Settings />
+                Настройки
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
                 Уведомления
