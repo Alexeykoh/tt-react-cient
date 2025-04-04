@@ -137,7 +137,7 @@ export const NotesEditor = () => {
     const newBlocks = [...blocks]
     const orderCounters: { [key: string]: number } = {} // parentId -> counter
 
-    newBlocks.forEach((block, index) => {
+    newBlocks.forEach((block) => {
       if (block.type === "ordered-list") {
         const parentId = block.parentId || "root"
         const level = block.level || 0
@@ -289,7 +289,12 @@ export const NotesEditor = () => {
     const blockIndex = blocks.findIndex((b) => b.id === id)
     if (blockIndex !== -1) {
       const currentBlock = blocks[blockIndex]
-      return addBlock(blockIndex, currentBlock.type, currentBlock.parentId, currentBlock.level)
+    const newBlockId = addBlock(blockIndex, currentBlock.type, currentBlock.parentId, currentBlock.level)
+    const nextBlock = findNextBlock(blockIndex, currentBlock.level || 0)
+    if (nextBlock) {
+      setFocusedBlockId(nextBlock.id)
+    }
+    return newBlockId
     }
     return null
   }
@@ -578,7 +583,7 @@ export const NotesEditor = () => {
       }
 
       // Get current parent ID
-      const parentId = currentParentStack.length > 0 ? currentParentStack[currentParentStack.length - 1].id : undefined
+      const parentId = currentParentStack.length > 0 ? currentParentStack[currentParentStack.length - 1] : undefined
 
       // Update previous level
       previousLevel = indentLevel
@@ -706,7 +711,7 @@ export const NotesEditor = () => {
       else if (line.trim().match(/^\[.*\]$$.*$$$/)) {
         const linkMatch = line.trim().match(/^\[(.*)\]$$(.*)$$$/)
         if (linkMatch) {
-          const [_, text, url] = linkMatch
+          const [, text, url] = linkMatch
           newBlocks.push({
             id: uuidv4(),
             type: "link",
@@ -879,4 +884,3 @@ export const NotesEditor = () => {
     </div>
   )
 }
-
