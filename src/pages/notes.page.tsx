@@ -86,10 +86,10 @@ const NotesPage: React.FC = () => {
                 <CardTitle className="w-full">
                   <div className="flex flex-row justify-between w-full">
                     <div className="flex flex-col">
-                      <p className="text-xl font-semibold">{el?.name}</p>
                       <p className="text-xs opacity-70">
                         {formatDate(el?.updated_at)}
                       </p>
+                      <p className="text-xl font-semibold">{el?.name}</p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -129,6 +129,7 @@ const NotesPage: React.FC = () => {
           </Card>
         ))}
       </div>
+        
     </div>
   );
 };

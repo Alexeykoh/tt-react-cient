@@ -21,6 +21,7 @@ import PrivateComponent from "@/widgets/private-component";
 import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
+import SearchWidget from "@/widgets/search.widget";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -121,8 +122,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <div className="flex items-center gap-2 px-3 w-full">
               <SidebarTrigger />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <div className="flex justify-center w-full">
+              <div className="flex justify-center items-center w-full gap-4">
                 <TaskFloatBarWidget />
+                <SearchWidget />
               </div>
             </div>
           </header>

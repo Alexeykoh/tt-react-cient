@@ -7,8 +7,9 @@ import {
   useEditNotesMutation,
   useGetNotesByIdQuery,
 } from "@/shared/api/notes.service";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { NotesPageWidget } from "@/widgets/notes/note-page";
+
 
 const NotesDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,7 +87,7 @@ const NotesDetailPage: React.FC = () => {
         />
       </div>
       <div className="flex flex-col gap-2 rounded-2xl bg-stone-900">
-        <Textarea
+        {/* <Textarea
           placeholder="Ваша заметка начинается здесь"
           className="resize-none min-h-96 h-full border-none p-4 rounded-2xl"
           value={content.text}
@@ -96,19 +97,8 @@ const NotesDetailPage: React.FC = () => {
             });
           }}
           onBlur={handleSave}
-        />
-        {/* <Button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex items-center gap-2 w-fit"
-        >
-          {isSaving ? (
-            <Loader size={16} className="animate-spin" />
-          ) : (
-            <Save size={16} />
-          )}
-          Сохранить
-        </Button> */}
+        /> */}
+       <NotesPageWidget />
       </div>
     </div>
   );
