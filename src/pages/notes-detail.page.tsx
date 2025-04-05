@@ -9,7 +9,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { v4 as uuidv4 } from "uuid";
-import { Block, NotesEditor } from "@/widgets/notes/note-editor";
+import { NotesEditorV2 } from "@/widgets/notesV2/note-editor-v2";
+
 
 const firstMessage: string = JSON.stringify([
   {
@@ -88,13 +89,8 @@ const NotesDetailPage: React.FC = () => {
       </div>
 
       <Card className="border-0 shadow-none bg-[#404040]/80 min-h-96">
-        <CardContent className="p-0">
-          <NotesEditor
-            sendToServer={handleSave}
-            updateState={function (state: Block[]): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
+        <CardContent className="">
+          <NotesEditorV2 />
         </CardContent>
       </Card>
     </div>
