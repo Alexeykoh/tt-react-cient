@@ -8,8 +8,21 @@ import {
 } from "@/shared/api/notes.service";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { v4 as uuidv4 } from "uuid";
+import { Block, NotesEditor } from "@/widgets/notes/note-editor";
 
-import { NotesEditor } from "@/widgets/notes/note-editor";
+const firstMessage: string = JSON.stringify([
+  {
+    id: uuidv4(),
+    type: "heading1",
+    content: "Новая заметка",
+  },
+  {
+    id: uuidv4(),
+    type: "text",
+    content: "Начните писать здесь...",
+  },
+]);
 
 const NotesDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +36,7 @@ const NotesDetailPage: React.FC = () => {
 
   const [contentNote, setContent] = useState<{ name: string; text: string }>({
     name: "",
-    text: "",
+    text: firstMessage,
   });
 
   const handleSave = async (noteData?: string) => {
@@ -76,7 +89,12 @@ const NotesDetailPage: React.FC = () => {
 
       <Card className="border-0 shadow-none bg-[#404040]/80 min-h-96">
         <CardContent className="p-0">
-          <NotesEditor sendToServer={handleSave} />
+          <NotesEditor
+            sendToServer={handleSave}
+            updateState={function (state: Block[]): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
         </CardContent>
       </Card>
     </div>

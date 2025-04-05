@@ -53,6 +53,7 @@ export interface Block {
 }
 
 interface props {
+  updateState: (state: Block[]) => void;
   sendToServer: () => void;
 }
 
