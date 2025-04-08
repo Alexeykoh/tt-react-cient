@@ -1,4 +1,6 @@
+import { ROUTES } from "@/app/router/routes";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,12 +10,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useSubscription } from "@/hooks/use-subscription";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { LockKeyhole } from "lucide-react";
 import { HTMLAttributes, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  subscriptions: Array<SUNSCRIPTION>;
+  subscriptions: Array<SUBSCRIPTION>;
   lockPosition?: "left" | "right";
 }
 
@@ -53,11 +56,16 @@ export default function PrivateComponent({
           <DialogHeader>
             <DialogTitle>Подписка</DialogTitle>
             <DialogDescription>
-              <p>{`Эта функция доступна тольк опльзователям с подсписками: `}</p>
-              <div className="pt-3 uppercase">
-                {Object.values(subscriptions).map((el) => (
-                  <Badge className="mx-1">{el}</Badge>
-                ))}
+              <div className="flex flex-col gap-2">
+                <p>{`Эта функция доступна тольк опльзователям с подсписками: `}</p>
+                <div className="pt-3 uppercase">
+                  {Object.values(subscriptions).map((el) => (
+                    <Badge className="mx-1">{el}</Badge>
+                  ))}
+                </div>
+                <Link className="mt-4 self-center" to={"/" + ROUTES.PLANS}>
+                  <Button>Обновить план</Button>
+                </Link>
               </div>
             </DialogDescription>
           </DialogHeader>

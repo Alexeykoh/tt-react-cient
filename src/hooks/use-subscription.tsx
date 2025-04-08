@@ -1,18 +1,22 @@
-import { useMemo } from 'react';
-import { SUNSCRIPTION } from '../shared/enums/sunscriptions.enum';
-import { useGetUserQuery } from '../shared/api/user.service';
+import { useMemo } from "react";
+import { SUBSCRIPTION } from "../shared/enums/sunscriptions.enum";
+import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 
 interface SubscriptionResult {
   access: boolean;
-  subscription: SUNSCRIPTION | null;
+  subscription: SUBSCRIPTION | null;
 }
 
-export function useSubscription(requiredSubscriptions: SUNSCRIPTION[]): SubscriptionResult {
-  const { data: user } = useGetUserQuery();
+export function useSubscription(
+  requiredSubscriptions: SUBSCRIPTION[]
+): SubscriptionResult {
+  const { data: subscriptionData } = useGetSubscriptionsQuery();
 
   return useMemo(() => {
-    if (!user) return { access: false, subscription: null };
-    const access = requiredSubscriptions.includes(user.subscriptionType);
-    return { access, subscription: user.subscriptionType };
-  }, [user, requiredSubscriptions]);
+    if (!subscriptionData) return { access: false, subscription: null };
+    const access = requiredSubscriptions.includes(
+      subscriptionData?.planId as SUBSCRIPTION
+    );
+    return { access, subscription: subscriptionData?.planId as SUBSCRIPTION };
+  }, [subscriptionData, requiredSubscriptions]);
 }

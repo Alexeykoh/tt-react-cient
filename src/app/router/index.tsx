@@ -3,18 +3,24 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
-import LoginPage from "@/pages/login.page";
-import HomePage from "@/pages/home.page";
-import RegisterPage from "@/pages/register.page";
-import ProjectsPage from "@/pages/projects.page";
-import ClientsPage from "@/pages/clients.page";
-import NotesPage from "@/pages/notes.page";
-import ProjectDetailPage from "@/pages/project-detail.page";
 import NoAccessPage from "@/pages/no-access.page";
 import { ROUTES } from "./routes";
-import TaskDetailPage from "@/pages/task-detail.page";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import NotesDetailPage from "@/pages/notes-detail.page";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import {
+  ClientsPage,
+  HomePage,
+  LoginPage,
+  NotesDetailPage,
+  NotesPage,
+  NotificationsPage,
+  PlansPage,
+  ProjectDetailPage,
+  ProjectsPage,
+  RegisterPage,
+  SettingsPage,
+  TaskDetailPage,
+  UserPage,
+} from "@/pages";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +46,16 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: ROUTES.PLANS,
+    element: (
+      <PrivateRoute
+        roles={[SUBSCRIPTION.BASIC, SUBSCRIPTION.FREE, SUBSCRIPTION.PREMIUM]}
+      >
+        <PlansPage />
+      </PrivateRoute>
+    ),
+  },
+  {
     path: ROUTES.HOME,
     element: (
       <MainLayout>
@@ -52,9 +68,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <HomePage />
@@ -66,9 +82,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <ProjectsPage />
@@ -80,9 +96,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <ProjectDetailPage />
@@ -94,9 +110,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
+              SUBSCRIPTION.BASIC,
               // SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <TaskDetailPage />
@@ -108,9 +124,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <NotesDetailPage />
@@ -122,12 +138,54 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <ClientsPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ROUTES.USER,
+        element: (
+          <PrivateRoute
+            roles={[
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
+            ]}
+          >
+            <UserPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ROUTES.SETTINGS,
+        element: (
+          <PrivateRoute
+            roles={[
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
+            ]}
+          >
+            <SettingsPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ROUTES.NOTIFICATIONS,
+        element: (
+          <PrivateRoute
+            roles={[
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
+            ]}
+          >
+            <NotificationsPage />
           </PrivateRoute>
         ),
       },
@@ -136,9 +194,9 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute
             roles={[
-              SUNSCRIPTION.BASIC,
-              SUNSCRIPTION.FREE,
-              SUNSCRIPTION.PREMIUM,
+              SUBSCRIPTION.BASIC,
+              SUBSCRIPTION.FREE,
+              SUBSCRIPTION.PREMIUM,
             ]}
           >
             <NotesPage />

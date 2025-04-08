@@ -1,6 +1,6 @@
 import React from "react";
-import LoginForm from "../features/auth/LoginForm";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import LoginForm from "@/features/auth/LoginForm";
 
 const LoginPage: React.FC = () => {
   return (

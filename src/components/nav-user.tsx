@@ -2,15 +2,13 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  Loader,
   LogOut,
   Settings,
   Sparkles,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { ROUTES } from "@/app/router/routes";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +25,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useGetUserQuery } from "@/shared/api/user.service";
-import { getAvatarUrl } from "@/lib/get-avatar-url";
+import { Link } from "react-router-dom";
+import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import UserAvatar from "./user-avatar";
 
 interface NavUserProps {
   name: string;
@@ -37,8 +38,9 @@ interface NavUserProps {
 
 export function NavUser({ name, email, avatar }: NavUserProps) {
   const { isMobile } = useSidebar();
-  const user = { name, email, avatar, user_id: email };
   const { isLoading, error } = useGetUserQuery();
+  const { data: subscriptionData } = useGetSubscriptionsQuery();
+  const user = { name, email, avatar, user_id: email };
 
   // Если данные загружаются или произошла ошибка, показываем заглушку
   if (isLoading || error || !user) {
@@ -68,12 +70,10 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={getAvatarUrl(user.name)} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
-                  <Loader className="animate-spin" />
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                name={user.name}
+                planId={subscriptionData?.planId as SUBSCRIPTION}
+              />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
@@ -89,12 +89,10 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={getAvatarUrl(user.name)} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">
-                    <Loader className="animate-spin" />
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  name={user.name}
+                  planId={subscriptionData?.planId as SUBSCRIPTION}
+                />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
@@ -103,25 +101,33 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Обновить до Pro
-              </DropdownMenuItem>
+              <Link to={ROUTES.PLANS}>
+                <DropdownMenuItem>
+                  <Sparkles />
+                  Обновить до Pro
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Аккаунт
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings />
-                Настройки
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Уведомления
-              </DropdownMenuItem>
+              <Link to={ROUTES.USER}>
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Аккаунт
+                </DropdownMenuItem>
+              </Link>
+              <Link to={ROUTES.SETTINGS}>
+                <DropdownMenuItem>
+                  <Settings />
+                  Настройки
+                </DropdownMenuItem>
+              </Link>
+              <Link to={ROUTES.NOTIFICATIONS}>
+                <DropdownMenuItem>
+                  <Bell />
+                  Уведомления
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem

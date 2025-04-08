@@ -1,9 +1,9 @@
-import { SUNSCRIPTION } from "../enums/sunscriptions.enum";
+import { SUBSCRIPTION } from "../enums/sunscriptions.enum";
 
 export interface User {
   user_id: string;
   name: string;
-  subscriptionType: SUNSCRIPTION;
+  subscriptionType: SUBSCRIPTION;
   email?: string;
   avatar?: string;
 }

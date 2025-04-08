@@ -18,7 +18,7 @@ import {
   useDeleteTaskMutation,
   useUpdateTaskMutation,
 } from "@/shared/api/task.service";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { Task } from "@/shared/interfaces/task.interface";
 import PrivateComponent from "@/widgets/private-component";
 import {
@@ -98,7 +98,7 @@ export default function TaskTableRowFeature(task: Task) {
       )}
       <TableCell className="font-medium w-[1/6] flex items-center gap-4">
         <PrivateComponent
-          subscriptions={[SUNSCRIPTION.BASIC, SUNSCRIPTION.PREMIUM]}
+          subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
         >
           <Button
             size={"icon"}

@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSearcV2Query } from "@/shared/api/search.service";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import PrivateComponent from "@/widgets/private-component";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
                   Перейти
                 </Button>
                 <PrivateComponent
-                  subscriptions={[SUNSCRIPTION.BASIC, SUNSCRIPTION.PREMIUM]}
+                  subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
                 >
                   <Button
                     variant={"outline"}

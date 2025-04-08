@@ -1,6 +1,6 @@
 import React from "react";
-import RegisterForm from "../features/auth/RegisterForm";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import RegisterForm from "@/features/auth/RegisterForm";
 
 const RegisterPage: React.FC = () => {
   return (

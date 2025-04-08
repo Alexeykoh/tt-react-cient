@@ -18,10 +18,11 @@ import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
 import { Separator } from "@/components/ui/separator";
 
 import PrivateComponent from "@/widgets/private-component";
-import { SUNSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
 import SearchWidget from "@/widgets/search.widget";
+import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -29,9 +30,10 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { data: user } = useGetUserQuery();
 
   useGetCurrenciesQuery();
-  const { data: user } = useGetUserQuery();
+  useGetSubscriptionsQuery();
 
   return (
     <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1732732291583-af1deca63038?q=80&w=2063&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
@@ -85,9 +87,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 <PrivateComponent
                   lockPosition="left"
                   subscriptions={[
-                    SUNSCRIPTION.FREE,
-                    SUNSCRIPTION.BASIC,
-                    SUNSCRIPTION.PREMIUM,
+                    SUBSCRIPTION.FREE,
+                    SUBSCRIPTION.BASIC,
+                    SUBSCRIPTION.PREMIUM,
                   ]}
                 >
                   <SidebarMenuItem>
