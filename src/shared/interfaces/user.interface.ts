@@ -1,9 +1,19 @@
-import { SUBSCRIPTION } from "../enums/sunscriptions.enum";
+import { z } from "zod";
 
-export interface User {
-  user_id: string;
-  name: string;
-  subscriptionType: SUBSCRIPTION;
-  email?: string;
-  avatar?: string;
-}
+export const UserSchema = z.object({
+  user_id: z.string(),
+  name: z.string(),
+  email: z.string().optional(),
+  avatar: z.string().optional(),
+});
+
+export const EditUserNameSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Имя пользователя обязательно")
+    .regex(/^\S/, "Имя не должно начинаться с пробела")
+    .regex(/^(?!.*\s\s)/, "Имя не должно содержать два пробела подряд"),
+});
+
+export type User = z.infer<typeof UserSchema>;
+export type EditUserNameDTO = z.infer<typeof EditUserNameSchema>;

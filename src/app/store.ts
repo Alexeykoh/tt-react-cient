@@ -11,6 +11,7 @@ import { searchService } from "@/shared/api/search.service";
 import { notesService } from "@/shared/api/notes.service";
 import { subscriptionsService } from "@/shared/api/subscriptions.service";
 import { plansService } from "@/shared/api/plans.service";
+import { friendshipService } from "@/shared/api/friendship.service";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     [notesService.reducerPath]: notesService.reducer,
     [subscriptionsService.reducerPath]: subscriptionsService.reducer,
     [plansService.reducerPath]: plansService.reducer,
+    [friendshipService.reducerPath]: friendshipService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -40,7 +42,8 @@ export const store = configureStore({
       searchService.middleware,
       notesService.middleware,
       subscriptionsService.middleware,
-      plansService.middleware
+      plansService.middleware,
+      friendshipService.middleware
     ),
 });
 
