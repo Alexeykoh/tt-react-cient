@@ -85,7 +85,7 @@ const LoginForm: React.FC = () => {
         />
       </FormProvider>
       <Button disabled={isLoading} type="submit" className="mt-4 w-full">
-        {isLoading ? "Loading..." : "Login"}
+        {isLoading ? "Загрузка..." : "Войти"}
       </Button>
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">

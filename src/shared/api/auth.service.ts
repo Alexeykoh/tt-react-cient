@@ -1,8 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import { User } from "../interfaces/user.interface";
-
-
+import {
+  RegisterRequest,
+  RegisterResponse,
+  registerResponseSchema,
+} from "../interfaces/register.interface";
 
 interface AuthResponse {
   user: User;
@@ -23,16 +26,23 @@ export const authApi = createApi({
       transformResponse: (response: { data: AuthResponse }) => response.data,
       invalidatesTags: ["User"],
     }),
-    register: builder.query<
-      AuthResponse,
-      { username: string; password: string }
-    >({
-      query: ({ username, password }) => ({
-        url: "auth/register",
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
+      query: ({ name, password, email }) => ({
+        url: "users/register",
         method: "POST",
-        body: { username, password },
+        body: { name, password, email },
       }),
-      transformResponse: (response: { data: AuthResponse }) => response.data,
+      transformResponse: (response: unknown) => {
+        // Валидируем ответ
+        const result = registerResponseSchema.safeParse(response);
+
+        if (!result.success) {
+          console.error("Невалидный ответ сервера:", result.error);
+          throw new Error("Ошибка валидации ответа сервера");
+        }
+
+        return result.data;
+      },
     }),
     getCurrentUser: builder.query<User, void>({
       query: () => ({
@@ -45,4 +55,5 @@ export const authApi = createApi({
   }),
 });
 
-export const { useLoginMutation, useRegisterQuery, useGetCurrentUserQuery } = authApi;
+export const { useLoginMutation, useRegisterMutation, useGetCurrentUserQuery } =
+  authApi;

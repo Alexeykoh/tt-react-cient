@@ -1,7 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Link } from "react-router-dom";
 
 import {
@@ -18,31 +17,16 @@ import { useState } from "react";
 import { Eye, EyeOff, Loader } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarUrl } from "@/lib/get-avatar-url";
-
-const registerSchema = z
-  .object({
-    username: z.string().min(1, "Имя пользователя обязательно"),
-    password: z.string().min(6, "Пароль должен содержать не менее 6 символов"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
-    email: z.string().email("Некорректный адрес электронной почты"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Пароли не совпадают",
-    path: ["confirmPassword"],
-  });
-
-interface RegisterFormData {
-  username: string;
-  password: string;
-  confirmPassword: string;
-  email: string;
-}
+import {
+  registerRequestSchema,
+  RegisterRequest,
+} from "@/shared/interfaces/register.interface";
+import { useRegisterMutation } from "@/shared/api/auth.service";
 
 const RegisterForm: React.FC = () => {
+  const [register, { isLoading }] = useRegisterMutation();
   const form = useForm({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerRequestSchema),
   });
 
   const [showPassword, setShowPassword] = useState({
@@ -50,36 +34,39 @@ const RegisterForm: React.FC = () => {
     confirmPassword: false,
   });
 
-  const onSubmit = (data: RegisterFormData) => {
-    console.log("Form Data:", data);
+  const onSubmit = (data: RegisterRequest) => {
+    console.log(data);
+    register(data);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-        <Avatar className="h-8 w-8 rounded-lg">
-          <AvatarImage
-            src={getAvatarUrl(form.watch("username"))}
-            alt={"avatar"}
-          />
-          <AvatarFallback className="rounded-lg">
-            <Loader className="animate-spin" />
-          </AvatarFallback>
-        </Avatar>
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Имя пользователя</FormLabel>
-              <FormControl style={{ width: "100%" }}>
-                <Input
-                  placeholder="username"
-                  {...field}
-                  defaultValue=""
-                  style={{ width: "100%" }}
-                  autoComplete="username"
-                />
+              <FormControl className="w-full">
+                <div className="relative w-full">
+                  <Input
+                    placeholder="username"
+                    {...field}
+                    defaultValue=""
+                    className={"w-full pl-10"}
+                    autoComplete="username"
+                  />
+                  <Avatar className="h-6 w-6 rounded-lg absolute bottom-1/2 translate-y-1/2 left-2">
+                    <AvatarImage
+                      src={getAvatarUrl(form.watch("name"))}
+                      alt={"avatar"}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      <Loader className="animate-spin" />
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -209,8 +196,8 @@ const RegisterForm: React.FC = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="mt-4 w-full">
-          Зарегистрироваться
+        <Button disabled={isLoading} type="submit" className="mt-4 w-full">
+          {isLoading ? "Загрузка..." : "Зарегистрироваться"}
         </Button>
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
