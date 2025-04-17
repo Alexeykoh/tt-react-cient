@@ -1,17 +1,33 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { AccountTab } from "@/components/settings-tab/account-tab";
+import { PeoplesTab } from "@/components/settings-tab/peoples-tab";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function SettingsPage() {
+  const tabsData = [
+    {
+      value: "account",
+      title: "Аккаунт",
+      component: AccountTab,
+    },
+    {
+      value: "peoples",
+      title: "Пользователи",
+      component: PeoplesTab,
+    },
+    // {
+    //   value: "teams",
+    //   title: "Комманды",
+    //   component: AccountTab,
+    // },
+    // {
+    //   value: "appearance",
+    //   title: "Внешний вид",
+    //   component: AccountTab,
+    // },
+  ];
+
   return (
     <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
       <div className="flex flex-wrap justify-between gap-2">
@@ -20,84 +36,38 @@ export default function SettingsPage() {
 
       <Card className="flex-1 flex flex-col">
         <CardContent className="flex-1 flex flex-col p-4">
-          <Tabs defaultValue="peoples" className="w-full flex flex-row ">
-            <TabsList className="grid grid-rows-2 p-2 h-fit bg-transparent ">
-              <TabsTrigger value="peoples">Пользователи</TabsTrigger>
-              <TabsTrigger value="teams">Комманды</TabsTrigger>
-              <TabsTrigger value="appearance">Внешний вид</TabsTrigger>
+          <Tabs
+            defaultValue={tabsData[0].value}
+            className="w-full flex flex-row "
+          >
+            <TabsList className="grid grid-rows-2 p-2 h-fit bg-transparent w-fit ">
+              {tabsData.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="items-start justify-start"
+                >
+                  {tab.title}
+                </TabsTrigger>
+              ))}
             </TabsList>
-            <TabsContent value="peoples" className="w-full">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account</CardTitle>
-                  <CardDescription>
-                    Make changes to your account here. Click save when you're
-                    done.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="space-y-1">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" defaultValue="Pedro Duarte" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" defaultValue="@peduarte" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Save changes</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            <TabsContent value="teams">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Password</CardTitle>
-                  <CardDescription>
-                    Change your password here. After saving, you'll be logged
-                    out.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="space-y-1">
-                    <Label htmlFor="current">Current password</Label>
-                    <Input id="current" type="password" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="new">New password</Label>
-                    <Input id="new" type="password" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Save password</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            <TabsContent value="appearance">
-              <Card>
-                <CardHeader>
-                  <CardTitle>appearance</CardTitle>
-                  <CardDescription>
-                    Change your password here. After saving, you'll be logged
-                    out.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="space-y-1">
-                    <Label htmlFor="current">Current password</Label>
-                    <Input id="current" type="password" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="new">New password</Label>
-                    <Input id="new" type="password" />
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button>Save password</Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
+            {tabsData.map((tab) => (
+              <TabsContent
+                key={tab.value}
+                value={tab.value}
+                className="w-full p-3"
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{tab.title}</CardTitle>
+                  </CardHeader>
+                  <Separator orientation="horizontal" />
+                  <CardContent className="space-y-2">
+                    {tab.component && <tab.component />}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            ))}
           </Tabs>
         </CardContent>
       </Card>

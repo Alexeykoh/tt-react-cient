@@ -110,7 +110,7 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link to={ROUTES.USER}>
+              <Link to={ROUTES.USER} className="hidden">
                 <DropdownMenuItem>
                   <BadgeCheck />
                   Аккаунт

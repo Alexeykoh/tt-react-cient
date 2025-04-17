@@ -6,14 +6,15 @@ import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 interface Props {
   name: string;
   planId: SUBSCRIPTION;
+  size?: "small" | "large";
 }
 
-export default function UserAvatar({ name, planId }: Props) {
+export default function UserAvatar({ name, planId, size = "small" }: Props) {
   return (
     <Avatar
-      className={`h-8 w-8 rounded-lg ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
+      className={`${size === "small" ? "w-8 h-8" : "w-15 h-15"} rounded-lg ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
     >
-      <AvatarImage src={getAvatarUrl(name)} alt={name} />
+      <AvatarImage src={getAvatarUrl(name, planId)} alt={name} />
       <AvatarFallback className="rounded-lg">
         <Loader className="animate-spin" />
       </AvatarFallback>

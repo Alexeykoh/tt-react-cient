@@ -1,8 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { User } from "../interfaces/user.interface";
-
-
+import {
+  EditUserNameDTO,
+  EditUserNameSchema,
+  User,
+} from "../interfaces/user.interface";
 
 export const userService = createApi({
   reducerPath: "user-service",
@@ -17,7 +19,25 @@ export const userService = createApi({
       transformResponse: (response: { data: User }) => response.data,
       providesTags: ["user-service"],
     }),
+    editUserName: builder.mutation<User, EditUserNameDTO>({
+      query: (user) => ({
+        url: "users/me",
+        method: "PATCH",
+        body: user,
+      }),
+      transformResponse: (response: { data: User }) => response.data,
+      invalidatesTags: ["user-service"],
+      async onQueryStarted(arg) {
+        const validationResult = EditUserNameSchema.safeParse(arg);
+        if (!validationResult.success) {
+          const errors = validationResult.error.errors
+            .map((err) => err.message)
+            .join(", ");
+          throw new Error(errors);
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetUserQuery } = userService;
+export const { useGetUserQuery, useEditUserNameMutation } = userService;
