@@ -32,9 +32,9 @@ export const authApi = createApi({
         method: "POST",
         body: { name, password, email },
       }),
-      transformResponse: (response: unknown) => {
+      transformResponse: (response: { data: RegisterResponse }) => {
         // Валидируем ответ
-        const result = registerResponseSchema.safeParse(response);
+        const result = registerResponseSchema.safeParse(response.data);
 
         if (!result.success) {
           console.error("Невалидный ответ сервера:", result.error);
