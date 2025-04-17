@@ -12,6 +12,7 @@ import { notesService } from "@/shared/api/notes.service";
 import { subscriptionsService } from "@/shared/api/subscriptions.service";
 import { plansService } from "@/shared/api/plans.service";
 import { friendshipService } from "@/shared/api/friendship.service";
+import { notificationsService } from "@/shared/api/notification.service";
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     [subscriptionsService.reducerPath]: subscriptionsService.reducer,
     [plansService.reducerPath]: plansService.reducer,
     [friendshipService.reducerPath]: friendshipService.reducer,
+    [notificationsService.reducerPath]: notificationsService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -43,7 +45,8 @@ export const store = configureStore({
       notesService.middleware,
       subscriptionsService.middleware,
       plansService.middleware,
-      friendshipService.middleware
+      friendshipService.middleware,
+      notificationsService.middleware
     ),
 });
 
