@@ -1,8 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import {
   FormField,
   FormItem,
@@ -21,10 +21,16 @@ import {
   registerRequestSchema,
   RegisterRequest,
 } from "@/shared/interfaces/register.interface";
-import { useRegisterMutation } from "@/shared/api/auth.service";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "@/shared/api/auth.service";
+import { ROUTES } from "@/app/router/routes";
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
+  const [login,{isLoading: isLoadingLogin}] = useLoginMutation();
   const form = useForm({
     resolver: zodResolver(registerRequestSchema),
   });
@@ -35,8 +41,16 @@ const RegisterForm: React.FC = () => {
   });
 
   const onSubmit = (data: RegisterRequest) => {
-    console.log(data);
-    register(data);
+    register(data)
+      .unwrap()
+      .then(() => {
+        login({ email: data.email, password: data.password })
+          .unwrap()
+          .then((data) => {
+            Cookies.set("authToken", data.token);
+            navigate(ROUTES.HOME);
+          });
+      });
   };
 
   return (
@@ -197,7 +211,7 @@ const RegisterForm: React.FC = () => {
           )}
         />
         <Button disabled={isLoading} type="submit" className="mt-4 w-full">
-          {isLoading ? "Загрузка..." : "Зарегистрироваться"}
+          {isLoading || isLoadingLogin ? "Загрузка..." : "Зарегистрироваться"}
         </Button>
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
