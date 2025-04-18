@@ -32,7 +32,7 @@ export const notificationsService = createApi({
     }),
     readNotifications: builder.mutation<INotification, string>({
       query: (id) => ({
-        url: "notifications/" + id,
+        url: "notifications/read/" + id,
         method: "PATCH",
       }),
       transformResponse: (response: { data: INotification }) => {
@@ -48,8 +48,18 @@ export const notificationsService = createApi({
       },
       invalidatesTags: ["notifications"],
     }),
+    readAllNotifications: builder.mutation<INotification, void>({
+      query: () => ({
+        url: "notifications/read/all",
+        method: "PATCH",
+      }),
+      invalidatesTags: ["notifications"],
+    }),
   }),
 });
 
-export const { useGetNotificationsQuery, useReadNotificationsMutation } =
-  notificationsService;
+export const {
+  useGetNotificationsQuery,
+  useReadNotificationsMutation,
+  useReadAllNotificationsMutation,
+} = notificationsService;

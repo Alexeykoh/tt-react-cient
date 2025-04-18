@@ -16,11 +16,15 @@ import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/dateUtils";
 import { Skeleton } from "@/components/ui/skeleton";
+import UserAvatar from "@/components/user-avatar";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
 export default function SearchWidget() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchLocation, setSearchLocation] = useState<"all" | "projects" | "tasks" | "clients">("all");
+  const [searchLocation, setSearchLocation] = useState<
+    "all" | "projects" | "tasks" | "clients" | "users"
+  >("all");
   const [triggerSearch, { data, isFetching, error }] = useLazySearcV2Query();
 
   const handleSearch = () => {
@@ -47,12 +51,12 @@ export default function SearchWidget() {
     navigate(`/${type}/${id}`);
   };
 
-  const hasResults = data && (
-    data.projects.length > 0 ||
-    data.tasks.length > 0 ||
-    data.clients.length > 0 ||
-    data.users.length > 0
-  );
+  const hasResults =
+    data &&
+    (data.projects.length > 0 ||
+      data.tasks.length > 0 ||
+      data.clients.length > 0 ||
+      data.users.length > 0);
 
   return (
     <Drawer direction="top">
@@ -96,22 +100,25 @@ export default function SearchWidget() {
             </div>
 
             <div className="flex space-x-2 mt-3 mb-4">
-              {(["all", "projects", "tasks", "clients"] as const).map((loc) => (
-                <button
-                  key={loc}
-                  className={`text-xs px-2 py-1 rounded-md ${
-                    searchLocation === loc
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                  onClick={() => setSearchLocation(loc)}
-                >
-                  {loc === "all" && "Все"}
-                  {loc === "projects" && "Проекты"}
-                  {loc === "tasks" && "Задачи"}
-                  {loc === "clients" && "Клиенты"}
-                </button>
-              ))}
+              {(["all", "projects", "tasks", "clients", "users"] as const).map(
+                (loc) => (
+                  <button
+                    key={loc}
+                    className={`text-xs px-2 py-1 rounded-md ${
+                      searchLocation === loc
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                    onClick={() => setSearchLocation(loc)}
+                  >
+                    {loc === "all" && "Все"}
+                    {loc === "projects" && "Проекты"}
+                    {loc === "tasks" && "Задачи"}
+                    {loc === "clients" && "Клиенты"}
+                    {loc === "users" && "Пользователи"}
+                  </button>
+                )
+              )}
             </div>
 
             <div className="mt-4 space-y-4">
@@ -193,6 +200,35 @@ export default function SearchWidget() {
                             <p className="text-xs text-muted-foreground">
                               {client.contact_info}
                             </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {data && data?.users.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-2">Пользователи</h3>
+                      <div className="space-y-2">
+                        {data.users?.map((user) => (
+                          <div
+                            key={user.user_id}
+                            className="flex gap-2 items-center p-3 rounded-md border hover:bg-accent cursor-pointer"
+                            onClick={() =>
+                              navigateToItem("users", user.user_id)
+                            }
+                          >
+                            <UserAvatar
+                              name={user.name}
+                              planId={SUBSCRIPTION.FREE}
+                              size="large"
+                            />
+                            <div>
+                              <p className="font-medium">{user.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {user.email}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>

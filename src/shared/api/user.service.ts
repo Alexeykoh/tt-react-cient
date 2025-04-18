@@ -9,7 +9,7 @@ import {
 export const userService = createApi({
   reducerPath: "user-service",
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ["user-service"],
+  tagTypes: ["user-service", "user-id-service"],
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
       query: () => ({
@@ -18,6 +18,14 @@ export const userService = createApi({
       }),
       transformResponse: (response: { data: User }) => response.data,
       providesTags: ["user-service"],
+    }),
+    getUserById: builder.query<User, string>({
+      query: (id) => ({
+        url: "users/" + id,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: User }) => response.data,
+      providesTags: ["user-id-service"],
     }),
     editUserName: builder.mutation<User, EditUserNameDTO>({
       query: (user) => ({
@@ -40,4 +48,5 @@ export const userService = createApi({
   }),
 });
 
-export const { useGetUserQuery, useEditUserNameMutation } = userService;
+export const { useGetUserQuery, useEditUserNameMutation, useGetUserByIdQuery } =
+  userService;

@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import { Search } from "../interfaces/search.interface";
 
-type SearchLocation = "all" | "projects" | "tasks" | "clients";
+type SearchLocation = "all" | "projects" | "tasks" | "clients" | 'users';
 
 export const searchService = createApi({
   reducerPath: "search-service",

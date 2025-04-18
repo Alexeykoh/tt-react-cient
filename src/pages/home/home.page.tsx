@@ -27,6 +27,11 @@ const HomePage: React.FC = () => {
       <div className="flex flex-col gap-4 w-full pb-6">
         <h2 className="text-xl">Последние задачи</h2>
         <div className="flex flex-wrap gap-4 w-full">
+          {searchData?.tasks?.length === 0 && (
+            <>
+              <Button>Создать</Button>
+            </>
+          )}
           {searchData?.tasks?.map((el) => (
             <Card key={el?.task_id} className="min-w-64 w-full md:w-fit">
               <CardHeader>
@@ -68,6 +73,11 @@ const HomePage: React.FC = () => {
       <div className="flex flex-col gap-4 w-full pb-6">
         <h2 className="text-xl">Последние проекты</h2>
         <div className="flex flex-wrap gap-4 w-full">
+          {searchData?.projects?.length === 0 && (
+            <>
+              <Button>Создать</Button>
+            </>
+          )}
           {searchData?.projects?.map((el) => (
             <Card key={el?.project_id} className="min-w-64 w-full md:w-fit">
               <CardHeader>

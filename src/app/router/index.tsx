@@ -148,7 +148,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: ROUTES.USER,
+        path: ROUTES.USER + "/:id",
         element: (
           <PrivateRoute
             roles={[
