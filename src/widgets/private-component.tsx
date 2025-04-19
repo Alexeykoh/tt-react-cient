@@ -1,4 +1,4 @@
-import { ROUTES } from "@/app/router/routes";
+import { ROUTES } from "@/app/router/routes.enum";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

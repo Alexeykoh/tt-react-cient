@@ -2,7 +2,7 @@ import React, { JSX } from "react";
 import Cookies from "js-cookie";
 import { Navigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { ROUTES } from "./routes";
+import { ROUTES } from "./routes.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";

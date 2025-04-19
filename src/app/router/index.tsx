@@ -4,7 +4,7 @@ import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import NoAccessPage from "@/pages/no-access.page";
-import { ROUTES } from "./routes";
+import { ROUTES, VIEW_ROUTES } from "./routes.enum";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import {
   ClientsPage,
@@ -21,6 +21,7 @@ import {
   TaskDetailPage,
   UserPage,
 } from "@/pages";
+import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
 
 const router = createBrowserRouter([
   {
@@ -92,7 +93,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: ROUTES.PROJECTS + "/:id",
+        path: ROUTES.PROJECTS,
         element: (
           <PrivateRoute
             roles={[
@@ -104,6 +105,23 @@ const router = createBrowserRouter([
             <ProjectDetailPage />
           </PrivateRoute>
         ),
+        children: [
+          {
+            // table
+            path: VIEW_ROUTES.TABLE + "/:id",
+            element: <TasksListTablePage />,
+          },
+          {
+            // list
+            path: VIEW_ROUTES.LIST + "/:id",
+            element: <ProjectDetailPage />,
+          },
+          {
+            // board
+            path: VIEW_ROUTES.BOARD + "/:id",
+            element: <ProjectDetailPage />,
+          },
+        ],
       },
       {
         path: ROUTES.TASKS + "/:id",

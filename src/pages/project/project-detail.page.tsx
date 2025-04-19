@@ -1,37 +1,35 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useMemo, useState } from "react";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   useDeleteProjectMutation,
   useGetProjectByIdQuery,
 } from "@/shared/api/projects.service";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/dateUtils";
-import { useGetTasksByProjectQuery } from "@/shared/api/task.service";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
 import { Button } from "@/components/ui/button";
 import {
   CalendarDays,
   ChevronLeft,
   HandCoins,
+  Kanban,
+  List,
   MoreVerticalIcon,
   PencilIcon,
+  Table,
   TrashIcon,
   User,
 } from "lucide-react";
-
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -41,13 +39,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditProjectForm from "@/features/project/EditProjectForm";
-import CreateTaskForm from "@/features/tasks/create-task.form";
-import TaskTableRowFeature from "@/features/tasks/task-table-row.feature";
+import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import extractLetterFromPath from "@/lib/extractPageView";
 
 const ProjectDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+  const location = useLocation();
+
+  const currentPageView = useMemo(
+    () => extractLetterFromPath(location.pathname),
+    [location.pathname]
+  );
+
+  const { id } = useParams<{ id: string }>();
   const [deleteProject] = useDeleteProjectMutation();
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
@@ -56,10 +60,6 @@ const ProjectDetailPage: React.FC = () => {
     error,
     isLoading,
   } = useGetProjectByIdQuery({ id: id! });
-  const { data: tasks } = useGetTasksByProjectQuery(id || "", {
-    skip: !id,
-    refetchOnMountOrArgChange: true,
-  });
 
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки проекта</div>;
@@ -187,46 +187,41 @@ const ProjectDetailPage: React.FC = () => {
           </CardContent>
         </Card>
         <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 flex flex-col p-4">
-            {project && (
-              <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-                <DialogTrigger asChild>
-                  <Button className="w-fit">Добавить задачу</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Создать новый проект</DialogTitle>
-                  </DialogHeader>
-                  <CreateTaskForm
-                    onSuccess={() => setDialogIsOpen(false)}
-                    onClose={() => {}}
-                    projectId={project?.project_id}
-                  />
-                </DialogContent>
-              </Dialog>
-            )}
-
-            <Table className="flex-1 w-full ">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[1/6]"></TableHead>
-                  <TableHead className="w-[1/6]">Наименование</TableHead>
-                  <TableHead className="w-[1/6]">Ставка</TableHead>
-                  <TableHead className="w-[1/6]">Статус</TableHead>
-                  {/* <TableHead className="w-[15%]"></TableHead> */}
-                </TableRow>
-              </TableHeader>
-              <TableBody className="flex-1">
-                {tasks &&
-                  tasks?.map((el) => {
-                    return (
-                      <TableRow key={el.task_id}>
-                        <TaskTableRowFeature {...el} />
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
+          <CardContent className="flex-1 flex flex-col p-4 gap-4">
+            <div className="flex items-center gap-2">
+              <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
+                <Button
+                  variant={
+                    currentPageView === VIEW_ROUTES.TABLE
+                      ? "default"
+                      : "outline"
+                  }
+                >
+                  <Table />
+                </Button>
+              </Link>
+              <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
+                <Button
+                  variant={
+                    currentPageView === VIEW_ROUTES.LIST ? "default" : "outline"
+                  }
+                >
+                  <List />
+                </Button>
+              </Link>
+              <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.BOARD}/${id}`}>
+                <Button
+                  variant={
+                    currentPageView === VIEW_ROUTES.BOARD
+                      ? "default"
+                      : "outline"
+                  }
+                >
+                  <Kanban />
+                </Button>
+              </Link>
+            </div>
+            <Outlet />
           </CardContent>
         </Card>
       </div>

@@ -25,7 +25,7 @@ import {
   useLoginMutation,
   useRegisterMutation,
 } from "@/shared/api/auth.service";
-import { ROUTES } from "@/app/router/routes";
+import { ROUTES } from "@/app/router/routes.enum";
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();

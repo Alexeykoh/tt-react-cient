@@ -52,12 +52,14 @@ interface CreateTaskFormProps {
   onSuccess: () => void;
   onClose: () => void;
   projectId: string;
+  projectRate: number;
 }
 
 function CreateTaskForm({
   onSuccess,
   onClose,
   projectId,
+  projectRate = 0
 }: CreateTaskFormProps) {
   const [createTask, { isLoading: isCreating }] = useCreateTaskMutation();
   const { data: currencies, isLoading: isLoadingCurrencies } =
@@ -71,7 +73,7 @@ function CreateTaskForm({
       description: "",
       is_paid: false,
       payment_type: PAYMENT.HOURLY,
-      rate: 0,
+      rate: projectRate,
       currency_id: "USD",
       tag_ids: [],
     },

@@ -7,7 +7,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Cookies from "js-cookie";
-import { ROUTES } from "@/app/router/routes";
+import { ROUTES } from "@/app/router/routes.enum";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,

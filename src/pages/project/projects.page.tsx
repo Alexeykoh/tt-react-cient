@@ -21,6 +21,7 @@ import { PanelTop } from "lucide-react";
 import React, { useState } from "react";
 import { formatDate } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";
+import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +72,11 @@ const ProjectsPage: React.FC = () => {
                         <Button
                           variant="default"
                           className="mr-2"
-                          onClick={() => navigate(`/projects/${el.project_id}`)}
+                          onClick={() =>
+                            navigate(
+                              `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el.project_id}`
+                            )
+                          }
                         >
                           <span className="sr-only">Перейти к проекту</span>
                           <PanelTop />

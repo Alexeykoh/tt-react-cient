@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit/query";
 import { enqueueSnackbar } from "notistack";
 import Cookies from "js-cookie";
-import { ROUTES } from "@/app/router/routes";
+import { ROUTES } from "@/app/router/routes.enum";
 
 const customFetchBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,

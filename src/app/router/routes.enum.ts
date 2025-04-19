@@ -13,3 +13,10 @@ export enum ROUTES {
   PLANS = "plans",
   NO_ACCESS = "no-access",
 }
+
+
+export enum VIEW_ROUTES {
+  TABLE = "t",
+  LIST = "l",
+  BOARD = "b",
+}
