@@ -37,9 +37,12 @@ export const clientService = createApi({
     }),
     editClients: builder.mutation<Client, EditClientDTO>({
       query: (data) => ({
-        url: `clients`,
-        method: "PATH",
-        body: data,
+        url: `clients/${data.client_id}`,
+        method: "PATCH",
+        body: {
+          name: data.name,
+          contact_info: data.contact_info,
+        },
       }),
       invalidatesTags: ["client-pagiated"],
     }),

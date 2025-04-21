@@ -1,3 +1,4 @@
+import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 import ClientItem from "@/components/client-item";
 import RateItem from "@/components/rate-item";
 import TaskItem from "@/components/task-item";
@@ -50,7 +51,9 @@ const HomePage: React.FC = () => {
               <CardFooter className="space-x-2">
                 <Button
                   onClick={() =>
-                    navigate("/projects/" + el?.project?.project_id)
+                    navigate(
+                      `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el?.project?.project_id}`
+                    )
                   }
                 >
                   Перейти
@@ -60,7 +63,7 @@ const HomePage: React.FC = () => {
                 >
                   <Button
                     variant={"outline"}
-                    onClick={() => navigate("/tasks/" + el?.task_id)}
+                    onClick={() => navigate(`/${ROUTES.TASKS}/${el?.task_id}`)}
                   >
                     Статистика
                   </Button>
@@ -90,7 +93,13 @@ const HomePage: React.FC = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button onClick={() => navigate("/projects/" + el?.project_id)}>
+                <Button
+                  onClick={() =>
+                    navigate(
+                      `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el?.project_id}`
+                    )
+                  }
+                >
                   Перейти
                 </Button>
               </CardFooter>

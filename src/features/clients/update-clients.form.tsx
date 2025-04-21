@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useEditClientsMutation } from "@/shared/api/client.service";
+import { EditClientDTO } from "@/shared/interfaces/client.interface";
 
 // Схема валидации формы
 const updateClientSchema = z.object({
@@ -23,23 +24,30 @@ const updateClientSchema = z.object({
 type UpdateClientFormValues = z.infer<typeof updateClientSchema>;
 
 interface UpdateClientFormProps {
+  defaults: EditClientDTO;
   onSuccess: () => void;
-  onClose: () => void; // Добавляем пропс для закрытия формы
+  onClose: () => void;
 }
 
-function UpdateClientForm({ onSuccess, onClose }: UpdateClientFormProps) {
-  const [createProject, { isLoading: isCreating }] = useEditClientsMutation();
+function UpdateClientForm({
+  defaults,
+  onSuccess,
+  onClose,
+}: UpdateClientFormProps) {
+  const [updateClient, { isLoading: isCreating }] = useEditClientsMutation();
   const form = useForm<UpdateClientFormValues>({
     resolver: zodResolver(updateClientSchema),
     defaultValues: {
       name: "",
       contact_info: "",
     },
+    values: defaults,
   });
 
   async function onSubmit(values: UpdateClientFormValues) {
     try {
-      await createProject({
+      await updateClient({
+        client_id: defaults.client_id,
         name: values.name,
         contact_info: values.contact_info,
       }).unwrap();
@@ -75,7 +83,7 @@ function UpdateClientForm({ onSuccess, onClose }: UpdateClientFormProps) {
             <FormItem>
               <FormLabel>Контактная информация</FormLabel>
               <FormControl>
-              <Input placeholder="b415@mail.com" {...field} />
+                <Input placeholder="b415@mail.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
