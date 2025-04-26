@@ -50,3 +50,12 @@ export enum TaskStatus {
   IN_PROGRESS = "IN_PROGRESS",
   DONE = "DONE",
 }
+
+export interface TaskStatusColumn {
+  id: string;
+  order: number;
+  color: string | null;
+  name: string;
+  created_at: string;
+  updated_at: string;
+}

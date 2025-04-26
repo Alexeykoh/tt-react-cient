@@ -6,13 +6,22 @@ import {
   UpdateTaskDto,
   AssignUserDto,
   Task,
+  TaskStatusColumn,
 } from "../interfaces/task.interface";
 
 export const taskService = createApi({
   reducerPath: "task-service",
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ["task"],
+  tagTypes: ["task", 'task-status-column', 'task-status'],
   endpoints: (builder) => ({
+    getTaskStatusColumn: builder.query<TaskStatusColumn[], string>({
+      query: (projectId) => ({
+        url: `task-status-column/${projectId}`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: TaskStatusColumn[] }) => response.data,
+      providesTags: ["task-status-column"],
+    }),
     getTasksByProject: builder.query<Task[], string>({
       query: (projectId) => ({
         url: `tasks/${projectId}/tasks`,
@@ -87,4 +96,5 @@ export const {
   useDeleteTaskMutation,
   useAssignUserToTaskMutation,
   useRemoveUserFromTaskMutation,
+  useGetTaskStatusColumnQuery
 } = taskService;

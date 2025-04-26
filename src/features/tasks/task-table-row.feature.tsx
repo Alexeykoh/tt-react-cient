@@ -138,7 +138,6 @@ export default function TaskTableRowFeature(task: Task) {
               </>
             ) : (
               <>
-                {" "}
                 <Loader />
                 не оплачен
               </>

@@ -22,6 +22,8 @@ import {
   UserPage,
 } from "@/pages";
 import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
+import { TasksListListPage } from "@/pages/tasks/tasks-list-list.page";
+import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
 
 const router = createBrowserRouter([
   {
@@ -114,12 +116,12 @@ const router = createBrowserRouter([
           {
             // list
             path: VIEW_ROUTES.LIST + "/:id",
-            element: <ProjectDetailPage />,
+            element: <TasksListListPage />,
           },
           {
             // board
             path: VIEW_ROUTES.BOARD + "/:id",
-            element: <ProjectDetailPage />,
+            element: <TasksListBoardPage />,
           },
         ],
       },

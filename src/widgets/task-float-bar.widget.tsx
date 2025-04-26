@@ -9,6 +9,7 @@ import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import { useNavigate } from "react-router-dom";
+import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 
 export default function TaskFloatBarWidget() {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export default function TaskFloatBarWidget() {
                   <Button
                     onClick={() =>
                       navigate(
-                        `/projects/${latestTaskLog?.task?.project?.project_id}`
+                        `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${latestTaskLog?.task?.project?.project_id}`
                       )
                     }
                   >
