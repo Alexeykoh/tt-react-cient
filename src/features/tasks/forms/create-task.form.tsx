@@ -42,6 +42,7 @@ const createTaskSchema = z.object({
     }
     return val;
   }),
+  order: z.number().int().min(0, "Порядок должен быть неотрицательным"),
   currency_id: z.string().min(1, "Валюта обязательна"),
   tag_ids: z.array(z.string()).default([]),
 });
@@ -74,6 +75,7 @@ function CreateTaskForm({
       is_paid: false,
       payment_type: PAYMENT.HOURLY,
       rate: projectRate,
+      order: 0,
       currency_id: "USD",
       tag_ids: [],
     },
@@ -154,6 +156,30 @@ function CreateTaskForm({
                     </FormLabel>
                   </FormItem>
                 </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="order"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Порядок (order)</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  {...field}
+                  value={field.value}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? 0 : parseInt(value, 10));
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

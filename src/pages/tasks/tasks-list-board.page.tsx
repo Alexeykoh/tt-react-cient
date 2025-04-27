@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useGetProjectByIdQuery } from "@/shared/api/projects.service";
-import { useUpdateTaskStatusMutation } from "@/shared/api/task.service";
+import { useUpdateTaskStatusMutation, useUpdateTaskMutation } from "@/shared/api/task.service";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task, TaskStatusColumn } from "@/shared/interfaces/task.interface";
@@ -45,6 +45,7 @@ export function TasksListBoardPage() {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [columns, setColumns] = useState<TaskStatusColumn[]>([]);
   const [updateStatus] = useUpdateTaskStatusMutation();
+  const [updateTask] = useUpdateTaskMutation();
 
   const {
     data: initialColumns = [],
@@ -93,9 +94,9 @@ export function TasksListBoardPage() {
       setColumns((prevColumns) =>
         produce(prevColumns, (draft) => {
           draft.forEach((column) => {
-            column.tasks = tasks.filter(
-              (task) => task.taskStatus.taskStatusColumn.id === column.id
-            );
+            column.tasks = tasks
+              .filter((task) => task.taskStatus.taskStatusColumn.id === column.id)
+              .sort((a, b) => a.order - b.order);
           });
         })
       );
@@ -133,7 +134,7 @@ export function TasksListBoardPage() {
       if (!activeColumn || !overColumn) return;
 
       // Оптимистичное обновление
-      const newColumns = produce(columns, (draft) => {
+      let newColumns = produce(columns, (draft) => {
         const sourceCol = draft.find((c) => c.id === activeColumn.id)!;
         const targetCol = draft.find((c) => c.id === overColumn.id)!;
 
@@ -165,13 +166,57 @@ export function TasksListBoardPage() {
         }
       });
 
+      // Пересчёт order для задач в обеих колонках
+      newColumns = produce(newColumns, (draft) => {
+        // Обновить order в целевой колонке
+        const targetCol = draft.find((c) => c.id === overColumn.id);
+        if (targetCol && targetCol.tasks) {
+          targetCol.tasks.forEach((task, idx) => {
+            task.order = idx;
+          });
+        }
+        // Если перемещение между колонками — обновить order и в исходной колонке
+        if (activeColumn.id !== overColumn.id) {
+          const sourceCol = draft.find((c) => c.id === activeColumn.id);
+          if (sourceCol && sourceCol.tasks) {
+            sourceCol.tasks.forEach((task, idx) => {
+              task.order = idx;
+            });
+          }
+        }
+      });
+
       setColumns(newColumns);
 
-      // Отправка на сервер
+      // Отправка на сервер: обновить статус и порядок задачи
       await updateStatus({
         task_id: active.id.toString(),
         task_status_column_id: overColumn.id,
       }).unwrap();
+
+      // Собрать все задачи из обеих колонок для синхронизации order
+      const syncTasks: { taskId: string; updateData: { order: number } }[] = [];
+      const targetCol = newColumns.find((c) => c.id === overColumn.id);
+      if (targetCol && targetCol.tasks) {
+        targetCol.tasks.forEach((task, idx) => {
+          syncTasks.push({ taskId: task.task_id, updateData: { order: idx } });
+        });
+      }
+      if (activeColumn.id !== overColumn.id) {
+        const sourceCol = newColumns.find((c) => c.id === activeColumn.id);
+        if (sourceCol && sourceCol.tasks) {
+          sourceCol.tasks.forEach((task, idx) => {
+            syncTasks.push({ taskId: task.task_id, updateData: { order: idx } });
+          });
+        }
+      }
+
+      // Синхронизировать order на сервере для всех задач в обеих колонках
+      await Promise.all(
+        syncTasks.map(({ taskId, updateData }) =>
+          updateTask({ taskId, updateData })
+        )
+      );
     } catch (error) {
       console.error("Ошибка при переносе задачи:", error);
       setColumns(previousColumns);
