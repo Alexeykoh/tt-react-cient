@@ -7,6 +7,9 @@ import {
 import { TIMELOGSTATUS } from "@/shared/interfaces/time-log.interface";
 import TimerComponent from "./timer";
 import { LoaderCircle } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { startTimer, stopTimer } from "@/features/time/model/time.slice";
 
 interface Props {
   task_id: string;
@@ -19,6 +22,7 @@ export default function TaskItem({
   showTime = true,
   isReverse = false,
 }: Props) {
+  const dispatch = useDispatch();
   const { data: latestLog, isLoading: logIsLoading } =
     useGetTimeLogLatestTaskQuery(
       { task_id },
@@ -27,11 +31,47 @@ export default function TaskItem({
   const [start, { isLoading: startIsLoading }] = usePostTimeLogStartMutation();
   const [stop, { isLoading: stopIsLoading }] = usePostTimeLogStopMutation();
 
+  // Синхронизация состояния таймера в redux при изменении latestLog
+  useEffect(() => {
+    if (!latestLog) return;
+    if (latestLog.status === TIMELOGSTATUS.PROGRESS) {
+      dispatch(
+        startTimer({
+          task_id,
+          startTime: latestLog.start_time
+            ? new Date(latestLog.start_time).getTime()
+            : Date.now(),
+          accumulated: Number(latestLog.common_duration) || 0,
+        })
+      );
+    } else {
+      dispatch(
+        stopTimer({
+          task_id,
+          accumulated: Number(latestLog.common_duration) || 0,
+        })
+      );
+    }
+  }, [latestLog, dispatch, task_id]);
+
   function logToggleHandler() {
     if (latestLog && latestLog?.status === TIMELOGSTATUS.PROGRESS) {
       stop({ task_id });
+      dispatch(
+        stopTimer({
+          task_id,
+          accumulated: Number(latestLog?.common_duration) || 0,
+        })
+      );
     } else {
       start({ task_id });
+      dispatch(
+        startTimer({
+          task_id,
+          startTime: Date.now(),
+          accumulated: Number(latestLog?.common_duration) || 0,
+        })
+      );
     }
   }
 
@@ -46,10 +86,11 @@ export default function TaskItem({
       />
       {logIsLoading ? (
         <LoaderCircle className="animate-spin" />
-      ) : showTime ? (
+      ) : showTime && latestLog ? (
         <TimerComponent
-          time={latestLog?.common_duration || ""}
-          isActive={latestLog?.status === TIMELOGSTATUS.PROGRESS}
+          task_id={task_id}
+          fallbackTime={Number(latestLog.common_duration) || 0}
+          fallbackStatus={latestLog.status}
         />
       ) : null}
     </div>

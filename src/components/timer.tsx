@@ -1,48 +1,39 @@
 import { formatMilliseconds } from "@/lib/format-seconds";
-import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { TimerStatus } from "@/features/time/model/types";
 
 interface Props {
-  time: string | number;
-  isActive: boolean;
+  task_id: string;
+  fallbackTime?: number;
+  fallbackStatus?: string;
 }
 
-function TimerComponent({ time, isActive }: Props) {
-  const [milliseconds, setMilliseconds] = useState<number>(Number(time));
-  const timerIdRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(0);
-  const accumulatedTimeRef = useRef<number>(Number(time));
-
-  // Синхронизация с внешним значением time
-  useEffect(() => {
-    accumulatedTimeRef.current = Number(time);
-    if (!isActive) {
-      setMilliseconds(Number(time));
-    }
-  }, [time]);
-
-  // Управление таймером
-  useEffect(() => {
-    if (isActive) {
-      startTimeRef.current = Date.now() - accumulatedTimeRef.current;
-
-      timerIdRef.current = setInterval(() => {
-        const elapsed = Date.now() - startTimeRef.current;
-        setMilliseconds(elapsed);
-      }, 100); // Обновляем каждые 100мс для плавности
-    } else {
-      if (timerIdRef.current) {
-        clearInterval(timerIdRef.current);
-        timerIdRef.current = null;
+function TimerComponent({ task_id, fallbackTime = 0 }: Props) {
+  // Получаем данные таймера и глобальный тик из redux
+  const { accumulated, startTime, status } = useSelector(
+    (state: RootState) =>
+      state.time.timers[task_id] || {
+        accumulated: 0,
+        startTime: null,
+        status: TimerStatus.IDLE,
       }
-      accumulatedTimeRef.current = milliseconds;
-    }
+  );
+  // Подписка на глобальный тик для форс-обновления компонента
+  useSelector((state: RootState) => state.time.tick);
 
-    return () => {
-      if (timerIdRef.current) {
-        clearInterval(timerIdRef.current);
-      }
-    };
-  }, [isActive]);
+  // Вычисляем текущее время
+  let milliseconds = accumulated;
+
+  if (status === TimerStatus.PROGRESS && startTime) {
+    milliseconds = accumulated + (Date.now() - startTime);
+  } else if (
+    status === TimerStatus.IDLE &&
+    accumulated === 0 &&
+    fallbackTime > 0
+  ) {
+    milliseconds = fallbackTime;
+  }
 
   return (
     <div>

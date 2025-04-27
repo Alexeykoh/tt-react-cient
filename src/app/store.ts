@@ -13,6 +13,8 @@ import { subscriptionsService } from "@/shared/api/subscriptions.service";
 import { plansService } from "@/shared/api/plans.service";
 import { friendshipService } from "@/shared/api/friendship.service";
 import { notificationsService } from "@/shared/api/notification.service";
+import timeReducer from "@/features/time/model/time.slice";
+import { timeTickerMiddleware } from "@/features/time/model/time.middleware";
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +32,7 @@ export const store = configureStore({
     [plansService.reducerPath]: plansService.reducer,
     [friendshipService.reducerPath]: friendshipService.reducer,
     [notificationsService.reducerPath]: notificationsService.reducer,
+    time: timeReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -46,7 +49,8 @@ export const store = configureStore({
       subscriptionsService.middleware,
       plansService.middleware,
       friendshipService.middleware,
-      notificationsService.middleware
+      notificationsService.middleware,
+      timeTickerMiddleware
     ),
 });
 
