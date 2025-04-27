@@ -11,7 +11,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { v4 as uuidv4 } from "uuid";
 import { NotesEditorV2 } from "@/widgets/notesV2/note-editor-v2";
 
-
 const firstMessage: string = JSON.stringify([
   {
     id: uuidv4(),
@@ -67,7 +66,7 @@ const NotesDetailPage: React.FC = () => {
     );
 
   return (
-    <div className="container mx-auto p-4 flex flex-col gap-4">
+    <div className="w-ful h-full p-4 flex flex-col gap-4">
       <div className="flex items-center gap-4">
         <Button
           size={"icon"}

@@ -119,7 +119,7 @@ const ProjectDetailPage: React.FC = () => {
         </>
       )}
 
-      <div className="container mx-auto p-4 flex flex-col gap-4">
+      <div className="w-full h-fullp-4 flex flex-col gap-4">
         <Card>
           <CardContent className="w-full">
             <div className="flex justify-between w-full">

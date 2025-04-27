@@ -16,16 +16,20 @@ import {
 import { TableCell } from "@/components/ui/table";
 import {
   useDeleteTaskMutation,
-  useUpdateTaskMutation,
+  useUpdateTaskStatusMutation,
 } from "@/shared/api/task.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import { Task } from "@/shared/interfaces/task.interface";
+import {
+  Task,
+  TaskStatusColumn,
+  UpdateTaskStatusDto,
+} from "@/shared/interfaces/task.interface";
 import PrivateComponent from "@/widgets/private-component";
 import {
+  ChartBar,
   Check,
   Loader,
   MoreVerticalIcon,
-  PanelTopOpen,
   PencilIcon,
   TrashIcon,
 } from "lucide-react";
@@ -33,13 +37,34 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UpdateTaskForm from "./update-task.form";
 import RateItem from "@/components/rate-item";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
-export default function TaskTableRowFeature(task: Task) {
+interface Props {
+  task: Task;
+  statusColumns: Array<TaskStatusColumn>;
+}
+
+export default function TaskTableRowFeature({ task, statusColumns }: Props) {
   const navigate = useNavigate();
-  const [updateTask] = useUpdateTaskMutation();
   const [deleteTask] = useDeleteTaskMutation();
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [updateStatus] = useUpdateTaskStatusMutation();
+
+  function handleUpdateStatus(dto: UpdateTaskStatusDto) {
+    updateStatus(dto)
+      .unwrap()
+      .then(() => {})
+      .catch(() => {});
+  }
 
   return (
     <>
@@ -97,21 +122,38 @@ export default function TaskTableRowFeature(task: Task) {
         </>
       )}
       <TableCell className="font-medium w-[1/6] flex items-center gap-4">
-        <PrivateComponent
-          subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
-        >
-          <Button
-            size={"icon"}
-            onClick={() => navigate(`/tasks/${task.task_id}`)}
-            variant={"default"}
-          >
-            <PanelTopOpen />
-          </Button>
-        </PrivateComponent>
         <TaskItem task_id={task.task_id} />
       </TableCell>
       <TableCell className="w-[1/6] ">
         <p>{task?.name}</p>
+      </TableCell>
+      <TableCell className="w-[1/6]">
+        <Select
+          defaultValue={task.taskStatus.taskStatusColumn.id}
+          onValueChange={(value) => {
+            handleUpdateStatus({
+              task_id: task.task_id,
+              task_status_column_id: value,
+            });
+          }}
+        >
+          <SelectTrigger
+            className={`w-[180px]`}
+            style={{ borderColor: task.taskStatus.taskStatusColumn.color }}
+          >
+            <SelectValue placeholder="Выберите статус" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {/* <SelectLabel>Fruits</SelectLabel> */}
+              {statusColumns.map((column) => (
+                <SelectItem key={column.id} value={column.id}>
+                  {column.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </TableCell>
       <TableCell className="w-[1/6]">
         <RateItem
@@ -121,22 +163,13 @@ export default function TaskTableRowFeature(task: Task) {
         />
       </TableCell>
       <TableCell className="w-[1/6]">
-        {task.taskStatus.taskStatusColumn.name}
-      </TableCell>
-      <TableCell className="w-[1/6]">
         {task.created_at && <p>{new Date(task.created_at).toLocaleString()}</p>}
       </TableCell>
       <TableCell className="w-[1/6]">
         {task && (
-          <Button
-            onClick={() => {
-              updateTask({
-                taskId: task.task_id,
-                updateData: { is_paid: !task?.is_paid },
-              });
-            }}
+          <Badge
             variant={task?.is_paid ? "default" : "destructive"}
-            className="bg-emerald-400"
+            className="bg-emerald-400 flex items-center gap-2 justify-center text-md"
           >
             {task?.is_paid ? (
               <>
@@ -148,7 +181,7 @@ export default function TaskTableRowFeature(task: Task) {
                 не оплачен
               </>
             )}
-          </Button>
+          </Badge>
         )}
       </TableCell>
       <div className="flex justify-end pr-2">
@@ -172,6 +205,17 @@ export default function TaskTableRowFeature(task: Task) {
               <PencilIcon className="mr-2 size-4" />
               <span>Редактировать</span>
             </DropdownMenuItem>
+
+            <PrivateComponent
+              subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
+            >
+              <DropdownMenuItem
+                onClick={() => navigate(`/tasks/${task.task_id}`)}
+              >
+                <ChartBar className="mr-2 size-4" />
+                <span>Статистика</span>
+              </DropdownMenuItem>
+            </PrivateComponent>
 
             <DropdownMenuSeparator />
             <DropdownMenuItem

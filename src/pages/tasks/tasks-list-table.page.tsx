@@ -1,4 +1,7 @@
-import { useGetTasksByProjectQuery, useGetTaskStatusColumnQuery } from "@/shared/api/task.service";
+import {
+  useGetTasksByProjectQuery,
+  useGetTaskStatusColumnQuery,
+} from "@/shared/api/task.service";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -33,14 +36,10 @@ export function TasksListTablePage() {
     isLoading,
   } = useGetProjectByIdQuery({ id: id! });
 
-    const {
-      data: columns = [],
-      isLoading: columnsLoading,
-      error: columnsError,
-    } = useGetTaskStatusColumnQuery(id || "", {
-      skip: !id,
-      refetchOnMountOrArgChange: true,
-    });
+  const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
+    skip: !id,
+    refetchOnMountOrArgChange: true,
+  });
 
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки проекта</div>;
@@ -71,8 +70,8 @@ export function TasksListTablePage() {
           <TableRow>
             <TableHead className="w-[1/6]"></TableHead>
             <TableHead className="w-[1/6]">Наименование</TableHead>
-            <TableHead className="w-[1/6]">Ставка</TableHead>
             <TableHead className="w-[1/6]">Статус</TableHead>
+            <TableHead className="w-[1/6]">Ставка</TableHead>
             <TableHead className="w-[1/6]">Дата</TableHead>
             <TableHead className="w-[1/6]">Оплата</TableHead>
           </TableRow>
@@ -82,7 +81,7 @@ export function TasksListTablePage() {
             tasks?.map((el) => {
               return (
                 <TableRow key={el.task_id}>
-                  <TaskTableRowFeature {...el} />
+                  <TaskTableRowFeature task={el} statusColumns={columns} />
                 </TableRow>
               );
             })}

@@ -18,6 +18,7 @@ export interface Task {
     taskStatusColumn: {
       id: string;
       name: string;
+      color: string;
     };
   };
 }
@@ -65,4 +66,9 @@ export interface TaskStatusColumn {
   name: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface UpdateTaskStatusDto {
+  task_id: string;
+  task_status_column_id: string;
 }
