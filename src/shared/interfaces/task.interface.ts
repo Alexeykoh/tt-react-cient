@@ -38,6 +38,7 @@ export interface CreateTaskDto {
   project_id: string;
   description: string;
   is_paid: boolean;
+  order: number;
   payment_type: PAYMENT;
   rate: number | string;
   currency_id: string;
