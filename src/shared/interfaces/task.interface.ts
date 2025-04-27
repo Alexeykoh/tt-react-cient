@@ -13,6 +13,13 @@ export interface Task {
     project_id: string;
     name: string;
   };
+  taskStatus: {
+    id: string;
+    taskStatusColumn: {
+      id: string;
+      name: string;
+    };
+  };
 }
 
 export interface AssignUserDto {

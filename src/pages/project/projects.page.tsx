@@ -30,7 +30,7 @@ const ProjectsPage: React.FC = () => {
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
 
   return (
-    <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
+    <div className="w-full p-4 flex flex-col">
       <div className="flex flex-wrap justify-between gap-2">
         <h1 className="text-2xl font-bold mb-4">Проекты</h1>
       </div>

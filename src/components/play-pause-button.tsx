@@ -23,7 +23,7 @@ export default function PlayPauseButton({ isPlay, isLoading, onClick }: Props) {
       ) : !isPlay ? (
         <Play />
       ) : (
-        <Pause />
+        <Pause className="animate-pulse" />
       )}
     </Button>
   );

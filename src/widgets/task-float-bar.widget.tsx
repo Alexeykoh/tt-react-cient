@@ -1,5 +1,4 @@
 import { useGetTimeLogLatestQuery } from "@/shared/api/time-log.service";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
@@ -22,22 +21,11 @@ export default function TaskFloatBarWidget() {
           <div className="flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <Card className="flex flex-row items-start p-0 cursor-pointer">
-                  <CardContent className="flex gap-2 px-3 py-2">
-                    <TaskItem
-                      showTime={false}
-                      task_id={latestTaskLog?.task?.task_id || ""}
-                    />
-                    <div className="flex flex-col min-w-16 ">
-                      <p className="text-sm/3 font-light opacity-75">
-                        {"Задача:"}
-                      </p>
-                      <h6 className="text-md/3 font-semibold">
-                        {latestTaskLog?.task?.name}
-                      </h6>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex flex-col  cursor-pointer">
+                  <h6 className="text-md/3 font-semibold">
+                    {latestTaskLog?.task?.name}
+                  </h6>
+                </div>
               </PopoverTrigger>
               <PopoverContent className="w-80 space-y-2">
                 <div className="flex flex-col">
@@ -75,6 +63,10 @@ export default function TaskFloatBarWidget() {
                 </div>
               </PopoverContent>
             </Popover>
+            <TaskItem
+              showTime={false}
+              task_id={latestTaskLog?.task?.task_id || ""}
+            />
           </div>
         </>
       )}

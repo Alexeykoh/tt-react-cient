@@ -4,19 +4,17 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarFooter,
-  SidebarTrigger,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   Sidebar,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
 import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
-import { Separator } from "@/components/ui/separator";
-
 import PrivateComponent from "@/widgets/private-component";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
@@ -36,13 +34,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   useGetSubscriptionsQuery();
 
   return (
-    <div className="w-screen h-screen p-2 lg:p-0  bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1682334288172-88e43f2d7d59?q=80&w=3389&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
+    <div className="w-screen h-screen bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1682334288172-88e43f2d7d59?q=80&w=3389&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
-            <div className="flex items-center gap-2 px-2">
-              <Clock className="h-6 w-6" />
-              <span className="text-lg font-semibold">TimeTracker</span>
+            <div className="flex items-center justify-between gap-2 px-2">
+              <div className="flex items-center gap-2">
+                <Clock className="h-6 w-6" />
+                <span className="text-lg font-semibold">TimeTracker</span>
+              </div>
+              <SearchWidget />
             </div>
           </SidebarHeader>
           <SidebarContent>
@@ -119,18 +120,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </div>
           </SidebarFooter>
         </Sidebar>
-        <main className="w-full">
-          <header className="flex shrink-0 items-center  gap-2 p-2 w-full">
+        <main className="w-full h-full overflow-hidden">
+          <header className="flex shrink-0 items-center gap-2 p-2 w-full bg-sidebar/50 backdrop-blur-md">
             <div className="flex items-center gap-2 px-3 w-full">
               <SidebarTrigger />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <div className="flex justify-center items-center w-full gap-4">
+              <div className="flex justify-end items-end w-full gap-4">
                 <TaskFloatBarWidget />
-                <SearchWidget />
               </div>
             </div>
           </header>
-          {children}
+          <div className="container mx-auto flex h-full w-full overflow-auto">
+            {children}
+          </div>
         </main>
       </SidebarProvider>
     </div>

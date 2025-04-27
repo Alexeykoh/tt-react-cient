@@ -128,7 +128,7 @@ const ProjectDetailPage: React.FC = () => {
                   <Button
                     size={"icon"}
                     variant={"default"}
-                    onClick={() => navigate(`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}`)}
+                    onClick={() => navigate(`/${ROUTES.PROJECTS}`)}
                   >
                     <ChevronLeft />
                   </Button>
