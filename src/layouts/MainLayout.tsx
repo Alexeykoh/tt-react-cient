@@ -129,7 +129,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </div>
             </div>
           </header>
-          <div className="container mx-auto flex h-full w-full overflow-auto">
+          <div className="container mx-auto flex h-full w-full overflow-auto p-4">
             {children}
           </div>
         </main>

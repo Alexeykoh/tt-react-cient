@@ -48,7 +48,7 @@ export default function TaskDetailPage() {
   const totalTime = chartData.reduce((sum, item) => sum + item.desktop, 0);
 
   return (
-    <div className="container mx-auto p-4 flex flex-col gap-4">
+    <div className="w-full h-full flex flex-col gap-4">
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center space-between gap-4">

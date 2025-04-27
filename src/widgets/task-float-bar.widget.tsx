@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import { useNavigate } from "react-router-dom";
 import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { CheckSquare } from "lucide-react";
 
 export default function TaskFloatBarWidget() {
   const navigate = useNavigate();
@@ -21,12 +22,17 @@ export default function TaskFloatBarWidget() {
           <div className="flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <div className="flex flex-col  cursor-pointer">
+                <Button
+                  variant="outline"
+                  className="flex gap-2 cursor-pointer"
+                >
+                  <CheckSquare />
                   <h6 className="text-md/3 font-semibold">
                     {latestTaskLog?.task?.name}
                   </h6>
-                </div>
+                </Button>
               </PopoverTrigger>
+
               <PopoverContent className="w-80 space-y-2">
                 <div className="flex flex-col">
                   <p className="text-xs font-light opacity-75">{"Проект:"}</p>
@@ -63,10 +69,13 @@ export default function TaskFloatBarWidget() {
                 </div>
               </PopoverContent>
             </Popover>
-            <TaskItem
-              showTime={true}
-              task_id={latestTaskLog?.task?.task_id || ""}
-            />
+            <div className="pl-2 border-l-2  ">
+              <TaskItem
+                showTime={true}
+                task_id={latestTaskLog?.task?.task_id || ""}
+                isReverse
+              />
+            </div>
           </div>
         </>
       )}

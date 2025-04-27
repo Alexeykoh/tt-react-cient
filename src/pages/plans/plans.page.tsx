@@ -15,13 +15,9 @@ export default function PlansPage() {
   const { data: plans } = useGetPlansQuery();
   const navigate = useNavigate();
   return (
-    <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)]">
+    <div className="container mx-auto p-4 flex flex-col">
       <div className="flex flex-wrap gap-4">
-        <Button
-          size={"icon"}
-          variant={"default"}
-          onClick={() => navigate(-1)}
-        >
+        <Button size={"icon"} variant={"default"} onClick={() => navigate(-1)}>
           <ChevronLeft />
         </Button>
         <h1 className="text-2xl font-bold mb-4">Подписки</h1>

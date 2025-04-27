@@ -40,7 +40,7 @@ const NotesPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-80px)] gap-4">
+    <div className="w-full h-full flex flex-col gap-4">
       <div className="flex flex-row items-center gap-6 w-fit">
         <h1 className="text-2xl font-bold">Заметки</h1>
         <Button onClick={createNotesHandler}>Добавить заметку</Button>
@@ -129,7 +129,6 @@ const NotesPage: React.FC = () => {
           </Card>
         ))}
       </div>
-        
     </div>
   );
 };
