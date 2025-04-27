@@ -121,7 +121,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </SidebarFooter>
         </Sidebar>
         <main className="w-full h-full overflow-hidden">
-          <header className="flex shrink-0 items-center gap-2 p-2 w-full bg-sidebar/50 backdrop-blur-md">
+          <header className="flex shrink-0 items-center gap-2 p-2 w-full bg-sidebar">
             <div className="flex items-center gap-2 px-3 w-full">
               <SidebarTrigger />
               <div className="flex justify-end items-end w-full gap-4">
