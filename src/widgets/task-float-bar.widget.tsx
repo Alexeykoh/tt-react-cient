@@ -64,7 +64,7 @@ export default function TaskFloatBarWidget() {
               </PopoverContent>
             </Popover>
             <TaskItem
-              showTime={false}
+              showTime={true}
               task_id={latestTaskLog?.task?.task_id || ""}
             />
           </div>

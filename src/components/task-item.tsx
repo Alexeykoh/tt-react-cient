@@ -11,9 +11,14 @@ import { LoaderCircle } from "lucide-react";
 interface Props {
   task_id: string;
   showTime?: boolean;
+  isReverse?: boolean;
 }
 
-export default function TaskItem({ task_id, showTime = true }: Props) {
+export default function TaskItem({
+  task_id,
+  showTime = true,
+  isReverse = false,
+}: Props) {
   const { data: latestLog, isLoading: logIsLoading } =
     useGetTimeLogLatestTaskQuery(
       { task_id },
@@ -31,7 +36,9 @@ export default function TaskItem({ task_id, showTime = true }: Props) {
   }
 
   return (
-    <div className="flex gap-4 items-center">
+    <div
+      className={`flex gap-4 items-center ${isReverse && "flex-row-reverse"}`}
+    >
       <PlayPauseButton
         onClick={logToggleHandler}
         isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
