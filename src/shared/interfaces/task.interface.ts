@@ -9,6 +9,7 @@ export interface Task {
   rate: number | string;
   created_at: string;
   currency: Currency;
+  order: number;
   project: {
     project_id: string;
     name: string;
@@ -48,6 +49,7 @@ export interface UpdateTaskDto {
   description?: string;
   is_paid?: boolean;
   payment_type?: PAYMENT;
+  order?: number;
   rate?: string;
   created_at?: string;
   currency_id?: string;

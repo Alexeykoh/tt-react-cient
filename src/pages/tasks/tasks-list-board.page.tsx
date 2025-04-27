@@ -110,21 +110,25 @@ export function TasksListBoardPage() {
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    console.log('DRAG END', { active, over, columns });
     if (!over || active.id === over.id) return;
 
     const previousColumns = [...columns];
 
     try {
-      // Находим исходную и целевую колонки
+      // Находим исходную колонку
       const activeColumn = columns.find((col) =>
         col.tasks?.some((t) => t.task_id === active.id)
       );
 
-      const overColumn = columns.find(
-        (col) =>
-          col.id === over.data.current?.columnId ||
-          col.tasks?.some((t) => t.task_id === over.id)
-      );
+      // Определяем целевую колонку:
+      // если over.data.current?.columnId есть — это задача, иначе если over.id — это id колонки
+      let overColumn: TaskStatusColumn | undefined;
+      if (over.data.current?.columnId) {
+        overColumn = columns.find((col) => col.id === over.data.current?.columnId);
+      } else {
+        overColumn = columns.find((col) => col.id === over.id);
+      }
 
       if (!activeColumn || !overColumn) return;
 
@@ -150,8 +154,13 @@ export function TasksListBoardPage() {
             },
           };
 
-          const overIndex =
-            targetCol.tasks?.findIndex((t) => t.task_id === over.id) ?? 0;
+          // Если переносим на задачу — вставляем перед ней, иначе в конец
+          let overIndex = 0;
+          if (over.data.current?.type === "task") {
+            overIndex = targetCol.tasks?.findIndex((t) => t.task_id === over.id) ?? 0;
+          } else {
+            overIndex = targetCol.tasks?.length ?? 0;
+          }
           targetCol.tasks?.splice(overIndex, 0, updatedTask);
         }
       });
@@ -202,11 +211,16 @@ export function TasksListBoardPage() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex overflow-x-auto gap-4 pb-4">
-          {columns.map((column) => (
-            <Column key={column.id} column={column} />
-          ))}
-        </div>
+        <SortableContext
+          items={columns.map((col) => col.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex overflow-x-auto gap-4 pb-4">
+            {columns.map((column) => (
+              <Column key={column.id} column={column} />
+            ))}
+          </div>
+        </SortableContext>
 
         <DragOverlay>
           {activeTask && (
@@ -219,8 +233,32 @@ export function TasksListBoardPage() {
 }
 
 function Column({ column }: { column: TaskStatusColumn }) {
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    isDragging,
+    transform,
+    transition,
+  } = useSortable({
+    id: column.id,
+    data: { type: "column", column },
+  });
+
+  const style = {
+    opacity: isDragging ? 0.5 : 1,
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <Card className="flex-shrink-0 w-72 rounded-lg p-4">
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className="flex-shrink-0 w-72 rounded-lg p-4"
+      {...attributes}
+      {...listeners}
+    >
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-medium">{column.name}</h3>
         <span className="text-sm text-gray-500">
@@ -251,7 +289,11 @@ function SortableTask({ task }: { task: Task }) {
     isDragging,
   } = useSortable({
     id: task.task_id,
-    data: { type: "task", task },
+    data: {
+      type: "task",
+      task,
+      columnId: task.taskStatus.taskStatusColumn.id,
+    },
   });
 
   const style = {
