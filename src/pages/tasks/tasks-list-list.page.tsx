@@ -9,9 +9,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import CreateTaskForm from "@/features/tasks/create-task.form";
+import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 import { useGetProjectByIdQuery } from "@/shared/api/projects.service";
-import TaskListItemFeature from "@/features/tasks/task-list-item.feature";
+import TaskListItemFeature from "@/features/tasks/view-mod/task-list-item.feature";
 
 export function TasksListListPage() {
   const { id } = useParams<{ id: string }>();

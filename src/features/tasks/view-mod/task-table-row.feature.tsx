@@ -35,7 +35,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UpdateTaskForm from "./update-task.form";
 import RateItem from "@/components/rate-item";
 import {
   Select,
@@ -46,6 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import UpdateTaskForm from "../forms/update-task.form";
 
 interface Props {
   task: Task;

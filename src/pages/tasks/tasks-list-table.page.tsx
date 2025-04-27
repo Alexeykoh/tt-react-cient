@@ -19,9 +19,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import CreateTaskForm from "@/features/tasks/create-task.form";
+import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 import { useGetProjectByIdQuery } from "@/shared/api/projects.service";
-import TaskTableRowFeature from "@/features/tasks/task-table-row.feature";
+import TaskTableRowFeature from "@/features/tasks/view-mod/task-table-row.feature";
 
 export function TasksListTablePage() {
   const { id } = useParams<{ id: string }>();

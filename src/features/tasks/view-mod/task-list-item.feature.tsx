@@ -34,11 +34,11 @@ import {
   PencilIcon,
   TrashIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import UpdateTaskForm from "./update-task.form";
 import RateItem from "@/components/rate-item";
 import TaskItem from "@/components/task-item";
+import UpdateTaskForm from "../forms/update-task.form";
 
 export default function TaskListItemFeature(task: Task) {
   const navigate = useNavigate();
