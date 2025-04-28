@@ -17,7 +17,6 @@ import {
   ChevronLeft,
   HandCoins,
   Kanban,
-  List,
   MoreVerticalIcon,
   PencilIcon,
   Table,
@@ -227,7 +226,7 @@ const ProjectDetailPage: React.FC = () => {
                     <span>Таблица</span>
                   </Button>
                 </Link>
-                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
+                {/* <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
                   <Button
                     size={"sm"}
                     variant={
@@ -237,7 +236,7 @@ const ProjectDetailPage: React.FC = () => {
                     <List />
                     <span>Список</span>
                   </Button>
-                </Link>
+                </Link> */}
                 <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.BOARD}/${id}`}>
                   <Button
                     size={"sm"}

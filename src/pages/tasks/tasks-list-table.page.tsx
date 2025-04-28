@@ -24,7 +24,7 @@ export function TasksListTablePage() {
   });
 
   return (
-    <div>
+    <div className="flex p-4">
       <Table className="flex-1 w-full ">
         <TableHeader>
           <TableRow>
