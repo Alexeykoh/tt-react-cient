@@ -2,7 +2,6 @@ import {
   useGetTasksByProjectQuery,
   useGetTaskStatusColumnQuery,
 } from "@/shared/api/task.service";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Table,
@@ -11,60 +10,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import CreateTaskForm from "@/features/tasks/forms/create-task.form";
-import { useGetProjectByIdQuery } from "@/shared/api/projects.service";
 import TaskTableRowFeature from "@/features/tasks/view-mod/task-table-row.feature";
 
 export function TasksListTablePage() {
   const { id } = useParams<{ id: string }>();
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const { data: tasks } = useGetTasksByProjectQuery(id || "", {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
-  const {
-    data: project,
-    error,
-    isLoading,
-  } = useGetProjectByIdQuery({ id: id! });
-
   const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
 
-  if (isLoading) return <div>Загрузка...</div>;
-  if (error) return <div>Ошибка загрузки проекта</div>;
-
   return (
     <div>
-      {project && (
-        <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-fit">Добавить задачу</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Создать новый проект</DialogTitle>
-            </DialogHeader>
-            <CreateTaskForm
-              onSuccess={() => setDialogIsOpen(false)}
-              onClose={() => {}}
-              projectId={project?.project_id}
-              projectRate={Number(project?.rate) || 0}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-
       <Table className="flex-1 w-full ">
         <TableHeader>
           <TableRow>

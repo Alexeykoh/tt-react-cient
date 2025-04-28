@@ -34,7 +34,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   useGetSubscriptionsQuery();
 
   return (
-    <div className="w-screen h-screen bg-auto bg-center bg-no-repea bg-[url(https://images.unsplash.com/photo-1682334288172-88e43f2d7d59?q=80&w=3389&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
+    <div className="w-screen h-screen">
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
@@ -129,9 +129,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               </div>
             </div>
           </header>
-          <div className="flex h-full w-full overflow-auto p-4">
-            {children}
-          </div>
+          <div className="flex h-full w-full overflow-auto">{children}</div>
         </main>
       </SidebarProvider>
     </div>

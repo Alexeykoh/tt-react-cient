@@ -22,26 +22,16 @@ import {
   MouseSensor,
 } from "@dnd-kit/core";
 import { produce } from "immer";
-import { Card } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useGetProjectByIdQuery } from "@/shared/api/projects.service";
-import { useUpdateTaskStatusMutation, useUpdateTaskMutation } from "@/shared/api/task.service";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+  useUpdateTaskStatusMutation,
+  useUpdateTaskMutation,
+} from "@/shared/api/task.service";
 import { Task, TaskStatusColumn } from "@/shared/interfaces/task.interface";
-import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 import { TaskCard } from "@/features/tasks/kanban/task-card";
+import { SortableColumn } from "@/features/tasks/kanban/sortable-column";
 
 export function TasksListBoardPage() {
   const { id } = useParams<{ id: string }>();
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [columns, setColumns] = useState<TaskStatusColumn[]>([]);
   const [updateStatus] = useUpdateTaskStatusMutation();
@@ -55,12 +45,6 @@ export function TasksListBoardPage() {
     skip: !id,
     refetchOnMountOrArgChange: true,
   });
-
-  const {
-    data: project,
-    error: projectError,
-    isLoading: projectLoading,
-  } = useGetProjectByIdQuery({ id: id! });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -95,7 +79,9 @@ export function TasksListBoardPage() {
         produce(prevColumns, (draft) => {
           draft.forEach((column) => {
             column.tasks = tasks
-              .filter((task) => task.taskStatus.taskStatusColumn.id === column.id)
+              .filter(
+                (task) => task.taskStatus.taskStatusColumn.id === column.id
+              )
               .sort((a, b) => a.order - b.order);
           });
         })
@@ -111,7 +97,7 @@ export function TasksListBoardPage() {
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    console.log('DRAG END', { active, over, columns });
+    console.log("DRAG END", { active, over, columns });
     if (!over || active.id === over.id) return;
 
     const previousColumns = [...columns];
@@ -126,7 +112,9 @@ export function TasksListBoardPage() {
       // если over.data.current?.columnId есть — это задача, иначе если over.id — это id колонки
       let overColumn: TaskStatusColumn | undefined;
       if (over.data.current?.columnId) {
-        overColumn = columns.find((col) => col.id === over.data.current?.columnId);
+        overColumn = columns.find(
+          (col) => col.id === over.data.current?.columnId
+        );
       } else {
         overColumn = columns.find((col) => col.id === over.id);
       }
@@ -158,7 +146,8 @@ export function TasksListBoardPage() {
           // Если переносим на задачу — вставляем перед ней, иначе в конец
           let overIndex = 0;
           if (over.data.current?.type === "task") {
-            overIndex = targetCol.tasks?.findIndex((t) => t.task_id === over.id) ?? 0;
+            overIndex =
+              targetCol.tasks?.findIndex((t) => t.task_id === over.id) ?? 0;
           } else {
             overIndex = targetCol.tasks?.length ?? 0;
           }
@@ -206,7 +195,10 @@ export function TasksListBoardPage() {
         const sourceCol = newColumns.find((c) => c.id === activeColumn.id);
         if (sourceCol && sourceCol.tasks) {
           sourceCol.tasks.forEach((task, idx) => {
-            syncTasks.push({ taskId: task.task_id, updateData: { order: idx } });
+            syncTasks.push({
+              taskId: task.task_id,
+              updateData: { order: idx },
+            });
           });
         }
       }
@@ -225,31 +217,11 @@ export function TasksListBoardPage() {
     }
   };
 
-  if (projectLoading || columnsLoading) return <div>Загрузка...</div>;
-  if (projectError || columnsError) return <div>Ошибка загрузки данных</div>;
+  if (columnsLoading) return <div>Загрузка...</div>;
+  if (columnsError) return <div>Ошибка загрузки данных</div>;
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{project?.name}</h1>
-        <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-fit">Добавить задачу</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Создать новую задачу</DialogTitle>
-            </DialogHeader>
-            <CreateTaskForm
-              onSuccess={() => setDialogIsOpen(false)}
-              onClose={() => setDialogIsOpen(false)}
-              projectId={project?.project_id || ""}
-              projectRate={Number(project?.rate) || 0}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -262,95 +234,15 @@ export function TasksListBoardPage() {
         >
           <div className="flex overflow-x-auto gap-4 pb-4">
             {columns.map((column) => (
-              <Column key={column.id} column={column} />
+              <SortableColumn key={column.id} column={column} />
             ))}
           </div>
         </SortableContext>
 
         <DragOverlay>
-          {activeTask && (
-            <TaskCard task={activeTask} className="shadow-xl w-72" />
-          )}
+          {activeTask && <TaskCard task={activeTask} />}
         </DragOverlay>
       </DndContext>
-    </div>
-  );
-}
-
-function Column({ column }: { column: TaskStatusColumn }) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    isDragging,
-    transform,
-    transition,
-  } = useSortable({
-    id: column.id,
-    data: { type: "column", column },
-  });
-
-  const style = {
-    opacity: isDragging ? 0.5 : 1,
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      className="flex-shrink-0 w-72 rounded-lg p-4"
-      {...attributes}
-      {...listeners}
-    >
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-medium">{column.name}</h3>
-        <span className="text-sm text-gray-500">
-          {column.tasks?.length || 0}
-        </span>
-      </div>
-      <SortableContext
-        items={column.tasks?.map((t) => t.task_id) || []}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="space-y-3">
-          {column.tasks?.map((task) => (
-            <SortableTask key={task.task_id} task={task} />
-          ))}
-        </div>
-      </SortableContext>
-    </Card>
-  );
-}
-
-function SortableTask({ task }: { task: Task }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: task.task_id,
-    data: {
-      type: "task",
-      task,
-      columnId: task.taskStatus.taskStatusColumn.id,
-    },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.8 : 1,
-    cursor: "grab",
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} className="hover:shadow-md transition-shadow" />
     </div>
   );
 }

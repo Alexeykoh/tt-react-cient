@@ -11,7 +11,8 @@ export default function PlayPauseButton({ isPlay, isLoading, onClick }: Props) {
   return (
     <Button
       size={"icon"}
-      className={`${!isPlay ? "bg-emerald-400 hover:text-emerald-400 " : "bg-orange-400 hover:text-orange-400"} active:scale-90 duration-150`}
+      variant={"outline"}
+      className={`${!isPlay ? "text-emerald-400" : "text-orange-400"} active:scale-90 duration-150`}
       onClick={() => {
         if (!isLoading) {
           onClick();

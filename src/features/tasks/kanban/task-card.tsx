@@ -1,22 +1,33 @@
 // features/tasks/task-card.tsx
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
 import { Task } from "@/shared/interfaces/task.interface";
+import TaskItem from "@/components/task-item";
 
 interface TaskCardProps {
   task: Task;
-  className?: string;
 }
 
-export function TaskCard({ task, className }: TaskCardProps) {
+export function TaskCard({ task }: TaskCardProps) {
   return (
-    <Card className={className}>
+    <Card
+      className={"border-0 shadow-2xl"}
+      onClickCapture={() => {
+        console.log("keke");
+      }}
+      key={task.task_id}
+    >
       <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold truncate">{task.name}</CardTitle>
-          <Badge variant="outline" className="ml-2" style={{ backgroundColor: task.taskStatus.taskStatusColumn.color || undefined }}>
-            {task.taskStatus.taskStatusColumn.name}
-          </Badge>
+        <div className="flex  items-start justify-between">
+          <CardTitle className="text-base font-semibold truncate break-words text-wrap">
+            {task.name}
+          </CardTitle>
+          <TaskItem task_id={task.task_id} showTime={false} />
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -24,7 +35,9 @@ export function TaskCard({ task, className }: TaskCardProps) {
           {task.description || "Нет описания"}
         </CardDescription>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Ставка: {task.rate} {task.currency?.symbol || ""}</span>
+          <span>
+            Ставка: {task.rate} {task.currency?.symbol || ""}
+          </span>
           <span>{new Date(task.created_at).toLocaleDateString()}</span>
         </div>
       </CardContent>

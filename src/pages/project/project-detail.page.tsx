@@ -10,7 +10,7 @@ import {
   useDeleteProjectMutation,
   useGetProjectByIdQuery,
 } from "@/shared/api/projects.service";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -41,6 +42,8 @@ import {
 import EditProjectForm from "@/features/project/EditProjectForm";
 import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
+import { Separator } from "@/components/ui/separator";
+import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -55,6 +58,7 @@ const ProjectDetailPage: React.FC = () => {
   const [deleteProject] = useDeleteProjectMutation();
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
+  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const {
     data: project,
     error,
@@ -119,118 +123,146 @@ const ProjectDetailPage: React.FC = () => {
         </>
       )}
 
-      <div className="w-full h-fullp-4 flex flex-col gap-4">
-        <Card>
-          <CardContent className="w-full">
-            <div className="flex justify-between w-full">
-              <div className="flex flex-col ">
-                <div className="flex items-center gap-4 mb-4">
-                  <Button
-                    size={"icon"}
-                    variant={"default"}
-                    onClick={() => navigate(`/${ROUTES.PROJECTS}`)}
-                  >
-                    <ChevronLeft />
-                  </Button>
-                  <div className="flex gap-4 text-2xl font-bold">
-                    <p>{project?.name}</p>
-                    <div className="flex justify-end pr-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-                            size="icon"
-                          >
-                            <MoreVerticalIcon />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setEditDialogIsOpen(true);
-                            }}
-                          >
-                            <PencilIcon className="mr-2 size-4" />
-                            <span>Редактировать</span>
-                          </DropdownMenuItem>
+      <div className="w-full h-full flex flex-col gap-4">
+        <div className="w-full">
+          <div className="flex justify-between w-full">
+            <div className="flex flex-col w-full">
+              <div className="flex flex-row border-b-2 w-full p-2 justify-between items-center">
+                <div className="flex flex-col space-y-1">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      className="size-6"
+                      size={"icon"}
+                      variant={"outline"}
+                      onClick={() => navigate(`/${ROUTES.PROJECTS}`)}
+                    >
+                      <ChevronLeft />
+                    </Button>
+                    <div className="flex gap-4 text-xl font-bold items-center">
+                      <p className="uppercase">{project?.name}</p>
+                      <div className="flex justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                              size="icon"
+                            >
+                              <MoreVerticalIcon />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setEditDialogIsOpen(true);
+                              }}
+                            >
+                              <PencilIcon className="mr-2 size-4" />
+                              <span>Редактировать</span>
+                            </DropdownMenuItem>
 
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => setProjectToDelete(id || "")}
-                          >
-                            <TrashIcon className="mr-2 size-4" />
-                            <span>Удалить</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setProjectToDelete(id || "")}
+                            >
+                              <TrashIcon className="mr-2 size-4" />
+                              <span>Удалить</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 flex-wrap text-gray-400 text-xs">
+                    <div className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      <p>{project?.client?.name || "Не указан"}</p>
+                    </div>
+                    <Separator orientation="vertical" className="border-1" />
+                    <div className="flex items-center gap-2">
+                      <HandCoins className="w-4 h-4" />
+                      <p>
+                        {project?.currency?.symbol}
+                        {project?.rate}
+                      </p>
+                    </div>
+                    <Separator orientation="vertical" className="border-1" />
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="w-4 h-4" />
+                      <p>{formatDate(project?.created_at || "")}</p>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
-                    <Button
-                      variant={
-                        currentPageView === VIEW_ROUTES.TABLE
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      <Table />
+                <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+                  <DialogTrigger asChild>
+                    <Button size={"sm"} className="w-fit">
+                      Добавить задачу
                     </Button>
-                  </Link>
-                  <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
-                    <Button
-                      variant={
-                        currentPageView === VIEW_ROUTES.LIST
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      <List />
-                    </Button>
-                  </Link>
-                  <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.BOARD}/${id}`}>
-                    <Button
-                      variant={
-                        currentPageView === VIEW_ROUTES.BOARD
-                          ? "default"
-                          : "outline"
-                      }
-                    >
-                      <Kanban />
-                    </Button>
-                  </Link>
-                </div>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Создать новую задачу</DialogTitle>
+                    </DialogHeader>
+                    <CreateTaskForm
+                      onSuccess={() => setDialogIsOpen(false)}
+                      onClose={() => setDialogIsOpen(false)}
+                      projectId={project?.project_id || ""}
+                      projectRate={Number(project?.rate) || 0}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  <p>Клиент: {project?.client?.name}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <HandCoins className="w-4 h-4" />
-                  <p>
-                    Ставка: {project?.currency?.symbol}
-                    {project?.rate}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CalendarDays className="w-4 h-4" />
-                  <p>Дата создания: {formatDate(project?.created_at || "")}</p>
-                </div>
+              <div className="flex items-center gap-2 p-2">
+                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
+                  <Button
+                    size={"sm"}
+                    variant={
+                      currentPageView === VIEW_ROUTES.TABLE
+                        ? "outline"
+                        : "ghost"
+                    }
+                  >
+                    <Table />
+                    <span>Таблица</span>
+                  </Button>
+                </Link>
+                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
+                  <Button
+                    size={"sm"}
+                    variant={
+                      currentPageView === VIEW_ROUTES.LIST ? "outline" : "ghost"
+                    }
+                  >
+                    <List />
+                    <span>Список</span>
+                  </Button>
+                </Link>
+                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.BOARD}/${id}`}>
+                  <Button
+                    size={"sm"}
+                    variant={
+                      currentPageView === VIEW_ROUTES.BOARD
+                        ? "outline"
+                        : "ghost"
+                    }
+                  >
+                    <Kanban />
+                    <span>Доска</span>
+                  </Button>
+                </Link>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 flex flex-col p-4 gap-4">
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col">
+          <CardContent className="flex-1 flex flex-col gap-4">
             {/* Рендер списка задач в зависимости от выбранного вида представления */}
             <Outlet />
           </CardContent>
-        </Card>
+        </div>
       </div>
     </>
   );
