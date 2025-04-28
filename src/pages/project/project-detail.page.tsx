@@ -10,7 +10,6 @@ import {
   useDeleteProjectMutation,
   useGetProjectByIdQuery,
 } from "@/shared/api/projects.service";
-import { CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import {
@@ -123,7 +122,7 @@ const ProjectDetailPage: React.FC = () => {
         </>
       )}
 
-      <div className="w-full h-full flex flex-col gap-4">
+      <div className="w-full h-full flex flex-col">
         <div className="w-full">
           <div className="flex justify-between w-full">
             <div className="flex flex-col w-full">
@@ -257,11 +256,11 @@ const ProjectDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col">
-          <CardContent className="flex-1 flex flex-col gap-4">
+        <div className="flex-1 flex flex-col p-4 h-full">
+          <div className="flex-1 flex flex-col gap-4 h-full">
             {/* Рендер списка задач в зависимости от выбранного вида представления */}
             <Outlet />
-          </CardContent>
+          </div>
         </div>
       </div>
     </>

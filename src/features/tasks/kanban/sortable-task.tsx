@@ -29,7 +29,7 @@ export function SortableTask({ task }: { task: Task }) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <TaskCard task={task} className="hover:shadow-md transition-shadow" />
+      <TaskCard task={task} />
     </div>
   );
 }

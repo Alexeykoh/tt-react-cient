@@ -40,11 +40,11 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
         transition,
         backgroundColor: column.color ? backgroundColor : "",
       }}
-      className="flex-shrink-0 w-72 rounded-lg p-4"
+      className="shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden"
       {...attributes}
       {...listeners}
     >
-      <div className="flex justify-between items-center ">
+      <div className="flex justify-between items-center h-fit">
         <div className="text-sm text-gray-500 flex items-center gap-3">
           <Badge
             style={{ backgroundColor: column.color || "" }}
@@ -64,7 +64,7 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
         items={column.tasks?.map((t) => t.task_id) || []}
         strategy={verticalListSortingStrategy}
       >
-        <div className="space-y-3">
+        <div className="space-y-2 flex shrink-0 flex-col max-h-full ">
           {column.tasks?.map((task) => (
             <SortableTask key={task.task_id} task={task} />
           ))}

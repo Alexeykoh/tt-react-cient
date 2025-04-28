@@ -221,7 +221,7 @@ export function TasksListBoardPage() {
   if (columnsError) return <div>Ошибка загрузки данных</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 flex w-full h-full">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -232,7 +232,7 @@ export function TasksListBoardPage() {
           items={columns.map((col) => col.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="flex overflow-x-auto gap-4 pb-4">
+          <div className="flex overflow-x-auto gap-4 pb-4 w-full h-full">
             {columns.map((column) => (
               <SortableColumn key={column.id} column={column} />
             ))}
