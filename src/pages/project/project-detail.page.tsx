@@ -127,7 +127,7 @@ const ProjectDetailPage: React.FC = () => {
         <div className="w-full">
           <div className="flex justify-between w-full">
             <div className="flex flex-col w-full">
-              <div className="flex flex-row border-b-2 w-full p-2 justify-between items-center">
+              <div className="flex flex-row border-b-2 w-full p-4 justify-between items-center">
                 <div className="flex flex-col space-y-1">
                   <div className="flex items-center gap-4">
                     <Button
@@ -144,7 +144,7 @@ const ProjectDetailPage: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
                               size="icon"
                             >
@@ -214,7 +214,7 @@ const ProjectDetailPage: React.FC = () => {
                   </DialogContent>
                 </Dialog>
               </div>
-              <div className="flex items-center gap-2 p-2">
+              <div className="flex items-center gap-2 p-4">
                 <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
                   <Button
                     size={"sm"}

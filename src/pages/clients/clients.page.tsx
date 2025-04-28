@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -26,31 +25,30 @@ const ClientsPage: React.FC = () => {
 
   return (
     <>
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col p-4">
         <div className="flex flex-wrap justify-between gap-2">
           <h1 className="text-2xl font-bold mb-4">Клиенты</h1>
+          <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+            <DialogTrigger asChild>
+              <Button>Добавить клиента</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Создать нового клиента</DialogTitle>
+              </DialogHeader>
+              <CreateClientForm
+                onSuccess={() => setDialogIsOpen(false)}
+                onClose={() => {}}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
 
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 flex flex-col p-4">
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">
             <Table className="flex-1 w-full">
               <TableHeader>
-                <TableHead>
-                  <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-                    <DialogTrigger asChild>
-                      <Button>Добавить клиента</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Создать нового клиента</DialogTitle>
-                      </DialogHeader>
-                      <CreateClientForm
-                        onSuccess={() => setDialogIsOpen(false)}
-                        onClose={() => {}}
-                      />
-                    </DialogContent>
-                  </Dialog>
-                </TableHead>
+                <TableHead></TableHead>
                 <TableRow>
                   <TableHead className="w-[30%]">Наименование</TableHead>
                   <TableHead className="w-[20%]">Контакт</TableHead>
@@ -100,8 +98,8 @@ const ClientsPage: React.FC = () => {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </>
   );

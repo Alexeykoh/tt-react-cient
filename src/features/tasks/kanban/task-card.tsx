@@ -1,7 +1,6 @@
 // features/tasks/task-card.tsx
 import {
   Card,
-  CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
@@ -16,21 +15,22 @@ interface TaskCardProps {
 export function TaskCard({ task }: TaskCardProps) {
   return (
     <Card
-      className={"border-0 shadow-2xl"}
+      className={"border-0 shadow-2xl p-0"}
       onClickCapture={() => {
         console.log("keke");
       }}
       key={task.task_id}
     >
-      <CardHeader className="pb-2">
-        <div className="flex  items-start justify-between">
+      <CardContent className="p-4">
+        <div
+          className="flex  ite
+        ms-start justify-between"
+        >
           <CardTitle className="text-base font-semibold truncate break-words text-wrap">
             {task.name}
           </CardTitle>
           <TaskItem task_id={task.task_id} showTime={false} />
         </div>
-      </CardHeader>
-      <CardContent className="pt-0">
         <CardDescription className="mb-2 line-clamp-2 text-sm text-muted-foreground">
           {task.description || "Нет описания"}
         </CardDescription>

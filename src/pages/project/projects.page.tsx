@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 import {
   TableHeader,
   TableRow,
@@ -30,31 +29,30 @@ const ProjectsPage: React.FC = () => {
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col p-4">
       <div className="flex flex-wrap justify-between gap-2">
         <h1 className="text-2xl font-bold mb-4">Проекты</h1>
+        <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+          <DialogTrigger asChild>
+            <Button>Добавить проект</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Создать новый проект</DialogTitle>
+            </DialogHeader>
+            <CreateProjectForm
+              onSuccess={() => setDialogIsOpen(false)}
+              onClose={() => {}}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <Card className="flex-1 flex flex-col">
-        <CardContent className="flex-1 flex flex-col p-4">
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col">
           <Table className="flex-1 w-full">
             <TableHeader>
-              <TableHead>
-                <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-                  <DialogTrigger asChild>
-                    <Button>Добавить проект</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Создать новый проект</DialogTitle>
-                    </DialogHeader>
-                    <CreateProjectForm
-                      onSuccess={() => setDialogIsOpen(false)}
-                      onClose={() => {}}
-                    />
-                  </DialogContent>
-                </Dialog>
-              </TableHead>
+              <TableHead></TableHead>
               <TableRow>
                 <TableHead className="w-[30%]">Наименование</TableHead>
                 <TableHead className="w-[20%]">Клиент</TableHead>
@@ -127,8 +125,8 @@ const ProjectsPage: React.FC = () => {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

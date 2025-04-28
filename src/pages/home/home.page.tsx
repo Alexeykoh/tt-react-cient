@@ -20,7 +20,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { data: searchData } = useSearcV2Query({ searchLocation: "all" });
   return (
-    <div className="w-full h-full flex flex-col ">
+    <div className="w-full h-full flex flex-col p-4">
       <div className="flex flex-wrap justify-between gap-2">
         <h1 className="text-2xl font-bold mb-4">Главная</h1>
       </div>
