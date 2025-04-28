@@ -12,17 +12,11 @@ import { convertToRgba } from "@/lib/convert-to-rgba";
 import { useMemo } from "react";
 
 export function SortableColumn({ column }: { column: TaskStatusColumn }) {
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    isDragging,
-    transform,
-    transition,
-  } = useSortable({
-    id: column.id,
-    data: { type: "column", column },
-  });
+  const { setNodeRef, attributes, isDragging, transform, transition } =
+    useSortable({
+      id: column.id,
+      data: { type: "column", column },
+    });
 
   const backgroundColor = useMemo(() => {
     if (!column.color) return "";
@@ -40,7 +34,7 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
       }}
       className="shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden"
       {...attributes}
-      {...listeners}
+      // {...listeners}
     >
       <div className="flex justify-between items-center h-fit">
         <div className="text-sm text-gray-500 flex items-center gap-3">
