@@ -40,7 +40,7 @@ const NotesPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-4 p-4">
+    <div className="w-full h-full flex flex-col gap-4 p-4 overflow-y-auto">
       <div className="flex flex-row items-center justify-between gap-6 w-full">
         <h1 className="text-2xl font-bold">Заметки</h1>
         <Button onClick={createNotesHandler}>Добавить заметку</Button>
