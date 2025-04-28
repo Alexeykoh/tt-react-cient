@@ -221,7 +221,7 @@ export function TasksListBoardPage() {
   if (columnsError) return <div>Ошибка загрузки данных</div>;
 
   return (
-    <div className="space-y-4 flex w-full h-full">
+    <div className="space-y-4 flex w-full h-full p-4">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}

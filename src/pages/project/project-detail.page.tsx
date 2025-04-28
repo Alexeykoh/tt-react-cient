@@ -256,11 +256,9 @@ const ProjectDetailPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col p-4 h-full">
-          <div className="flex-1 flex flex-col gap-4 h-full">
-            {/* Рендер списка задач в зависимости от выбранного вида представления */}
-            <Outlet />
-          </div>
+        <div className="flex-1 overflow-hidden">
+          {/* Рендер списка задач в зависимости от выбранного вида представления */}
+          <Outlet />
         </div>
       </div>
     </>

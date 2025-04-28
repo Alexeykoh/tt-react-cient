@@ -10,13 +10,11 @@ export function TasksListListPage() {
   });
 
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4">
-        {tasks &&
-          tasks?.map((el) => {
-            return <TaskListItemFeature {...el} />;
-          })}
-      </div>
+    <div className="flex flex-wrap gap-4 h-full w-full overflow-y-auto p-4">
+      {tasks &&
+        tasks?.map((el) => {
+          return <TaskListItemFeature {...el} />;
+        })}
     </div>
   );
 }

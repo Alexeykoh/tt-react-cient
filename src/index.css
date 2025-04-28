@@ -72,7 +72,6 @@
   --sidebar-ring: oklch(0.541 0.281 293.009);
 }
 
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -192,4 +191,25 @@
 .ProseMirror th {
   background-color: #f8fafc;
   font-weight: 600;
+}
+
+/* Для WebKit-браузеров (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px; /* ширина вертикального скроллбара */
+  height: 6px; /* высота горизонтального скроллбара */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Для Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
 }

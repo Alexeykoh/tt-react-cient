@@ -34,7 +34,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   useGetSubscriptionsQuery();
 
   return (
-    <SidebarProvider className="w-screen flex h-screen">
+    <SidebarProvider className="w-screen h-screen flex">
       <Sidebar className="h-full">
         <SidebarHeader>
           <div className="flex items-center justify-between gap-2 px-2">
@@ -119,7 +119,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </div>
         </SidebarFooter>
       </Sidebar>
-      <main className="w-full h-full flex flex-col overflow-hidden">
+      <div className="w-screen h-screen flex flex-col overflow-hidden">
         <header className="flex items-center gap-2 p-2 w-full bg-sidebar">
           <div className="flex items-center gap-2 px-3 w-full">
             <SidebarTrigger />
@@ -128,8 +128,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </div>
           </div>
         </header>
-        <div className="flex-1 w-full h-full overflow-hidden">{children}</div>
-      </main>
+        <main className="flex-1 overflow-hidden">{children}</main>
+      </div>
     </SidebarProvider>
   );
 };

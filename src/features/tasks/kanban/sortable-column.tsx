@@ -8,8 +8,6 @@ import {
 import { SortableTask } from "./sortable-task";
 import { CSS } from "@dnd-kit/utilities";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { convertToRgba } from "@/lib/convert-to-rgba";
 import { useMemo } from "react";
 
@@ -52,9 +50,6 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
           >
             {column.name}
           </Badge>
-          <Button className="size-6" size={"icon"} variant={"outline"}>
-            <Plus />
-          </Button>
         </div>
         <span className="text-sm text-gray-500">
           {column.tasks?.length || 0}
@@ -64,7 +59,7 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
         items={column.tasks?.map((t) => t.task_id) || []}
         strategy={verticalListSortingStrategy}
       >
-        <div className="space-y-2 flex shrink-0 flex-col max-h-full ">
+        <div className="space-y-2 flex-1 flex-col overflow-y-auto">
           {column.tasks?.map((task) => (
             <SortableTask key={task.task_id} task={task} />
           ))}

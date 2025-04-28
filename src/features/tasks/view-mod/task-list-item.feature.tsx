@@ -99,7 +99,7 @@ export default function TaskListItemFeature(task: Task) {
       </Dialog>
 
       {/* Основная карточка */}
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className="hover:shadow-md transition-shadow w-full">
         <CardHeader className="relative">
           <div className="flex justify-between items-start">
             <div className="flex gap-4 items-center">
