@@ -5,14 +5,20 @@ interface Props {
   isPlay: boolean;
   isLoading: boolean;
   onClick: () => void;
+  variant: "button" | "icon";
 }
 
-export default function PlayPauseButton({ isPlay, isLoading, onClick }: Props) {
+export default function PlayPauseButton({
+  isPlay,
+  isLoading,
+  onClick,
+  variant,
+}: Props) {
   return (
     <Button
       size={"icon"}
       variant={"outline"}
-      className={`${!isPlay ? "text-emerald-400" : "text-orange-400"} active:scale-90 duration-150`}
+      className={`${!isPlay ? "text-emerald-400" : "text-orange-400"} ${variant === "icon" && "size-6"} active:scale-90 duration-150`}
       onClick={() => {
         if (!isLoading) {
           onClick();
@@ -20,11 +26,13 @@ export default function PlayPauseButton({ isPlay, isLoading, onClick }: Props) {
       }}
     >
       {isLoading ? (
-        <LoaderCircle className="animate-spin" />
+        <LoaderCircle
+          className={`animate-spin ${variant === "icon" && "size-3"}`}
+        />
       ) : !isPlay ? (
-        <Play />
+        <Play className={`${variant === "icon" && "size-3"}`} />
       ) : (
-        <Pause className="animate-pulse" />
+        <Pause className={`animate-pulse ${variant === "icon" && "size-3"}`} />
       )}
     </Button>
   );

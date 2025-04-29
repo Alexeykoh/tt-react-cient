@@ -15,12 +15,14 @@ interface Props {
   task_id: string;
   showTime?: boolean;
   isReverse?: boolean;
+  variant?: "button" | "icon";
 }
 
 export default function TaskItem({
   task_id,
   showTime = true,
   isReverse = false,
+  variant = "button",
 }: Props) {
   const dispatch = useDispatch();
   const { data: latestLog, isLoading: logIsLoading } =
@@ -83,6 +85,7 @@ export default function TaskItem({
         onClick={logToggleHandler}
         isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
         isLoading={logIsLoading || startIsLoading || stopIsLoading}
+        variant={variant}
       />
       {logIsLoading ? (
         <LoaderCircle className="animate-spin" />

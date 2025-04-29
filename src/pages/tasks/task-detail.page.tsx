@@ -4,12 +4,18 @@ import {
   useGetTaskByIdQuery,
 } from "@/shared/api/task.service";
 import {
+  Calculator,
+  Calendar,
   CalendarDays,
   ChevronLeft,
+  CreditCard,
   HandCoins,
   MoreVerticalIcon,
   PencilIcon,
+  Settings,
+  Smile,
   TrashIcon,
+  User,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/lib/dateUtils";
@@ -30,16 +36,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid } from "recharts";
 import { Card } from "@/components/ui/card";
 import { useGetTimeLogLogsQuery } from "@/shared/api/time-log.service";
 import TaskItem from "@/components/task-item";
+import { GanttChart } from "@/shared/ui/gantt-chart";
+import { GanttTask } from "@/shared/types/gantt.types";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
@@ -53,13 +64,6 @@ export default function TaskDetailPage() {
 
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
-
-  const chartConfig = {
-    duration: {
-      label: "Duration",
-      color: "hsl(var(--chart-1))",
-    },
-  } satisfies ChartConfig;
 
   return (
     <>
@@ -132,7 +136,12 @@ export default function TaskDetailPage() {
                     <div className="flex gap-4 text-xl font-bold items-center">
                       <TaskItem
                         task_id={task?.task_id || ""}
-                        showTime={false}
+                        showTime={true}
+                        variant={"icon"}
+                      />
+                      <Separator
+                        orientation="vertical"
+                        className="border-1 min-h-5"
                       />
                       <p className="uppercase">{task?.name}</p>
                       <div className="flex justify-end">
@@ -190,37 +199,66 @@ export default function TaskDetailPage() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden p-4">
-          <Card className="w-96 h-auto">
-            <ChartContainer config={chartConfig}>
-              <BarChart
-                accessibilityLayer
-                data={timeLogs?.data?.map((el) => {
-                  return { ...el, created_at: formatDate(el.created_at) };
-                })}
-              >
-                <CartesianGrid vertical={false} />
-                {/* <XAxis
-                  dataKey="created_at"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  tickFormatter={(value) => {
-                    return formatDate(value);
-                  }}
-                /> */}
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dashed" />}
-                />
-                <Bar
-                  dataKey="duration"
-                  fill="var(--color-primary)"
-                  radius={4}
-                />
-              </BarChart>
-            </ChartContainer>
-          </Card>
+        <div className="flex overflow-hidden p-4 w-full h-full gap-4">
+          <div className="flex w-full">
+            <Card className="w-full h-96 p-4">
+              <h3 className="text-lg font-semibold mb-2">Диаграмма Ганта</h3>
+              <GanttChart
+                tasks={
+                  (timeLogs?.data?.map((log) => ({
+                    id: log.log_id,
+                    label: (
+                      <div className="text-xs flex gap-1 items-center">
+                        {log.duration}
+                      </div>
+                    ),
+                    start: log.start_time,
+                    end: log.end_time,
+                  })) as GanttTask[]) || []
+                }
+                height={32}
+                className="w-full h-64"
+              />
+            </Card>
+          </div>
+          <Command className="rounded-lg border shadow-md w-64 h-full">
+            <CommandInput placeholder="Type a command or search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Suggestions">
+                <CommandItem>
+                  <Calendar />
+                  <span>Calendar</span>
+                </CommandItem>
+                <CommandItem>
+                  <Smile />
+                  <span>Search Emoji</span>
+                </CommandItem>
+                <CommandItem disabled>
+                  <Calculator />
+                  <span>Calculator</span>
+                </CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Settings">
+                <CommandItem>
+                  <User />
+                  <span>Profile</span>
+                  <CommandShortcut>⌘P</CommandShortcut>
+                </CommandItem>
+                <CommandItem>
+                  <CreditCard />
+                  <span>Billing</span>
+                  <CommandShortcut>⌘B</CommandShortcut>
+                </CommandItem>
+                <CommandItem>
+                  <Settings />
+                  <span>Settings</span>
+                  <CommandShortcut>⌘S</CommandShortcut>
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
         </div>
       </div>
     </>
