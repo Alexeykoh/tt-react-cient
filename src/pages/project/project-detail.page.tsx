@@ -13,16 +13,20 @@ import {
 import { formatDate } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import {
+  Briefcase,
   CalendarDays,
   ChevronLeft,
+  ContactRound,
   HandCoins,
   Kanban,
   List,
   MoreVerticalIcon,
   PencilIcon,
+  ShieldUser,
   Table,
   TrashIcon,
   User,
+  View,
 } from "lucide-react";
 import {
   Dialog,
@@ -43,6 +47,13 @@ import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
 import { Separator } from "@/components/ui/separator";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
+import UserAvatar from "@/components/user-avatar";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { ProjectRole } from "@/shared/enums/project-role.enum";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -194,24 +205,65 @@ const ProjectDetailPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
-                  <DialogTrigger asChild>
-                    <Button size={"sm"} className="w-fit">
-                      Добавить задачу
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Создать новую задачу</DialogTitle>
-                    </DialogHeader>
-                    <CreateTaskForm
-                      onSuccess={() => setDialogIsOpen(false)}
-                      onClose={() => setDialogIsOpen(false)}
-                      projectId={project?.project_id || ""}
-                      projectRate={Number(project?.rate) || 0}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-row">
+                    {project?.members?.map((el) => (
+                      <div className="relative">
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <div>
+                              <UserAvatar
+                                size="xs"
+                                name={el.user?.name || ""}
+                                planId={el.user?.subscriptions[0]?.planId || ""}
+                              />
+                              {el.role === ProjectRole.OWNER && (
+                                <ShieldUser className="size-4 absolute -bottom-1 -right-1 bg-rose-400 rounded-full" />
+                              )}
+                              {el.role === ProjectRole.MANAGER && (
+                                <Briefcase className="size-4 absolute -bottom-1 -right-1 bg-purple-400 rounded-full" />
+                              )}
+                              {el.role === ProjectRole.EXECUTOR && (
+                                <ContactRound className="size-4 absolute -bottom-1 -right-1 bg-sky-400 rounded-full" />
+                              )}
+                              {el.role === ProjectRole.GUEST && (
+                                <View className="size-4 absolute -bottom-1 -right-1 bg-gray-400 rounded-full" />
+                              )}
+                            </div>
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-fit">
+                            <div className="flex gap-2 items-center">
+                              <p>{el.user?.name}</p>
+                              <Separator
+                                orientation="vertical"
+                                className="min-h-5"
+                              />
+                              <p>{el.role}</p>
+                            </div>
+                          </HoverCardContent>
+                        </HoverCard>
+                      </div>
+                    ))}
+                  </div>
+                  <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+                    <DialogTrigger asChild>
+                      <Button size={"sm"} className="w-fit">
+                        Добавить задачу
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Создать новую задачу</DialogTitle>
+                      </DialogHeader>
+                      <CreateTaskForm
+                        onSuccess={() => setDialogIsOpen(false)}
+                        onClose={() => setDialogIsOpen(false)}
+                        projectId={project?.project_id || ""}
+                        projectRate={Number(project?.rate) || 0}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
               <div className="flex items-center gap-2 p-4">
                 <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
