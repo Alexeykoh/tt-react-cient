@@ -7,17 +7,20 @@ import {
 } from "@/components/ui/card";
 import { Task } from "@/shared/interfaces/task.interface";
 import TaskItem from "@/components/task-item";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/app/router/routes.enum";
 
 interface TaskCardProps {
   task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+  const navigate = useNavigate();
   return (
     <Card
       className={"border-0 shadow-2xl p-0"}
       onClickCapture={() => {
-        console.log("keke");
+        navigate(`/${ROUTES.TASKS}/${task.task_id}`);
       }}
       key={task.task_id}
     >

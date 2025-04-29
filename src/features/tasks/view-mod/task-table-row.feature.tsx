@@ -207,7 +207,11 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
             </DropdownMenuItem>
 
             <PrivateComponent
-              subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
+              subscriptions={[
+                SUBSCRIPTION.FREE,
+                SUBSCRIPTION.BASIC,
+                SUBSCRIPTION.PREMIUM,
+              ]}
             >
               <DropdownMenuItem
                 onClick={() => navigate(`/tasks/${task.task_id}`)}

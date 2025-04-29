@@ -9,9 +9,19 @@ import {
   SidebarMenuButton,
   Sidebar,
   SidebarTrigger,
+  SidebarMenuSub,
+  SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, Briefcase, FileText, Clock } from "lucide-react";
+import {
+  Home,
+  Users,
+  FileText,
+  Clock,
+  FolderGit2,
+  ChartNoAxesGantt,
+  ChevronRight,
+} from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import React, { ReactNode } from "react";
 import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
@@ -21,6 +31,13 @@ import { useGetUserQuery } from "@/shared/api/user.service";
 import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
 import SearchWidget from "@/widgets/search.widget";
 import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useSearcV2Query } from "@/shared/api/search.service";
+import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -32,6 +49,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   useGetCurrenciesQuery();
   useGetSubscriptionsQuery();
+
+  const { data: searchData, isLoading } = useSearcV2Query({
+    searchLocation: "projects",
+  });
 
   return (
     <SidebarProvider className="w-screen h-screen flex">
@@ -46,67 +67,105 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Главная"
-                  isActive={location.pathname === "/"}
-                >
-                  <Link to="/">
-                    <Home className="h-4 w-4" />
-                    <span>Главная</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Проекты"
-                  isActive={location.pathname === "/projects"}
-                >
-                  <Link to="/projects">
-                    <Briefcase className="h-4 w-4" />
-                    <span>Проекты</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Клиенты"
-                  isActive={location.pathname === "/clients"}
-                >
-                  <Link to="/clients">
-                    <Users className="h-4 w-4" />
-                    <span>Клиенты</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <PrivateComponent
-                lockPosition="left"
-                subscriptions={[
-                  SUBSCRIPTION.FREE,
-                  SUBSCRIPTION.BASIC,
-                  SUBSCRIPTION.PREMIUM,
-                ]}
-              >
+          <Collapsible defaultOpen className="group/collapsible">
+            <SidebarGroup>
+              <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
-                    tooltip="Заметки"
-                    isActive={location.pathname === "/notes"}
+                    tooltip="Главная"
+                    isActive={location.pathname === "/"}
                   >
-                    <Link to="/notes">
-                      <FileText className="h-4 w-4" />
-                      <span>Заметки</span>
+                    <Link to="/">
+                      <Home className="h-4 w-4" />
+                      <span>Главная</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              </PrivateComponent>
-            </SidebarMenu>
-          </SidebarGroup>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Проекты"
+                    isActive={location.pathname.includes(`/${ROUTES.PROJECTS}`)}
+                  >
+                    <Link to="/projects">
+                      <FolderGit2 className="h-4 w-4" />
+                      <span>Проекты</span>
+                      <CollapsibleTrigger asChild>
+                        <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                      </CollapsibleTrigger>
+                    </Link>
+                  </SidebarMenuButton>
+
+                  <CollapsibleContent>
+                    {isLoading && (
+                      <>
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <SidebarMenuSub>
+                            <SidebarMenuItem key={index}>
+                              <SidebarMenuSkeleton showIcon />
+                            </SidebarMenuItem>
+                          </SidebarMenuSub>
+                        ))}
+                      </>
+                    )}
+                    {searchData?.projects?.map((el) => (
+                      <SidebarMenuSub>
+                        <SidebarMenuButton
+                          asChild
+                          tooltip="Проекты"
+                          isActive={location.pathname.includes(
+                            `/${el.project_id}`
+                          )}
+                        >
+                          <Link
+                            to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el.project_id}`}
+                          >
+                            <ChartNoAxesGantt className="h-4 w-4" />
+                            <span>{el?.name}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSub>
+                    ))}
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Клиенты"
+                    isActive={location.pathname === "/clients"}
+                  >
+                    <Link to="/clients">
+                      <Users className="h-4 w-4" />
+                      <span>Клиенты</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <PrivateComponent
+                  lockPosition="left"
+                  subscriptions={[
+                    SUBSCRIPTION.FREE,
+                    SUBSCRIPTION.BASIC,
+                    SUBSCRIPTION.PREMIUM,
+                  ]}
+                >
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip="Заметки"
+                      isActive={location.pathname === "/notes"}
+                    >
+                      <Link to="/notes">
+                        <FileText className="h-4 w-4" />
+                        <span>Заметки</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PrivateComponent>
+              </SidebarMenu>
+            </SidebarGroup>
+          </Collapsible>
         </SidebarContent>
         <SidebarFooter>
           <NavUser

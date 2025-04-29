@@ -50,6 +50,7 @@ const HomePage: React.FC = () => {
                 </CardContent>
                 <CardFooter className="space-x-2">
                   <Button
+                    variant={"default"}
                     onClick={() =>
                       navigate(
                         `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el?.project?.project_id}`
