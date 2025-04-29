@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,23 +42,33 @@ lowlight.register("javascript", javascript);
 lowlight.register("python", python);
 
 
-// Компонент меню форматирования, отображается при выделении текста
 function FloatingMenu({ editor }: { editor: Editor | null }) {
-  console.log("FloatingMenu render", { editor });
-  if (!editor) {
-    console.log("FloatingMenu: editor is null");
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!editor || !editor.isFocused) {
+      setCoords(null);
+      return;
+    }
+    const { from, to } = editor.state.selection;
+    // Получаем координаты выделения или курсора
+    const start = editor.view.coordsAtPos(from);
+    const end = editor.view.coordsAtPos(to);
+    // Средняя точка между началом и концом выделения
+    const left = (start.left + end.right) / 2;
+    const top = Math.min(start.top, end.top);
+    setCoords({ left, top });
+  }, [editor, editor?.state.selection, editor?.isFocused]);
+
+  if (!editor || !editor.isFocused) {
     return null;
   }
 
-  // Показывать меню только если есть выделение
-  if (editor.state.selection.empty) {
-    console.log("FloatingMenu: selection empty");
-    return null;
-  }
-
-  console.log("FloatingMenu: rendered and visible");
   return (
     <div
+      ref={menuRef}
+      onMouseDown={e => e.preventDefault()}
       style={{
         position: "absolute",
         zIndex: 100,
@@ -69,6 +79,11 @@ function FloatingMenu({ editor }: { editor: Editor | null }) {
         gap: "8px",
         color: "white",
         userSelect: "none",
+        left: coords ? coords.left : 0,
+        top: coords ? coords.top - 40 : 0, // чуть выше выделения/курсора
+        pointerEvents: "auto",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+        transition: "left 0.1s, top 0.1s",
       }}
     >
       <Button
@@ -232,11 +247,39 @@ export default function NotesDetailPage() {
     text: "",
   });
 
+  // Преобразование plain text в структуру TipTap
+  function plainTextToTiptapDoc(text: string): object {
+    return {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: text
+            ? [{ type: "text", text }]
+            : [],
+        },
+      ],
+    };
+  }
+
   useEffect(() => {
     if (note) {
+      let tiptapContent: string;
+      try {
+        // Если это валидный JSON с type: "doc", используем как есть
+        const parsed = JSON.parse(note.text_content ?? "");
+        if (parsed && parsed.type === "doc") {
+          tiptapContent = note.text_content ?? "";
+        } else {
+          tiptapContent = JSON.stringify(plainTextToTiptapDoc(note.text_content ?? ""));
+        }
+      } catch {
+        // Если не JSON — преобразуем plain text
+        tiptapContent = JSON.stringify(plainTextToTiptapDoc(note.text_content ?? ""));
+      }
       setContent({
         name: note.name,
-        text: note.text_content || JSON.stringify({ type: "doc", content: [] }),
+        text: tiptapContent,
       });
     }
   }, [note]);
@@ -262,9 +305,18 @@ export default function NotesDetailPage() {
       ListItem,
       Heading,
     ],
-    content: contentNote.text ? JSON.parse(contentNote.text) : "<p></p>",
+    content: (() => {
+      try {
+        const parsed = JSON.parse(contentNote.text);
+        if (parsed && parsed.type === "doc") {
+          return parsed;
+        }
+        return plainTextToTiptapDoc(contentNote.text);
+      } catch {
+        return plainTextToTiptapDoc(contentNote.text);
+      }
+    })(),
     onUpdate: ({ editor }) => {
-      console.log("onUpdate called", editor.getJSON());
       setContent((prev) => ({
         ...prev,
         text: JSON.stringify(editor.getJSON()),
@@ -272,19 +324,50 @@ export default function NotesDetailPage() {
     },
   });
 
+  // Синхронизация содержимого редактора при загрузке данных с сервера
+  React.useEffect(() => {
+    if (editor && contentNote.text) {
+      try {
+        const parsed = JSON.parse(contentNote.text);
+        if (parsed && parsed.type === "doc") {
+          editor.commands.setContent(parsed, false);
+        } else {
+          editor.commands.setContent(plainTextToTiptapDoc(contentNote.text), false);
+        }
+      } catch {
+        editor.commands.setContent(plainTextToTiptapDoc(contentNote.text), false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentNote.text, editor]);
+
+  // Для актуальных данных при размонтировании используем editor
   const handleSave = async () => {
-    if (id) {
+    if (id && editor) {
       try {
         await update({
           note_id: id,
           name: contentNote.name || "Без названия",
-          text_content: contentNote.text || "",
+          text_content: JSON.stringify(editor.getJSON()),
         }).unwrap();
       } catch (error) {
         console.error("Ошибка при сохранении заметки:", error);
       }
     }
   };
+
+  // УБРАНО: автоматическое сохранение при размонтировании, чтобы не терять данные
+  // useEffect(() => {
+  //   return () => {
+  //     if (editor && id) {
+  //       update({
+  //         note_id: id,
+  //         name: contentNote.name || "Без названия",
+  //         text_content: JSON.stringify(editor.getJSON()),
+  //       });
+  //     }
+  //   };
+  // }, []);
 
   if (isLoading)
     return (
@@ -316,8 +399,13 @@ export default function NotesDetailPage() {
               return { ...el, name: e.target.value };
             });
           }}
-          onBlur={handleSave}
         />
+        <Button
+          variant="outline"
+          onClick={handleSave}
+        >
+          Сохранить
+        </Button>
       </div>
 
       <Card className="border-0 shadow-none bg-[#404040]/80 min-h-96 relative">

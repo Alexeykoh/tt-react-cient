@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -116,11 +115,11 @@ const NotesPage: React.FC = () => {
                 </CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="flex">
+            {/* <CardContent className="flex">
               <div className="text-xs font-light min-h-32 max-h-32 overflow-clip">
                 {el.text_content}
               </div>
-            </CardContent>
+            </CardContent> */}
             <CardFooter className="space-x-2">
               <Button onClick={() => navigate("/notes/" + el?.notes_id)}>
                 Перейти
