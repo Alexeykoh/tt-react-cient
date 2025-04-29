@@ -66,72 +66,70 @@ const ProjectDetailPage: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const [deleteProject] = useDeleteProjectMutation();
-  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
-  const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
+  const [dialogIsOpen, setDialogIsOpen] = useState<
+    "create" | "edit" | "delete" | null
+  >(null);
   const {
     data: project,
     error,
     isLoading,
   } = useGetProjectByIdQuery({ id: id! });
 
+
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки проекта</div>;
 
   return (
     <>
-      {project && (
-        <>
-          <Dialog open={editDialogIsOpen} onOpenChange={setEditDialogIsOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Редактировать проект</DialogTitle>
-              </DialogHeader>
-              <EditProjectForm
-                projectId={project?.project_id}
-                initialData={{
-                  name: project?.name,
-                  currency_id: project?.currency.code,
-                  rate: parseFloat(project?.rate),
-                  client_id: project?.client?.client_id,
-                  tag_ids: [],
-                }}
-                onSuccess={() => setEditDialogIsOpen(false)}
-                onClose={() => setEditDialogIsOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-          <Dialog
-            open={projectToDelete !== null}
-            onOpenChange={() => setProjectToDelete(null)}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Подтверждение удаления</DialogTitle>
-              </DialogHeader>
-              <p>Вы уверены, что хотите удалить этот проект?</p>
-              <div className="flex justify-end space-x-2 mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setProjectToDelete(null)}
-                >
-                  Отмена
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={async () => {
-                    navigate("/projects");
-                    await deleteProject(id || "");
-                    setProjectToDelete(null);
-                  }}
-                >
-                  Удалить
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
-      )}
+      <Dialog
+        open={dialogIsOpen === "edit"}
+        onOpenChange={(data) => setDialogIsOpen(data ? "edit" : null)}
+        
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Редактировать проект</DialogTitle>
+          </DialogHeader>
+          <EditProjectForm
+            projectId={project?.project_id || ""}
+            initialData={{
+              name: project?.name || "",
+              currency_id: project?.currency.code || "",
+              rate: parseFloat(project?.rate || ""),
+              client_id: project?.client?.client_id,
+              tag_ids: [],
+            }}
+            onSuccess={() => setDialogIsOpen(null)}
+            onClose={() => setDialogIsOpen(null)}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={dialogIsOpen === "delete"}
+        onOpenChange={(data) => setDialogIsOpen(data ? "delete" : null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Подтверждение удаления</DialogTitle>
+          </DialogHeader>
+          <p>Вы уверены, что хотите удалить этот проект?</p>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setDialogIsOpen(null)}>
+              Отмена
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                navigate("/projects");
+                setDialogIsOpen(null);
+                await deleteProject(id || "");
+              }}
+            >
+              Удалить
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="w-full h-full flex flex-col">
         <div className="w-full">
@@ -165,7 +163,7 @@ const ProjectDetailPage: React.FC = () => {
                           <DropdownMenuContent align="end" className="w-40">
                             <DropdownMenuItem
                               onClick={() => {
-                                setEditDialogIsOpen(true);
+                                setDialogIsOpen("edit");
                               }}
                             >
                               <PencilIcon className="mr-2 size-4" />
@@ -175,7 +173,7 @@ const ProjectDetailPage: React.FC = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
-                              onClick={() => setProjectToDelete(id || "")}
+                              onClick={() => setDialogIsOpen("delete")}
                             >
                               <TrashIcon className="mr-2 size-4" />
                               <span>Удалить</span>
@@ -249,7 +247,12 @@ const ProjectDetailPage: React.FC = () => {
                       );
                     })}
                   </div>
-                  <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
+                  <Dialog
+                    open={dialogIsOpen === "create"}
+                    onOpenChange={(data) =>
+                      setDialogIsOpen(data ? "create" : null)
+                    }
+                  >
                     <DialogTrigger asChild>
                       <Button size={"sm"} className="w-fit">
                         Добавить задачу
@@ -260,8 +263,8 @@ const ProjectDetailPage: React.FC = () => {
                         <DialogTitle>Создать новую задачу</DialogTitle>
                       </DialogHeader>
                       <CreateTaskForm
-                        onSuccess={() => setDialogIsOpen(false)}
-                        onClose={() => setDialogIsOpen(false)}
+                        onSuccess={() => setDialogIsOpen(null)}
+                        onClose={() => setDialogIsOpen(null)}
                         projectId={project?.project_id || ""}
                         projectRate={Number(project?.rate) || 0}
                       />
