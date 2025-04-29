@@ -207,43 +207,47 @@ const ProjectDetailPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex flex-row">
-                    {project?.members?.map((el) => (
-                      <div className="relative">
-                        <HoverCard>
-                          <HoverCardTrigger>
-                            <div>
-                              <UserAvatar
-                                size="xs"
-                                name={el.user?.name || ""}
-                                planId={el.user?.subscriptions[0]?.planId || ""}
-                              />
-                              {el.role === ProjectRole.OWNER && (
-                                <ShieldUser className="size-4 absolute -bottom-1 -right-1 bg-rose-400 rounded-full" />
-                              )}
-                              {el.role === ProjectRole.MANAGER && (
-                                <Briefcase className="size-4 absolute -bottom-1 -right-1 bg-purple-400 rounded-full" />
-                              )}
-                              {el.role === ProjectRole.EXECUTOR && (
-                                <ContactRound className="size-4 absolute -bottom-1 -right-1 bg-sky-400 rounded-full" />
-                              )}
-                              {el.role === ProjectRole.GUEST && (
-                                <View className="size-4 absolute -bottom-1 -right-1 bg-gray-400 rounded-full" />
-                              )}
-                            </div>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-fit">
-                            <div className="flex gap-2 items-center">
-                              <p>{el.user?.name}</p>
-                              <Separator
-                                orientation="vertical"
-                                className="min-h-5"
-                              />
-                              <p>{el.role}</p>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
-                      </div>
-                    ))}
+                    {project?.members?.map((el) => {
+                      return (
+                        <div className="relative">
+                          <HoverCard>
+                            <HoverCardTrigger>
+                              <div>
+                                <UserAvatar
+                                  size="xs"
+                                  name={el.user?.name || ""}
+                                  planId={
+                                    el.user?.subscriptions[0]?.planId || ""
+                                  }
+                                />
+                                {el.role === ProjectRole.OWNER && (
+                                  <ShieldUser className="size-4 absolute -bottom-1 -right-1 bg-gray-600 rounded-full" />
+                                )}
+                                {el.role === ProjectRole.MANAGER && (
+                                  <Briefcase className="size-4 absolute -bottom-1 -right-1 bg-purple-600 rounded-full" />
+                                )}
+                                {el.role === ProjectRole.EXECUTOR && (
+                                  <ContactRound className="size-4 absolute -bottom-1 -right-1 bg-sky-600 rounded-full" />
+                                )}
+                                {el.role === ProjectRole.GUEST && (
+                                  <View className="size-4 absolute -bottom-1 -right-1 bg-orange-600 rounded-full" />
+                                )}
+                              </div>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-fit">
+                              <div className="flex gap-2 items-center">
+                                <p>{el.user?.name}</p>
+                                <Separator
+                                  orientation="vertical"
+                                  className="min-h-5"
+                                />
+                                <p>{el.role}</p>
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        </div>
+                      );
+                    })}
                   </div>
                   <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
                     <DialogTrigger asChild>
