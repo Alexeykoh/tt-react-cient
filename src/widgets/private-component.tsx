@@ -8,10 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useSubscription } from "@/hooks/use-subscription";
+import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { LockKeyhole } from "lucide-react";
-import { HTMLAttributes, useState } from "react";
+import { HTMLAttributes, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
@@ -25,24 +25,28 @@ export default function PrivateComponent({
   children,
   ...props
 }: Props) {
-  const { access, subscription } = useSubscription(subscriptions);
+  const { data: subscData } = useGetSubscriptionsQuery();
+  const [access, setAccess] = useState<boolean | null>(null);
   const [dialog, setDialog] = useState<boolean>(false);
 
   function accessHandler() {
-    console.log("{ access, subscription }", {
-      access,
-      subscription,
-      subscriptions,
-    });
     if (!access) {
       setDialog((prev) => !prev);
     }
   }
+
+  useEffect(() => {
+    const hasAccess = subscriptions.includes(
+      (subscData?.planId as SUBSCRIPTION) || ""
+    );
+    setAccess(hasAccess);
+  }, [subscData?.planId, subscriptions]);
+
   return (
     <>
       <Dialog open={dialog} onOpenChange={setDialog}>
         <DialogTrigger>
-          <div className="" onClick={accessHandler} {...props}>
+          <div onClick={accessHandler} {...props}>
             <div className={`${!access && "pointer-events-none"} relative`}>
               {!access && (
                 <Badge

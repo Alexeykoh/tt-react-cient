@@ -20,7 +20,7 @@ export default function SidebarItemFeature({
   isIncludePath = true,
   component = null,
 }: Props) {
-//   const location = useLocation();
+  const location = useLocation();
   return (
     <PrivateComponent lockPosition="left" subscriptions={subscription}>
       <SidebarMenuItem>

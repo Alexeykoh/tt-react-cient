@@ -1,6 +1,6 @@
 import { ROUTES } from "@/app/router/routes.enum";
 import { NavUser } from "@/components/nav-user";
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Collapsible } from "@/components/ui/collapsible";
 import {
   SidebarHeader,
   SidebarContent,
@@ -9,26 +9,14 @@ import {
   SidebarMenu,
   Sidebar,
 } from "@/components/ui/sidebar";
-import { useSearcV2Query } from "@/shared/api/search.service";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import SearchWidget from "@/widgets/search.widget";
-import {
-  Home,
-  FileText,
-  Clock,
-  FolderGit2,
-  ChevronRight,
-  ContactRound,
-} from "lucide-react";
+import { Home, FileText, Clock, FolderGit2, ContactRound } from "lucide-react";
 import { Link } from "react-router";
 import SidebarItemFeature from "./sidebar-item";
-import SidebarIetmsList from "./sidebar-ittems-list";
 
 export default function SidebarFeature() {
   const { data: user } = useGetUserQuery();
-  const { data: searchData } = useSearcV2Query({
-    searchLocation: "projects",
-  });
 
   console.log("SidebarFeature/reload");
 
@@ -61,17 +49,11 @@ export default function SidebarFeature() {
               <SidebarItemFeature
                 tooltip={"Проекты"}
                 pathname={`/${ROUTES.PROJECTS}`}
-                component={
-                  <SidebarIetmsList projects={searchData?.projects || []} />
-                }
               >
-                <div>
+                <Link to={`/${ROUTES.PROJECTS}`}>
                   <FolderGit2 className="h-4 w-4" />
                   <span>Проекты</span>
-                  <CollapsibleTrigger asChild>
-                    <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                  </CollapsibleTrigger>
-                </div>
+                </Link>
               </SidebarItemFeature>
 
               <SidebarItemFeature
