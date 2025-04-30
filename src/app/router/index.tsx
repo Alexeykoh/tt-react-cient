@@ -25,6 +25,7 @@ import { TasksListListPage } from "@/pages/tasks/tasks-list-list.page";
 import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
 import ContactsPage from "@/pages/contacts/contacts.page";
 import ClientsPage from "@/pages/contacts/clients.page";
+import FriendsPage from "@/pages/contacts/friends.page";
 
 const router = createBrowserRouter([
   {
@@ -101,13 +102,13 @@ const router = createBrowserRouter([
         children: [
           {
             // clients
-            path: CONTACTS_VIEW.CLIENTS + "/:id",
+            path: CONTACTS_VIEW.CLIENTS,
             element: <ClientsPage />,
           },
           {
             // friends
-            path: CONTACTS_VIEW.FRIENDS + "/:id",
-            element: <ClientsPage />,
+            path: CONTACTS_VIEW.FRIENDS,
+            element: <FriendsPage />,
           },
         ],
       },

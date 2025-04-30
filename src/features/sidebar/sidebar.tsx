@@ -1,4 +1,4 @@
-import { ROUTES } from "@/app/router/routes.enum";
+import { CONTACTS_VIEW, ROUTES } from "@/app/router/routes.enum";
 import { NavUser } from "@/components/nav-user";
 import { Collapsible } from "@/components/ui/collapsible";
 import {
@@ -28,7 +28,15 @@ export default function SidebarFeature() {
             <Clock className="h-6 w-6" />
             <span className="text-lg font-semibold">TimeTracker</span>
           </div>
-          <SearchWidget />
+          <SearchWidget
+            searchLocationList={[
+              "all",
+              "projects",
+              "tasks",
+              "clients",
+              "users",
+            ]}
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -60,7 +68,7 @@ export default function SidebarFeature() {
                 tooltip={"Контакты"}
                 pathname={`/${ROUTES.CONTACTS}`}
               >
-                <Link to={`/${ROUTES.CONTACTS}`}>
+                <Link to={`/${ROUTES.CONTACTS}/${CONTACTS_VIEW.CLIENTS}`}>
                   <ContactRound className="h-4 w-4" />
                   <span>Контакты</span>
                 </Link>

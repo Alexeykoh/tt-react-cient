@@ -19,12 +19,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from "@/components/user-avatar";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
-export default function SearchWidget() {
+interface props {
+  searchLocationList: Array<"all" | "projects" | "tasks" | "clients" | "users">;
+}
+
+export default function SearchWidget({ searchLocationList }: props) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [searchLocation, setSearchLocation] = useState<
     "all" | "projects" | "tasks" | "clients" | "users"
-  >("all");
+  >(searchLocationList[0]);
   const [triggerSearch, { data, isFetching, error }] = useLazySearcV2Query();
 
   const handleSearch = () => {
@@ -100,25 +104,23 @@ export default function SearchWidget() {
             </div>
 
             <div className="flex space-x-2 mt-3 mb-4">
-              {(["all", "projects", "tasks", "clients", "users"] as const).map(
-                (loc) => (
-                  <button
-                    key={loc}
-                    className={`text-xs px-2 py-1 rounded-md ${
-                      searchLocation === loc
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                    onClick={() => setSearchLocation(loc)}
-                  >
-                    {loc === "all" && "Все"}
-                    {loc === "projects" && "Проекты"}
-                    {loc === "tasks" && "Задачи"}
-                    {loc === "clients" && "Клиенты"}
-                    {loc === "users" && "Пользователи"}
-                  </button>
-                )
-              )}
+              {(searchLocationList || []).map((loc) => (
+                <button
+                  key={loc}
+                  className={`text-xs px-2 py-1 rounded-md ${
+                    searchLocation === loc
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                  onClick={() => setSearchLocation(loc)}
+                >
+                  {loc === "all" && "Все"}
+                  {loc === "projects" && "Проекты"}
+                  {loc === "tasks" && "Задачи"}
+                  {loc === "clients" && "Клиенты"}
+                  {loc === "users" && "Пользователи"}
+                </button>
+              ))}
             </div>
 
             <div className="mt-4 space-y-4">
@@ -152,8 +154,9 @@ export default function SearchWidget() {
                           >
                             <p className="font-medium">{project.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {project.client.name} • {project.currency.symbol}
-                              {project.rate} • {formatDate(project.created_at)}
+                              {project?.client?.name} •{" "}
+                              {project.currency.symbol}
+                              {project?.rate} • {formatDate(project.created_at)}
                             </p>
                           </div>
                         ))}

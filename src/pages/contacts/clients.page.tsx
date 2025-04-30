@@ -16,10 +16,9 @@ import {
 import ClientTableRow from "@/features/clients/client-table-row";
 import CreateClientForm from "@/features/clients/create-clients.form";
 import { useGetClientsQuery } from "@/shared/api/client.service";
-import React, { useState } from "react";
+import { useState } from "react";
 
-
-const ClientsPage: React.FC = () => {
+function ClientsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const { data: clients } = useGetClientsQuery({ page: currentPage });
@@ -104,6 +103,6 @@ const ClientsPage: React.FC = () => {
       </div>
     </>
   );
-};
+}
 
 export default ClientsPage;
