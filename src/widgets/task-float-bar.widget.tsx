@@ -8,7 +8,7 @@ import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import { useNavigate } from "react-router-dom";
-import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import { CheckSquare } from "lucide-react";
 
 export default function TaskFloatBarWidget() {
@@ -60,7 +60,7 @@ export default function TaskFloatBarWidget() {
                   <Button
                     onClick={() =>
                       navigate(
-                        `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${latestTaskLog?.task?.project?.project_id}`
+                        `/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${latestTaskLog?.task?.project?.project_id}`
                       )
                     }
                   >

@@ -13,20 +13,17 @@ import {
 import { formatDate } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import {
-  Briefcase,
   CalendarDays,
   ChevronLeft,
-  ContactRound,
   HandCoins,
   Kanban,
   List,
   MoreVerticalIcon,
   PencilIcon,
-  ShieldUser,
   Table,
   TrashIcon,
   User,
-  View,
+  UserRoundPlus,
 } from "lucide-react";
 import {
   Dialog,
@@ -43,7 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditProjectForm from "@/features/project/EditProjectForm";
-import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
 import { Separator } from "@/components/ui/separator";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
@@ -53,7 +50,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -75,7 +71,6 @@ const ProjectDetailPage: React.FC = () => {
     isLoading,
   } = useGetProjectByIdQuery({ id: id! });
 
-
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки проекта</div>;
 
@@ -84,7 +79,6 @@ const ProjectDetailPage: React.FC = () => {
       <Dialog
         open={dialogIsOpen === "edit"}
         onOpenChange={(data) => setDialogIsOpen(data ? "edit" : null)}
-        
       >
         <DialogContent>
           <DialogHeader>
@@ -170,6 +164,11 @@ const ProjectDetailPage: React.FC = () => {
                               <span>Редактировать</span>
                             </DropdownMenuItem>
 
+                            <DropdownMenuItem onClick={() => {}}>
+                              <UserRoundPlus className="mr-2 size-4" />
+                              <span>Ппригласить</span>
+                            </DropdownMenuItem>
+
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
@@ -218,18 +217,6 @@ const ProjectDetailPage: React.FC = () => {
                                     el.user?.subscriptions[0]?.planId || ""
                                   }
                                 />
-                                {el.role === ProjectRole.OWNER && (
-                                  <ShieldUser className="size-4 absolute -bottom-1 -right-1 bg-gray-600 rounded-full" />
-                                )}
-                                {el.role === ProjectRole.MANAGER && (
-                                  <Briefcase className="size-4 absolute -bottom-1 -right-1 bg-purple-600 rounded-full" />
-                                )}
-                                {el.role === ProjectRole.EXECUTOR && (
-                                  <ContactRound className="size-4 absolute -bottom-1 -right-1 bg-sky-600 rounded-full" />
-                                )}
-                                {el.role === ProjectRole.GUEST && (
-                                  <View className="size-4 absolute -bottom-1 -right-1 bg-orange-600 rounded-full" />
-                                )}
                               </div>
                             </HoverCardTrigger>
                             <HoverCardContent className="w-fit">
@@ -273,11 +260,11 @@ const ProjectDetailPage: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-4">
-                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${id}`}>
+                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${id}`}>
                   <Button
                     size={"sm"}
                     variant={
-                      currentPageView === VIEW_ROUTES.TABLE
+                      currentPageView === TASKS_VIEW.TABLE
                         ? "outline"
                         : "ghost"
                     }
@@ -286,22 +273,22 @@ const ProjectDetailPage: React.FC = () => {
                     <span>Таблица</span>
                   </Button>
                 </Link>
-                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.LIST}/${id}`}>
+                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.LIST}/${id}`}>
                   <Button
                     size={"sm"}
                     variant={
-                      currentPageView === VIEW_ROUTES.LIST ? "outline" : "ghost"
+                      currentPageView === TASKS_VIEW.LIST ? "outline" : "ghost"
                     }
                   >
                     <List />
                     <span>Список</span>
                   </Button>
                 </Link>
-                <Link to={`/${ROUTES.PROJECTS}/${VIEW_ROUTES.BOARD}/${id}`}>
+                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.BOARD}/${id}`}>
                   <Button
                     size={"sm"}
                     variant={
-                      currentPageView === VIEW_ROUTES.BOARD
+                      currentPageView === TASKS_VIEW.BOARD
                         ? "outline"
                         : "ghost"
                     }

@@ -5,6 +5,7 @@ export enum ROUTES {
   REGISTER = "sign-up",
   PROJECTS = "projects",
   CLIENTS = "clients",
+  CONTACTS = "contacts",
   NOTES = "notes",
   TASKS = "tasks",
   USER = "users",
@@ -14,9 +15,13 @@ export enum ROUTES {
   NO_ACCESS = "no-access",
 }
 
-
-export enum VIEW_ROUTES {
+export enum TASKS_VIEW {
   TABLE = "t",
   LIST = "l",
   BOARD = "b",
+}
+
+export enum CONTACTS_VIEW {
+  FRIENDS = "f",
+  CLIENTS = "c",
 }

@@ -4,10 +4,9 @@ import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import NoAccessPage from "@/pages/no-access.page";
-import { ROUTES, VIEW_ROUTES } from "./routes.enum";
+import { CONTACTS_VIEW, ROUTES, TASKS_VIEW } from "./routes.enum";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import {
-  ClientsPage,
   HomePage,
   LoginPage,
   NotesDetailPage,
@@ -24,6 +23,8 @@ import {
 import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
 import { TasksListListPage } from "@/pages/tasks/tasks-list-list.page";
 import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
+import ContactsPage from "@/pages/contacts/contacts.page";
+import ClientsPage from "@/pages/contacts/clients.page";
 
 const router = createBrowserRouter([
   {
@@ -95,6 +96,22 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: ROUTES.CONTACTS,
+        element: <ContactsPage />,
+        children: [
+          {
+            // clients
+            path: CONTACTS_VIEW.CLIENTS + "/:id",
+            element: <ClientsPage />,
+          },
+          {
+            // friends
+            path: CONTACTS_VIEW.FRIENDS + "/:id",
+            element: <ClientsPage />,
+          },
+        ],
+      },
+      {
         path: ROUTES.PROJECTS,
         element: (
           <PrivateRoute
@@ -110,17 +127,17 @@ const router = createBrowserRouter([
         children: [
           {
             // table
-            path: VIEW_ROUTES.TABLE + "/:id",
+            path: TASKS_VIEW.TABLE + "/:id",
             element: <TasksListTablePage />,
           },
           {
             // list
-            path: VIEW_ROUTES.LIST + "/:id",
+            path: TASKS_VIEW.LIST + "/:id",
             element: <TasksListListPage />,
           },
           {
             // board
-            path: VIEW_ROUTES.BOARD + "/:id",
+            path: TASKS_VIEW.BOARD + "/:id",
             element: <TasksListBoardPage />,
           },
         ],
@@ -150,20 +167,6 @@ const router = createBrowserRouter([
             ]}
           >
             <NotesDetailPage />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: ROUTES.CLIENTS,
-        element: (
-          <PrivateRoute
-            roles={[
-              SUBSCRIPTION.BASIC,
-              SUBSCRIPTION.FREE,
-              SUBSCRIPTION.PREMIUM,
-            ]}
-          >
-            <ClientsPage />
           </PrivateRoute>
         ),
       },

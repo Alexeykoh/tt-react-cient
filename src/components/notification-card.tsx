@@ -7,6 +7,8 @@ import { Badge } from "./ui/badge";
 import { NotificationType } from "@/shared/enums/notification-type.enum";
 import { JSX, useState } from "react";
 import { Button } from "./ui/button";
+import { useAcceptFriendshipMutation } from "@/shared/api/friendship.service";
+import { Friendship } from "@/shared/interfaces/friends.interface";
 
 interface NotificationCardProps {
   notification: INotification;
@@ -19,6 +21,10 @@ interface NotificationCardActionsProps {
 export function NotificationCard({ notification }: NotificationCardProps) {
   const [expand, setExpand] = useState<boolean>(false);
   const [readNotifications] = useReadNotificationsMutation();
+
+  // actions
+  const [acceptFriendship] = useAcceptFriendshipMutation();
+
   function readNotificationHandler(notificationId: string) {
     if (notification.isRead) return;
     readNotifications(notificationId);
@@ -36,7 +42,18 @@ export function NotificationCard({ notification }: NotificationCardProps) {
         return {
           icon: Bell,
           label: "Приглашение в друзья",
-          actionButton: <Button>Принять</Button>,
+          actionButton: (
+            <Button
+              onClick={() => {
+                const friendship = JSON.parse(
+                  notification.data || ""
+                ) as Friendship
+                acceptFriendship(friendship.friendship_id);
+              }}
+            >
+              Принять
+            </Button>
+          ),
         };
 
       default:

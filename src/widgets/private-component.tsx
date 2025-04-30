@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,10 +25,15 @@ export default function PrivateComponent({
   children,
   ...props
 }: Props) {
-  const { access } = useSubscription(subscriptions);
+  const { access, subscription } = useSubscription(subscriptions);
   const [dialog, setDialog] = useState<boolean>(false);
 
   function accessHandler() {
+    console.log("{ access, subscription }", {
+      access,
+      subscription,
+      subscriptions,
+    });
     if (!access) {
       setDialog((prev) => !prev);
     }
@@ -55,19 +59,20 @@ export default function PrivateComponent({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Подписка</DialogTitle>
-            <DialogDescription>
-              <div className="flex flex-col gap-2">
-                <p>{`Эта функция доступна тольк опльзователям с подсписками: `}</p>
-                <div className="pt-3 uppercase">
-                  {Object.values(subscriptions).map((el) => (
-                    <Badge className="mx-1">{el}</Badge>
-                  ))}
-                </div>
-                <Link className="mt-4 self-center" to={"/" + ROUTES.PLANS}>
-                  <Button>Обновить план</Button>
-                </Link>
+
+            <div className="flex flex-col gap-2">
+              <p>{`Эта функция доступна тольк опльзователям с подсписками: `}</p>
+              <div className="pt-3 uppercase">
+                {Object.values(subscriptions).map((el) => (
+                  <Badge key={el} className="mx-1">
+                    {el}
+                  </Badge>
+                ))}
               </div>
-            </DialogDescription>
+              <Link className="mt-4 self-center" to={"/" + ROUTES.PLANS}>
+                <Button>Обновить план</Button>
+              </Link>
+            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>

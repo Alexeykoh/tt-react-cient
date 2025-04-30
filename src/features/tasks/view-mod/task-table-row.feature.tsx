@@ -129,7 +129,7 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
       </TableCell>
       <TableCell className="w-[1/6]">
         <Select
-          defaultValue={task.taskStatus.taskStatusColumn.id}
+          defaultValue={task?.taskStatus?.taskStatusColumn?.id}
           onValueChange={(value) => {
             handleUpdateStatus({
               task_id: task.task_id,
@@ -139,7 +139,7 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
         >
           <SelectTrigger
             className={`w-[180px]`}
-            style={{ borderColor: task.taskStatus.taskStatusColumn.color }}
+            style={{ borderColor: task?.taskStatus?.taskStatusColumn?.color }}
           >
             <SelectValue placeholder="Выберите статус" />
           </SelectTrigger>

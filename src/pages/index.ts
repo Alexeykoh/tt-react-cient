@@ -5,7 +5,7 @@ export { default as ProjectDetailPage } from "./project/project-detail.page";
 export { default as NotesDetailPage } from "./notes/notes-detail.page";
 export { default as TaskDetailPage } from "./tasks/task-detail.page";
 export { default as ProjectsPage } from "./project/projects.page";
-export { default as ClientsPage } from "./clients/clients.page";
+export { default as ContactsPage } from "./contacts/contacts.page";
 export { default as NotesPage } from "./notes/notes.page";
 export { default as UserPage } from "./user/user.page";
 export { default as SettingsPage } from "./settings/settings.page";

@@ -20,7 +20,10 @@ import { PanelTop } from "lucide-react";
 import React, { useState } from "react";
 import { formatDate } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";
-import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
+import UserAvatar from "@/components/user-avatar";
+import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -54,25 +57,28 @@ const ProjectsPage: React.FC = () => {
             <TableHeader>
               <TableHead></TableHead>
               <TableRow>
-                <TableHead className="w-[30%]">Наименование</TableHead>
-                <TableHead className="w-[20%]">Клиент</TableHead>
-                <TableHead className="w-[20%]">Ставка / ч.</TableHead>
-                <TableHead className="w-[15%]">Дата</TableHead>
-                <TableHead className="w-[15%]"></TableHead>
+                <TableHead className="w-1/6">Наименование</TableHead>
+                <TableHead className="w-1/6">Владелец</TableHead>
+                <TableHead className="w-1/6">Клиент</TableHead>
+                <TableHead className="w-1/6">Ставка / ч.</TableHead>
+                <TableHead className="w-1/6">Дата</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="flex-1">
               {data?.data &&
                 data?.data.map((el) => {
+                  const owner = el?.members?.find(
+                    (el) => el.role === ProjectRole.OWNER
+                  )?.user;
                   return (
                     <TableRow key={el.project_id}>
-                      <TableCell className="font-medium w-[30%] flex items-center">
+                      <TableCell className="font-medium w-1/6 flex items-center">
                         <Button
                           variant="default"
                           className="mr-2"
                           onClick={() =>
                             navigate(
-                              `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el.project_id}`
+                              `/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${el.project_id}`
                             )
                           }
                         >
@@ -81,11 +87,23 @@ const ProjectsPage: React.FC = () => {
                         </Button>
                         {el?.name}
                       </TableCell>
-                      <TableCell className="w-[20%]">
+                      <TableCell className="w-1/6">
+                        <div className="flex items-center gap-2">
+                          <UserAvatar
+                            name={owner?.name || ""}
+                            planId={
+                              owner?.subscriptions[0].planId ||
+                              SUBSCRIPTION.FREE
+                            }
+                          />
+                          {owner?.name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="w-1/6">
                         {el?.client?.name}
                       </TableCell>
-                      <TableCell className="w-[20%]">{`${el?.currency?.symbol}${el?.rate}`}</TableCell>
-                      <TableCell className="w-[15%]">
+                      <TableCell className="w-1/6">{`${el?.currency?.symbol}${el?.rate}`}</TableCell>
+                      <TableCell className="w-1/6">
                         {formatDate(el?.created_at)}
                       </TableCell>
                     </TableRow>

@@ -27,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import UpdateTaskForm from "@/features/tasks/forms/update-task.form";
-import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,7 +106,7 @@ export default function TaskDetailPage() {
                 <Button
                   variant="destructive"
                   onClick={async () => {
-                    navigate(`/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}`);
+                    navigate(`/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}`);
                     await deleteTask(id || "");
                     setTaskToDelete(null);
                   }}

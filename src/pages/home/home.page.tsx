@@ -1,4 +1,4 @@
-import { ROUTES, VIEW_ROUTES } from "@/app/router/routes.enum";
+import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import ClientItem from "@/components/client-item";
 import RateItem from "@/components/rate-item";
 import TaskItem from "@/components/task-item";
@@ -175,7 +175,7 @@ const HomePage: React.FC = () => {
                     variant={"default"}
                     onClick={() =>
                       navigate(
-                        `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el?.project?.project_id}`
+                        `/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${el?.project?.project_id}`
                       )
                     }
                   >
@@ -222,7 +222,7 @@ const HomePage: React.FC = () => {
                   <Button
                     onClick={() =>
                       navigate(
-                        `/${ROUTES.PROJECTS}/${VIEW_ROUTES.TABLE}/${el?.project_id}`
+                        `/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${el?.project_id}`
                       )
                     }
                   >

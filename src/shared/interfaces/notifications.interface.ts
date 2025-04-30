@@ -6,7 +6,7 @@ export const notificationsSchema = z.object({
   message: z.string(),
   isRead: z.boolean(),
   type: z.nativeEnum(NotificationType).optional(),
-  data: z.unknown().nullable().optional(),
+  data: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });

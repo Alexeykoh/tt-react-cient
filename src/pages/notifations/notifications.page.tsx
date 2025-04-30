@@ -28,12 +28,12 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex flex-wrap justify-between gap-2">
+    <div className="w-full h-full flex flex-col ">
+      <div className="flex flex-wrap justify-between gap-2 p-4">
         <h1 className="text-2xl font-bold mb-4">Уведомления</h1>
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col p-4 overflow-scroll">
         <Card className={cn("w-full")}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>

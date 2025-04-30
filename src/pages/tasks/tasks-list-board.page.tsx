@@ -80,7 +80,7 @@ export function TasksListBoardPage() {
           draft.forEach((column) => {
             column.tasks = tasks
               .filter(
-                (task) => task.taskStatus.taskStatusColumn.id === column.id
+                (task) => task?.taskStatus?.taskStatusColumn?.id === column.id
               )
               .sort((a, b) => a.order - b.order);
           });
