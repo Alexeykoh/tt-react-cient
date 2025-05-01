@@ -35,9 +35,10 @@ interface NavUserProps {
   name: string;
   email: string;
   avatar: string;
+  user_id: string;
 }
 
-export function NavUser({ name, email, avatar }: NavUserProps) {
+export function NavUser({ name, email, avatar, user_id }: NavUserProps) {
   const { isMobile } = useSidebar();
   const { isLoading, error } = useGetUserQuery();
   const { data: subscriptionData } = useGetSubscriptionsQuery();
@@ -130,7 +131,7 @@ export function NavUser({ name, email, avatar }: NavUserProps) {
                   Аккаунт
                 </DropdownMenuItem>
               </Link>
-              <Link to={ROUTES.SETTINGS}>
+              <Link to={`/${ROUTES.USER}/${user_id}`}>
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
                   Настройки

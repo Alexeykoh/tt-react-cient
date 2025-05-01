@@ -40,7 +40,7 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
         <div className="text-sm text-gray-500 flex items-center gap-3">
           <Badge
             style={{ backgroundColor: column.color || "" }}
-            className="font-medium"
+            className="font-medium text-gray-800"
           >
             {column.name}
           </Badge>

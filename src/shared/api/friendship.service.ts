@@ -1,23 +1,32 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import {
-  Friendship,
-  Friend,
-  FriendshipPending,
-} from "../interfaces/friends.interface";
+import { Friendship, FriendshipPending } from "../interfaces/friends.interface";
+import { PaginatedResponse } from "../interfaces/api.interface";
 
 export const friendshipService = createApi({
   reducerPath: "friendship-service",
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ["Friend-service", "Friend-me-service", "Friend-pending-service"],
+  tagTypes: [
+    "Friend-service",
+    "Friend-me-service",
+    "Friend-pending-service",
+    "Friend-id",
+  ],
   endpoints: (builder) => ({
-    getFriends: builder.query<Array<Friend>, void>({
-      query: () => ({
-        url: "friendship/friends",
+    getFriends: builder.query<PaginatedResponse<Friendship>, { page: number }>({
+      query: ({ page }) => ({
+        url: `friendship/friends?page=${page || 1}`,
         method: "GET",
       }),
       providesTags: ["Friend-service"],
-      transformResponse: (response: { data: Array<Friend> }) => response.data,
+    }),
+    getFriendById: builder.query<Friendship, string>({
+      query: (user_id) => ({
+        url: "friendship/" + user_id,
+        method: "GET",
+      }),
+      providesTags: ["Friend-id"],
+      transformResponse: (response: { data: Friendship }) => response.data,
     }),
     getFriendshipMe: builder.query<Array<Friendship>, void>({
       query: () => ({
@@ -42,7 +51,7 @@ export const friendshipService = createApi({
         url: "friendship/request/" + id,
         method: "POST",
       }),
-      invalidatesTags: ["Friend-service"],
+      invalidatesTags: ["Friend-service", "Friend-id"],
       transformResponse: (response: { data: FriendshipPending }) =>
         response.data,
     }),
@@ -64,7 +73,7 @@ export const friendshipService = createApi({
       transformResponse: (response: { data: FriendshipPending }) =>
         response.data,
     }),
-    cancelFriendship: builder.mutation<void, void>({
+    cancelFriendship: builder.mutation<void, string>({
       query: (id) => ({
         url: "friendship/decline/" + id,
         method: "PUT",
@@ -78,7 +87,9 @@ export const {
   useGetFriendshipPendingQuery,
   useGetFriendshipMeQuery,
   useGetFriendsQuery,
+  useGetFriendByIdQuery,
   useAcceptFriendshipMutation,
   useCancelFriendshipMutation,
   useDeclineFriendshipMutation,
+  useRequestFriendshipMutation,
 } = friendshipService;

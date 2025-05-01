@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useLazySearcV2Query } from "@/shared/api/search.service";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/dateUtils";
@@ -63,26 +63,27 @@ export default function SearchWidget({ searchLocationList }: props) {
       data.users.length > 0);
 
   return (
-    <Drawer direction="top">
-      <DrawerTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant={"outline"} size={"icon"}>
           <Search className="h-4 w-4" />
         </Button>
-      </DrawerTrigger>
-      <DrawerContent
+      </SheetTrigger>
+      <SheetContent
+        side="right"
         className={cn(
-          "mx-auto max-w-md rounded-t-lg",
+          "mx-auto max-w-md rounded-b-lg",
           "bg-background/90 backdrop-blur-lg",
-          "fixed inset-x-0 bottom-0 top-auto h-[80vh]"
+          // "fixed inset-x-0 top-0 h-[80vh]"
         )}
       >
         <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader className="text-center">
-            <DrawerTitle>Поиск</DrawerTitle>
-            <DrawerDescription>
+          <SheetHeader className="text-center">
+            <SheetTitle>Поиск</SheetTitle>
+            <SheetDescription>
               Введите запрос для поиска по системе
-            </DrawerDescription>
-          </DrawerHeader>
+            </SheetDescription>
+          </SheetHeader>
           <div className="p-4 pb-0">
             <div className="relative">
               <input
@@ -224,7 +225,7 @@ export default function SearchWidget({ searchLocationList }: props) {
                             <UserAvatar
                               name={user.name}
                               planId={SUBSCRIPTION.FREE}
-                              size="large"
+                              size="small"
                             />
                             <div>
                               <p className="font-medium">{user.name}</p>
@@ -241,13 +242,13 @@ export default function SearchWidget({ searchLocationList }: props) {
               )}
             </div>
           </div>
-          <DrawerFooter className="pt-2">
-            <DrawerClose asChild>
+          <SheetFooter className="pt-2">
+            <SheetClose asChild>
               <Button variant="outline">Закрыть</Button>
-            </DrawerClose>
-          </DrawerFooter>
+            </SheetClose>
+          </SheetFooter>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </SheetContent>
+    </Sheet>
   );
 }

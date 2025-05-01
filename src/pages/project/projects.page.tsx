@@ -74,7 +74,7 @@ const ProjectsPage: React.FC = () => {
                     <TableRow key={el.project_id}>
                       <TableCell className="font-medium w-1/6 flex items-center">
                         <Button
-                          variant="default"
+                          variant="ghost"
                           className="mr-2"
                           onClick={() =>
                             navigate(
@@ -90,6 +90,7 @@ const ProjectsPage: React.FC = () => {
                       <TableCell className="w-1/6">
                         <div className="flex items-center gap-2">
                           <UserAvatar
+                            size="xs"
                             name={owner?.name || ""}
                             planId={
                               owner?.subscriptions[0].planId ||

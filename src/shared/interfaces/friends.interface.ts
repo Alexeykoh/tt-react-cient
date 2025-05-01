@@ -17,6 +17,11 @@ export const FriendshipSchema = z.object({
     name: z.string(),
     email: z.string(),
   }),
+  sender: z.object({
+    user_id: z.string(),
+    name: z.string(),
+    email: z.string(),
+  }),
 });
 
 export const FriendshipPendingSchema = z.object({

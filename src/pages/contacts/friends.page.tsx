@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,17 +8,19 @@ import {
 } from "@/components/ui/table";
 import FriendTableRow from "@/features/contacts/friend-table-row";
 import { useGetFriendsQuery } from "@/shared/api/friendship.service";
-import SearchInputWidget from "@/widgets/search-input.widget";
+import SearchWidget from "@/widgets/search.widget";
+import { useState } from "react";
 
 function FriendsPage() {
-  // const [currentPage, setCurrentPage] = useState(1);
-  const { data: friends } = useGetFriendsQuery();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: friends } = useGetFriendsQuery({ page: currentPage });
+  console.log("friends", friends);
 
   return (
     <div className="w-full min-h-screen flex flex-col p-4">
-      <div className="flex gap-2 items-center">
-        <h1 className="text-xl font-bold ">Клиенты</h1>
-        <SearchInputWidget searchLocationList={["users", "clients"]} />
+      <div className="flex flex-wrap justify-between gap-2">
+        <h1 className="text-xl font-bold ">Друзья</h1>
+        <SearchWidget searchLocationList={["users"]} />
       </div>
 
       <div className="flex-1 flex flex-col overflow-auto">
@@ -32,9 +35,9 @@ function FriendsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {friends?.length ? (
-              friends?.map((friend) => (
-                <TableRow key={friend.user_id}>
+            {friends?.data?.length ? (
+              friends?.data?.map((friend) => (
+                <TableRow key={friend?.recipient?.name}>
                   <FriendTableRow {...friend} />
                 </TableRow>
               ))
@@ -50,6 +53,35 @@ function FriendsPage() {
             )}
           </TableBody>
         </Table>
+        {friends?.meta && (
+          <div className="flex items-center justify-between px-4 py-4 border-t">
+            <div className="text-sm text-muted-foreground">
+              Страница {friends.meta.page} из {friends.meta.totalPages}
+            </div>
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage <= 1}
+              >
+                Назад
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(prev + 1, friends.meta.totalPages)
+                  )
+                }
+                disabled={currentPage >= friends.meta.totalPages}
+              >
+                Вперед
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { formatDate } from "@/lib/dateUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from "@/components/user-avatar";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Props {
   searchLocationList: Array<"all" | "projects" | "tasks" | "clients" | "users">;
@@ -39,17 +39,17 @@ export default function SearchInputWidget({ searchLocationList }: Props) {
     navigate(`/${type}/${id}`);
   };
 
-  const hasResults =
-    data &&
-    (data.projects.length > 0 ||
+  const hasResults = data
+    ? data.projects.length > 0 ||
       data.tasks.length > 0 ||
       data.clients.length > 0 ||
-      data.users.length > 0);
+      data.users.length > 0
+    : false;
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center w-fullw flex-wrap">
       {/* Строка поиска */}
-      <div className="relative">
+      <div className="relative w-full">
         <input
           type="text"
           placeholder="Поиск..."
@@ -97,9 +97,9 @@ export default function SearchInputWidget({ searchLocationList }: Props) {
 
       {/* Результаты поиска */}
       {hasResults && (
-        <Card
+        <div
           ref={resultsRef}
-          className="absolute top-10 left-0 z-50 mt-1 w-full max-h-[60vh] overflow-y-auto rounded-md"
+          className="absolute top-10 left-0 z-50 w-96 max-h-[60vh] overflow-y-auto rounded-md"
         >
           {isFetching ? (
             <div className="space-y-3 p-4">
@@ -206,42 +206,48 @@ export default function SearchInputWidget({ searchLocationList }: Props) {
                 )}
 
                 {Array.isArray(data?.users) && data.users.length > 0 && (
-                  <section>
-                    <h3 className="text-sm font-medium mb-2">Пользователи</h3>
-                    <div className="space-y-2">
-                      {data?.users?.map((user) => (
-                        <div
-                          key={user.user_id}
-                          className="flex gap-2 items-center p-3 rounded-md border hover:bg-accent cursor-pointer"
-                          onClick={() => navigateToItem("users", user.user_id)}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              navigateToItem("users", user.user_id);
+                  <Card className="p-2">
+                    <CardHeader>
+                      <CardTitle>Пользователи</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-2">
+                      <div className="space-y-2">
+                        {data?.users?.map((user) => (
+                          <div
+                            key={user.user_id}
+                            className="flex gap-2 items-center p-3 rounded-md border hover:bg-accent cursor-pointer"
+                            onClick={() =>
+                              navigateToItem("users", user.user_id)
                             }
-                          }}
-                        >
-                          <UserAvatar
-                            name={user.name}
-                            planId={SUBSCRIPTION.FREE}
-                            size="large"
-                          />
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {user.email}
-                            </p>
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                navigateToItem("users", user.user_id);
+                              }
+                            }}
+                          >
+                            <UserAvatar
+                              name={user.name}
+                              planId={SUBSCRIPTION.FREE}
+                              size="small"
+                            />
+                            <div>
+                              <p className="font-medium">{user.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {user.email}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
               </div>
             )
           )}
-        </Card>
+        </div>
       )}
     </div>
   );

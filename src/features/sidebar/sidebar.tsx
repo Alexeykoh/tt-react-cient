@@ -92,6 +92,7 @@ export default function SidebarFeature() {
           name={user?.name || "user"}
           email={user?.email || "email"}
           avatar="/avatars/shadcn.jpg"
+          user_id={user?.user_id || "user_id"}
         />
         <div className="px-2 py-2 text-xs text-muted-foreground">
           © 2025 TimeTracker B415

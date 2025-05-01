@@ -138,17 +138,24 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
           }}
         >
           <SelectTrigger
-            className={`w-[180px]`}
+            className={`w-fit space-x-2 border-0 ring-0 focus:ring-0 focus:ring-offset-0`}
             style={{ borderColor: task?.taskStatus?.taskStatusColumn?.color }}
           >
             <SelectValue placeholder="Выберите статус" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper">
             <SelectGroup>
               {/* <SelectLabel>Fruits</SelectLabel> */}
               {statusColumns.map((column) => (
-                <SelectItem key={column.id} value={column.id}>
-                  {column.name}
+                <SelectItem key={column.id} value={column.id} className="">
+                  <Badge
+                    style={{
+                      backgroundColor: column.color || "",
+                    }}
+                    className="font-medium text-gray-800"
+                  >
+                    {column.name}
+                  </Badge>
                 </SelectItem>
               ))}
             </SelectGroup>

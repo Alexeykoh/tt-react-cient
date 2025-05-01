@@ -27,7 +27,7 @@ function ClientsPage() {
     <>
       <div className="w-full h-full flex flex-col p-4">
         <div className="flex flex-wrap justify-between gap-2">
-          <h1 className="text-2xl font-bold mb-4">Клиенты</h1>
+          <h1 className="text-xl font-bold mb-4">Клиенты</h1>
           <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
             <DialogTrigger asChild>
               <Button>Добавить клиента</Button>

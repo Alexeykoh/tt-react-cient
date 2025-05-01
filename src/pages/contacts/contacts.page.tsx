@@ -1,5 +1,6 @@
 import { CONTACTS_VIEW, ROUTES } from "@/app/router/routes.enum";
 import { Button } from "@/components/ui/button";
+import { ContactRound, Handshake } from "lucide-react";
 import { useMemo } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
@@ -27,6 +28,7 @@ function ContactsPage() {
                     : "ghost"
                 }
               >
+                <ContactRound />
                 <span>Клиенты</span>
               </Button>
             </Link>
@@ -39,6 +41,7 @@ function ContactsPage() {
                     : "ghost"
                 }
               >
+                <Handshake />
                 <span>Друзья</span>
               </Button>
             </Link>
