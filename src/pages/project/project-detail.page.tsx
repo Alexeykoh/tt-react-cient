@@ -50,20 +50,26 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { useGetFriendshipMeQuery } from "@/shared/api/friendship.service";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.service";
+import { ProjectRole } from "@/shared/enums/project-role.enum";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id: string }>();
 
+  const { data: friendsMe } = useGetFriendshipMeQuery();
+  const [inviteToProject] = useCreateProjectSharedMutation();
   const currentPageView = useMemo(
     () => extractLetterFromPath(location.pathname),
     [location.pathname]
   );
 
-  const { id } = useParams<{ id: string }>();
   const [deleteProject] = useDeleteProjectMutation();
   const [dialogIsOpen, setDialogIsOpen] = useState<
-    "create" | "edit" | "delete" | null
+    "create" | "edit" | "delete" | "invite" | null
   >(null);
   const {
     data: project,
@@ -125,6 +131,41 @@ const ProjectDetailPage: React.FC = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog
+        open={dialogIsOpen === "invite"}
+        onOpenChange={(data) => setDialogIsOpen(data ? "invite" : null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Пригласить пользователя</DialogTitle>
+          </DialogHeader>
+          <p>Выберите из списка друзей</p>
+          <div className="flex space-x-2 mt-4">
+            {friendsMe?.map((friend) => (
+              <Button
+                key={friend.friend.user_id}
+                variant="outline"
+                onClick={() => {
+                  setDialogIsOpen(null);
+                  inviteToProject({
+                    project_id: id || "",
+                    user_id: friend.friend.user_id,
+                    role: ProjectRole.EXECUTOR,
+                  });
+                }}
+              >
+                <UserAvatar
+                  size="xs"
+                  name={friend?.friend?.name}
+                  planId={SUBSCRIPTION.FREE}
+                />
+                <p>{friend?.friend?.name}</p>
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="w-full h-full flex flex-col">
         <div className="w-full">
           <div className="flex justify-between w-full">
@@ -164,9 +205,13 @@ const ProjectDetailPage: React.FC = () => {
                               <span>Редактировать</span>
                             </DropdownMenuItem>
 
-                            <DropdownMenuItem onClick={() => {}}>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setDialogIsOpen("invite");
+                              }}
+                            >
                               <UserRoundPlus className="mr-2 size-4" />
-                              <span>Ппригласить</span>
+                              <span>Пригласить</span>
                             </DropdownMenuItem>
 
                             <DropdownMenuSeparator />
@@ -203,7 +248,7 @@ const ProjectDetailPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-row">
+                  <div className="flex flex-row gap-2">
                     {project?.members?.map((el) => {
                       return (
                         <div className="relative">
@@ -264,9 +309,7 @@ const ProjectDetailPage: React.FC = () => {
                   <Button
                     size={"sm"}
                     variant={
-                      currentPageView === TASKS_VIEW.TABLE
-                        ? "outline"
-                        : "ghost"
+                      currentPageView === TASKS_VIEW.TABLE ? "outline" : "ghost"
                     }
                   >
                     <Table />
@@ -288,9 +331,7 @@ const ProjectDetailPage: React.FC = () => {
                   <Button
                     size={"sm"}
                     variant={
-                      currentPageView === TASKS_VIEW.BOARD
-                        ? "outline"
-                        : "ghost"
+                      currentPageView === TASKS_VIEW.BOARD ? "outline" : "ghost"
                     }
                   >
                     <Kanban />

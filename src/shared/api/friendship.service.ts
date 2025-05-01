@@ -1,7 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { Friendship, FriendshipPending } from "../interfaces/friends.interface";
+import { Friendship, FriendshipMe, FriendshipPending } from "../interfaces/friends.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
+import { FriendshipStatus } from "../enums/friendship.enum";
 
 export const friendshipService = createApi({
   reducerPath: "friendship-service",
@@ -13,9 +14,12 @@ export const friendshipService = createApi({
     "Friend-id",
   ],
   endpoints: (builder) => ({
-    getFriends: builder.query<PaginatedResponse<Friendship>, { page: number }>({
-      query: ({ page }) => ({
-        url: `friendship/friends?page=${page || 1}`,
+    getFriends: builder.query<
+      PaginatedResponse<Friendship>,
+      { page: number; status?: FriendshipStatus }
+    >({
+      query: ({ page, status }) => ({
+        url: `friendship/friends?page=${page || 1}${status ? "&status=" + status : ""}`,
         method: "GET",
       }),
       providesTags: ["Friend-service"],
@@ -28,13 +32,13 @@ export const friendshipService = createApi({
       providesTags: ["Friend-id"],
       transformResponse: (response: { data: Friendship }) => response.data,
     }),
-    getFriendshipMe: builder.query<Array<Friendship>, void>({
+    getFriendshipMe: builder.query<Array<FriendshipMe>, void>({
       query: () => ({
         url: "friendship/me",
         method: "GET",
       }),
       providesTags: ["Friend-me-service"],
-      transformResponse: (response: { data: Array<Friendship> }) =>
+      transformResponse: (response: { data: Array<FriendshipMe> }) =>
         response.data,
     }),
     getFriendshipPending: builder.query<Array<FriendshipPending>, void>({
@@ -75,8 +79,8 @@ export const friendshipService = createApi({
     }),
     cancelFriendship: builder.mutation<void, string>({
       query: (id) => ({
-        url: "friendship/decline/" + id,
-        method: "PUT",
+        url: "friendship/cancel/" + id,
+        method: "DELETE",
       }),
       invalidatesTags: ["Friend-service"],
     }),

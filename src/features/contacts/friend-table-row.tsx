@@ -11,8 +11,17 @@ import {
   useCancelFriendshipMutation,
 } from "@/shared/api/friendship.service";
 import { FriendshipStatus } from "@/shared/enums/friendship.enum";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/app/router/routes.enum";
+import { Badge } from "@/components/ui/badge";
 
-function FriendTableRow({ sender, status, friendship_id }: Friendship) {
+function FriendTableRow({
+  sender,
+  recipient,
+  status,
+  friendship_id,
+}: Friendship) {
+  const navigate = useNavigate();
   const { data: userData } = useGetUserQuery();
   const [accept, { isLoading: isLoadingAccept }] =
     useAcceptFriendshipMutation();
@@ -21,20 +30,59 @@ function FriendTableRow({ sender, status, friendship_id }: Friendship) {
   const [cancel, { isLoading: isLoadingCancel }] =
     useCancelFriendshipMutation();
 
+  function isSender() {
+    return userData?.user_id === sender.user_id;
+  }
+
+  function selectStatus(status: FriendshipStatus) {
+    switch (status) {
+      case FriendshipStatus.ACCEPTED:
+        return (
+          <Badge variant={"outline"} className="border-green-600">
+            Подтвержден
+          </Badge>
+        );
+      case FriendshipStatus.PENDING:
+        return (
+          <Badge variant={"outline"} className="border-yellow-600">
+            В ожидании
+          </Badge>
+        );
+      case FriendshipStatus.DECLINED:
+        return (
+          <Badge variant={"outline"} className="border-red-600">
+            Отклонен
+          </Badge>
+        );
+    }
+  }
+
   return (
     <>
-      <td className="px-4 py-2">
-        <div className="flex gap-2 items-center p-4">
+      <td className="">
+        <Button
+          variant={"outline"}
+          onClick={() =>
+            navigate(
+              `/${ROUTES.USER}/${isSender() ? recipient.user_id : sender.user_id}`
+            )
+          }
+          className="flex gap-2 items-center p-4 cursor-pointer"
+        >
           <UserAvatar
             size="xs"
-            name={sender?.name}
+            name={isSender() ? recipient.name : sender.name}
             planId={SUBSCRIPTION.FREE}
           />
-          <h2 className="text-sm font-bold">{userData?.name}</h2>
-        </div>
+          <h2 className="text-sm font-bold">
+            {isSender() ? recipient.name : sender.name}
+          </h2>
+        </Button>
       </td>
-      <td className="px-4 py-2">{sender.email || ""}</td>
-      <td className="px-4 py-2">{status ?? "-"}</td>
+      <td className="px-4 py-2">
+        {isSender() ? recipient.email : sender.email}
+      </td>
+      <td className="px-4 py-2">{selectStatus(status)}</td>
       <td className="px-4 py-2 text-right">
         {status === FriendshipStatus.ACCEPTED && (
           <>
@@ -53,18 +101,25 @@ function FriendTableRow({ sender, status, friendship_id }: Friendship) {
         )}
         {status === FriendshipStatus.PENDING && (
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                accept(friendship_id);
-              }}
-              isLoading={isLoadingAccept}
-              disabled={isLoadingAccept}
-            >
-              <UserRoundCheck className="size-4" />
-            </Button>
-            <Separator className="min-h-4 border-1" orientation="vertical" />
+            {!isSender() && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    accept(friendship_id);
+                  }}
+                  isLoading={isLoadingAccept}
+                  disabled={isLoadingAccept}
+                >
+                  <UserRoundCheck className="size-4" />
+                </Button>
+                <Separator
+                  className="min-h-4 border-1"
+                  orientation="vertical"
+                />
+              </>
+            )}
             <Button
               variant="ghost"
               size="icon"

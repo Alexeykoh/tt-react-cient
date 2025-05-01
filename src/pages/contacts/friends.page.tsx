@@ -13,7 +13,15 @@ import { useState } from "react";
 
 function FriendsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: friends } = useGetFriendsQuery({ page: currentPage });
+  const { data: friends } = useGetFriendsQuery(
+    { page: currentPage },
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+      pollingInterval: 5000,
+    }
+  );
   console.log("friends", friends);
 
   return (

@@ -70,6 +70,7 @@ const ProjectsPage: React.FC = () => {
                   const owner = el?.members?.find(
                     (el) => el.role === ProjectRole.OWNER
                   )?.user;
+                  console.log("owner", owner);
                   return (
                     <TableRow key={el.project_id}>
                       <TableCell className="font-medium w-1/6 flex items-center">

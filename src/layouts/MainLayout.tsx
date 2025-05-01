@@ -4,6 +4,7 @@ import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
 import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
 import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 import SidebarFeature from "@/features/sidebar/sidebar";
+import { useGetNotificationsQuery } from "@/shared/api/notification.service";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,6 +13,12 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { isLoading: currenciesLoading } = useGetCurrenciesQuery();
   const { isLoading: subscriptionLoading } = useGetSubscriptionsQuery();
+  useGetNotificationsQuery(undefined, {
+    pollingInterval: 10000,
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+    refetchOnFocus: true,
+  });
 
   return (
     <>
