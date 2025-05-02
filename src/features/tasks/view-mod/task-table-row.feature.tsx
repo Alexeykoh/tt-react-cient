@@ -44,13 +44,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import UpdateTaskForm from "../forms/update-task.form";
-import UserAvatar from "@/components/user-avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import TaskSharedUsers from "../shared-users/task-shared-users";
 
 interface Props {
   task: Task;
@@ -183,35 +177,7 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
         {task.created_at && <p>{new Date(task.created_at).toLocaleString()}</p>}
       </TableCell>
       <TableCell className="w-[1/6]">
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <div className="flex items-center gap-1">
-              {task.taskMembers.slice(0, 5).map((el) => (
-                <div className="flex items-center gap-2">
-                  <UserAvatar
-                    size="xs"
-                    name={el.user.name}
-                    planId={SUBSCRIPTION.FREE}
-                  />
-                </div>
-              ))}
-            </div>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-fit">
-            <ScrollArea className="h-32 w-full rounded-md">
-              {task.taskMembers.map((el) => (
-                <div className="flex items-center gap-2">
-                  <UserAvatar
-                    size="xs"
-                    name={el.user.name}
-                    planId={SUBSCRIPTION.FREE}
-                  />
-                  <p className="font-semibold text-sm">{el.user.name}</p>
-                </div>
-              ))}
-            </ScrollArea>
-          </HoverCardContent>
-        </HoverCard>
+        <TaskSharedUsers taskMembers={task.taskMembers} />
       </TableCell>
       <div className="flex justify-end pr-2">
         <DropdownMenu>

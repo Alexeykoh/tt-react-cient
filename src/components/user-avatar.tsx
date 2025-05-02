@@ -1,7 +1,13 @@
 import { Loader } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getAvatarUrl } from "@/lib/get-avatar-url";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Props {
   name: string;
@@ -24,13 +30,22 @@ export default function UserAvatar({ name, planId, size = "small" }: Props) {
   }
 
   return (
-    <Avatar
-      className={`${setSize(size)} rounded-full ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
-    >
-      <AvatarImage src={getAvatarUrl(name, planId)} alt={name} />
-      <AvatarFallback className="rounded-full">
-        <Loader className="animate-spin" />
-      </AvatarFallback>
-    </Avatar>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Avatar
+            className={`${setSize(size)} rounded-full ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
+          >
+            <AvatarImage src={getAvatarUrl(name, planId)} alt={name} />
+            <AvatarFallback className="rounded-full">
+              <Loader className="animate-spin" />
+            </AvatarFallback>
+          </Avatar>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{name}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

@@ -17,7 +17,6 @@ import {
   ChevronLeft,
   HandCoins,
   Kanban,
-  List,
   MoreVerticalIcon,
   PencilIcon,
   ShieldUser,
@@ -335,17 +334,7 @@ const ProjectDetailPage: React.FC = () => {
                     <span>Таблица</span>
                   </Button>
                 </Link>
-                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.LIST}/${id}`}>
-                  <Button
-                    size={"sm"}
-                    variant={
-                      currentPageView === TASKS_VIEW.LIST ? "outline" : "ghost"
-                    }
-                  >
-                    <List />
-                    <span>Список</span>
-                  </Button>
-                </Link>
+                {/*  */}
                 <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.BOARD}/${id}`}>
                   <Button
                     size={"sm"}

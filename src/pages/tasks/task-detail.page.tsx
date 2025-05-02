@@ -51,6 +51,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import TaskSharedUsers from "@/features/tasks/shared-users/task-shared-users";
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ export default function TaskDetailPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-4 flex-wrap text-gray-400 text-xs h-5">
+                  <div className="flex gap-4 flex-wrap text-gray-400 text-xs h-5 items-center">
                     <div className="flex items-center gap-2">
                       <HandCoins className="w-4 h-4" />
                       <p>
@@ -188,10 +189,19 @@ export default function TaskDetailPage() {
                       </p>
                     </div>
                     <Separator orientation="vertical" className="border-1" />
+
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4" />
                       <p>{formatDate(task?.created_at || "")}</p>
                     </div>
+
+                    <Separator orientation="vertical" className="border-1 " />
+                    <TaskSharedUsers
+                      taskMembers={task?.taskMembers || []}
+                      taskId={id || ""}
+                      // todo
+                      projectMembers={[]}
+                    />
                   </div>
                 </div>
               </div>

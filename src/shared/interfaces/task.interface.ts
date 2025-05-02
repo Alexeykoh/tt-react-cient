@@ -1,6 +1,6 @@
 import { Currency } from "./currency.interface";
 
-interface TaskMember {
+export interface TaskMember {
   member_id: string;
   user: {
     user_id: string;
