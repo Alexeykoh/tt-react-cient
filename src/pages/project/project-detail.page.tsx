@@ -20,6 +20,7 @@ import {
   List,
   MoreVerticalIcon,
   PencilIcon,
+  ShieldUser,
   Table,
   TrashIcon,
   User,
@@ -42,18 +43,16 @@ import {
 import EditProjectForm from "@/features/project/EditProjectForm";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
-import { Separator } from "@/components/ui/separator";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 import UserAvatar from "@/components/user-avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { useGetFriendshipMeQuery } from "@/shared/api/friendship.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.service";
 import { ProjectRole } from "@/shared/enums/project-role.enum";
+import InvitedUsers from "@/features/project/invited-users/invited-users";
+import { useGetUserQuery } from "@/shared/api/user.service";
+import { Badge } from "@/components/ui/badge";
+import RoleComponent from "@/widgets/role-component";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -61,6 +60,7 @@ const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   const { data: friendsMe } = useGetFriendshipMeQuery();
+  const { data: userMe } = useGetUserQuery();
   const [inviteToProject] = useCreateProjectSharedMutation();
   const currentPageView = useMemo(
     () => extractLetterFromPath(location.pathname),
@@ -204,15 +204,25 @@ const ProjectDetailPage: React.FC = () => {
                               <PencilIcon className="mr-2 size-4" />
                               <span>Редактировать</span>
                             </DropdownMenuItem>
+                            <RoleComponent
+                              roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                              userRole={
+                                project?.members.find(
+                                  (m) => m.user?.user_id === userMe?.user_id
+                                )?.role as ProjectRole
+                              }
 
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setDialogIsOpen("invite");
-                              }}
+                              // showChildren={false}
                             >
-                              <UserRoundPlus className="mr-2 size-4" />
-                              <span>Пригласить</span>
-                            </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setDialogIsOpen("invite");
+                                }}
+                              >
+                                <UserRoundPlus className="mr-2 size-4" />
+                                <span>Пригласить</span>
+                              </DropdownMenuItem>
+                            </RoleComponent>
 
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -227,65 +237,66 @@ const ProjectDetailPage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-4 flex-wrap text-gray-400 text-xs">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      <p>{project?.client?.name || "Не указан"}</p>
-                    </div>
-                    <Separator orientation="vertical" className="border-1" />
-                    <div className="flex items-center gap-2">
-                      <HandCoins className="w-4 h-4" />
-                      <p>
-                        {project?.currency?.symbol}
-                        {project?.rate}
-                      </p>
-                    </div>
-                    <Separator orientation="vertical" className="border-1" />
+                  <div className="flex gap-4 flex-wrap text-gray-400 text-xs items-center">
+                    <RoleComponent
+                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                      userRole={
+                        project?.members.find(
+                          (m) => m.user?.user_id === userMe?.user_id
+                        )?.role as ProjectRole
+                      }
+                      showChildren={false}
+                    >
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <p>{project?.client?.name || "Не указан"}</p>
+                      </div>
+                    </RoleComponent>
+                    <RoleComponent
+                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                      userRole={
+                        project?.members.find(
+                          (m) => m.user?.user_id === userMe?.user_id
+                        )?.role as ProjectRole
+                      }
+                      showChildren={false}
+                    >
+                      <div className="flex items-center gap-2">
+                        <HandCoins className="w-4 h-4" />
+                        <p>
+                          {project?.currency?.symbol}
+                          {project?.rate}
+                        </p>
+                      </div>
+                    </RoleComponent>
+
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4" />
                       <p>{formatDate(project?.created_at || "")}</p>
                     </div>
+
+                    <div className="flex items-center gap-2">
+                      <ShieldUser className="w-4 h-4" />
+                      <Badge variant={"outline"}>
+                        {
+                          project?.members.find(
+                            (el) => el.user?.user_id === userMe?.user_id
+                          )?.role
+                        }
+                      </Badge>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-row gap-2">
-                    {project?.members?.map((el) => {
-                      return (
-                        <div className="relative">
-                          <HoverCard>
-                            <HoverCardTrigger>
-                              <div
-                                className={`${!el.approve && "grayscale-[100%]"}`}
-                              >
-                                <UserAvatar
-                                  size="small"
-                                  name={el.user?.name || ""}
-                                  planId={
-                                    el.user?.subscriptions[0]?.planId || ""
-                                  }
-                                />
-                              </div>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-fit">
-                              <div className="flex flex-col gap-2">
-                                <div className="flex flex-col space-y-0.5">
-                                  <h3 className="text-xs font-light text-gray-400">
-                                    Пользователь
-                                  </h3>
-                                  <p>{el.user?.name}</p>
-                                </div>
-                                <div className="flex flex-col space-y-0.5">
-                                  <h3 className="text-xs font-light text-gray-400">
-                                    Роль
-                                  </h3>
-                                  <p>{el.role}</p>
-                                </div>
-                              </div>
-                            </HoverCardContent>
-                          </HoverCard>
-                        </div>
-                      );
-                    })}
+                  <div className="flex flex-row gap-1">
+                    <InvitedUsers
+                      members={project?.members || []}
+                      userRole={
+                        project?.members.find(
+                          (el) => el.user?.user_id === userMe?.user_id
+                        )?.role as ProjectRole
+                      }
+                    />
                   </div>
                   <Dialog
                     open={dialogIsOpen === "create"}

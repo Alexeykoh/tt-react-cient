@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/router/routes.enum";
 import { Button } from "@/components/ui/button";
 import { PanelTop } from "lucide-react";
+import UserAvatar from "@/components/user-avatar";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
 interface TaskCardProps {
   task: Task;
@@ -47,6 +49,15 @@ export function TaskCard({ task }: TaskCardProps) {
             Ставка: {task.rate} {task.currency?.symbol || ""}
           </span>
           <span>{new Date(task.created_at).toLocaleDateString()}</span>
+        </div>
+        <div className="flex items-center text-xs text-muted-foreground pt-2 gap-1">
+          {task.taskMembers.map((el) => (
+            <UserAvatar
+              size="xs"
+              name={el.user.name}
+              planId={SUBSCRIPTION.FREE}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>

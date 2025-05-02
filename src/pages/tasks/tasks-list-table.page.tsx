@@ -16,7 +16,10 @@ export function TasksListTablePage() {
   const { id } = useParams<{ id: string }>();
   const { data: tasks } = useGetTasksByProjectQuery(id || "", {
     skip: !id,
+    pollingInterval: 5000,
+    refetchOnFocus: true,
     refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
   });
   const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
     skip: !id,
@@ -33,7 +36,7 @@ export function TasksListTablePage() {
             <TableHead className="w-[1/6]">Статус</TableHead>
             <TableHead className="w-[1/6]">Ставка</TableHead>
             <TableHead className="w-[1/6]">Дата</TableHead>
-            <TableHead className="w-[1/6]">Оплата</TableHead>
+            <TableHead className="w-[1/6]">Пользователи</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="flex-1">

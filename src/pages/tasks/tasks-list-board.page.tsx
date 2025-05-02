@@ -44,6 +44,8 @@ export function TasksListBoardPage() {
   } = useGetTaskStatusColumnQuery(id || "", {
     skip: !id,
     refetchOnMountOrArgChange: true,
+    pollingInterval: 5000,
+    refetchOnFocus: true,
   });
 
   const sensors = useSensors(
@@ -97,7 +99,6 @@ export function TasksListBoardPage() {
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    console.log("DRAG END", { active, over, columns });
     if (!over || active.id === over.id) return;
 
     const previousColumns = [...columns];

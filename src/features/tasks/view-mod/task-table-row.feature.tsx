@@ -27,13 +27,11 @@ import {
 import PrivateComponent from "@/widgets/private-component";
 import {
   ChartBar,
-  Check,
-  Loader,
   MoreVerticalIcon,
   PencilIcon,
   TrashIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RateItem from "@/components/rate-item";
 import {
@@ -46,6 +44,13 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import UpdateTaskForm from "../forms/update-task.form";
+import UserAvatar from "@/components/user-avatar";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Props {
   task: Task;
@@ -58,13 +63,17 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [updateStatus] = useUpdateTaskStatusMutation();
+  const [selectedStatus, setSelectedStatus] = useState(
+    task?.taskStatus?.taskStatusColumn?.id
+  );
 
   function handleUpdateStatus(dto: UpdateTaskStatusDto) {
-    updateStatus(dto)
-      .unwrap()
-      .then(() => {})
-      .catch(() => {});
+    updateStatus(dto);
   }
+
+  useEffect(() => {
+    setSelectedStatus(task?.taskStatus?.taskStatusColumn?.id);
+  }, [task?.taskStatus?.taskStatusColumn?.id]);
 
   return (
     <>
@@ -129,8 +138,9 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
       </TableCell>
       <TableCell className="w-[1/6]">
         <Select
-          defaultValue={task?.taskStatus?.taskStatusColumn?.id}
+          value={selectedStatus}
           onValueChange={(value) => {
+            setSelectedStatus(value);
             handleUpdateStatus({
               task_id: task.task_id,
               task_status_column_id: value,
@@ -173,23 +183,35 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
         {task.created_at && <p>{new Date(task.created_at).toLocaleString()}</p>}
       </TableCell>
       <TableCell className="w-[1/6]">
-        {task && (
-          <Badge
-            variant={task?.is_paid ? "default" : "destructive"}
-            className="bg-emerald-400 flex items-center gap-2 justify-center text-md"
-          >
-            {task?.is_paid ? (
-              <>
-                <Check /> Оплачен
-              </>
-            ) : (
-              <>
-                <Loader />
-                не оплачен
-              </>
-            )}
-          </Badge>
-        )}
+        <HoverCard>
+          <HoverCardTrigger asChild>
+            <div className="flex items-center gap-1">
+              {task.taskMembers.slice(0, 5).map((el) => (
+                <div className="flex items-center gap-2">
+                  <UserAvatar
+                    size="xs"
+                    name={el.user.name}
+                    planId={SUBSCRIPTION.FREE}
+                  />
+                </div>
+              ))}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-fit">
+            <ScrollArea className="h-32 w-full rounded-md">
+              {task.taskMembers.map((el) => (
+                <div className="flex items-center gap-2">
+                  <UserAvatar
+                    size="xs"
+                    name={el.user.name}
+                    planId={SUBSCRIPTION.FREE}
+                  />
+                  <p className="font-semibold text-sm">{el.user.name}</p>
+                </div>
+              ))}
+            </ScrollArea>
+          </HoverCardContent>
+        </HoverCard>
       </TableCell>
       <div className="flex justify-end pr-2">
         <DropdownMenu>

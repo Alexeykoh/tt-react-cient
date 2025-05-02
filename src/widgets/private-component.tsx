@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
@@ -45,21 +44,22 @@ export default function PrivateComponent({
   return (
     <>
       <Dialog open={dialog} onOpenChange={setDialog}>
-        <DialogTrigger>
-          <div onClick={accessHandler} {...props}>
-            <div className={`${!access && "pointer-events-none"} relative`}>
-              {!access && (
-                <Badge
-                  variant={"secondary"}
-                  className={`${lockPosition === "left" ? "left-1 -translate-x-1/2" : "right-1 translate-x-1/2"} absolute p-1 bg-black/50 text-rose-400 z-10 bottom-1   translate-y-2 uppercase`}
-                >
-                  <LockKeyhole />
-                </Badge>
-              )}
-              {children}
-            </div>
+        <div onClick={accessHandler} {...props}>
+          <div
+            className={`${!access && "pointer-events-none"} relative grayscale-[100%]`}
+          >
+            {!access && (
+              <Badge
+                variant={"secondary"}
+                className={`${lockPosition === "left" ? "left-1 -translate-x-1/2" : "right-1 translate-x-1/2"} absolute p-1 bg-black/50 text-rose-400 z-10 bottom-1   translate-y-2 uppercase`}
+              >
+                <LockKeyhole />
+              </Badge>
+            )}
+            {children}
           </div>
-        </DialogTrigger>
+        </div>
+
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Подписка</DialogTitle>

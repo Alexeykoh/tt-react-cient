@@ -18,8 +18,6 @@ import SidebarItemFeature from "./sidebar-item";
 export default function SidebarFeature() {
   const { data: user } = useGetUserQuery();
 
-  console.log("SidebarFeature/reload");
-
   return (
     <Sidebar className="h-full">
       <SidebarHeader>

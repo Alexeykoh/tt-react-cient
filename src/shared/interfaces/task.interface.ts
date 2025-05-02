@@ -1,5 +1,14 @@
 import { Currency } from "./currency.interface";
 
+interface TaskMember {
+  member_id: string;
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+  };
+}
+
 export interface Task {
   task_id: string;
   name: string;
@@ -22,6 +31,7 @@ export interface Task {
       color: string;
     };
   };
+  taskMembers: Array<TaskMember>;
 }
 
 export interface AssignUserDto {

@@ -14,11 +14,7 @@ export function useSubscription(
 
   return useMemo(() => {
     if (!subscriptionData) return { access: false, subscription: null };
-    console.log(
-      "requiredSubscriptions",
-      requiredSubscriptions,
-      subscriptionData?.planId
-    );
+  
     const access = requiredSubscriptions.includes(
       subscriptionData?.planId as SUBSCRIPTION
     );

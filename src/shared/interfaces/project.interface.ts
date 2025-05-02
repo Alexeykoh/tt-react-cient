@@ -10,17 +10,19 @@ export interface Project {
   rate: string;
   currency: Currency;
   client: Client | null;
-  members: {
-    role: ProjectRole;
-    approve: boolean;
-    user: {
-      user_id: string;
-      name: string;
-      email: string;
-      subscriptions: {
-        planId: SUBSCRIPTION;
-        status: SUBSCRIPTION_STATUS;
-      }[];
-    };
-  }[];
+  members: Array<ProjectMembers>;
+}
+
+export interface ProjectMembers {
+  role: ProjectRole;
+  approve: boolean;
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+    subscriptions: {
+      planId: SUBSCRIPTION;
+      status: SUBSCRIPTION_STATUS;
+    }[];
+  };
 }

@@ -22,7 +22,6 @@ function FriendsPage() {
       pollingInterval: 5000,
     }
   );
-  console.log("friends", friends);
 
   return (
     <div className="w-full min-h-screen flex flex-col p-4">

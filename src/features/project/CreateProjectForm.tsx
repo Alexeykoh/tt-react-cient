@@ -50,8 +50,6 @@ function CreateProjectForm({ onSuccess, onClose }: CreateProjectFormProps) {
   });
   const [createProject, { isLoading: isCreating }] = useCreateProjectMutation();
 
-  console.log("currencies", currencies);
-
   const form = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {

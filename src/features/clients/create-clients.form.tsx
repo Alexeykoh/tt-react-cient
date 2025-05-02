@@ -38,7 +38,7 @@ function CreateClientForm({ onSuccess, onClose }: CreateClientFormProps) {
   });
 
   async function onSubmit(values: CreateClientFormValues) {
-    console.log("values", values);
+
     try {
       await createProject({
         name: values.name,
