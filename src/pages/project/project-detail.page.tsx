@@ -254,9 +254,11 @@ const ProjectDetailPage: React.FC = () => {
                         <div className="relative">
                           <HoverCard>
                             <HoverCardTrigger>
-                              <div>
+                              <div
+                                className={`${!el.approve && "grayscale-[100%]"}`}
+                              >
                                 <UserAvatar
-                                  size="xs"
+                                  size="small"
                                   name={el.user?.name || ""}
                                   planId={
                                     el.user?.subscriptions[0]?.planId || ""
@@ -265,13 +267,19 @@ const ProjectDetailPage: React.FC = () => {
                               </div>
                             </HoverCardTrigger>
                             <HoverCardContent className="w-fit">
-                              <div className="flex gap-2 items-center">
-                                <p>{el.user?.name}</p>
-                                <Separator
-                                  orientation="vertical"
-                                  className="min-h-5"
-                                />
-                                <p>{el.role}</p>
+                              <div className="flex flex-col gap-2">
+                                <div className="flex flex-col space-y-0.5">
+                                  <h3 className="text-xs font-light text-gray-400">
+                                    Пользователь
+                                  </h3>
+                                  <p>{el.user?.name}</p>
+                                </div>
+                                <div className="flex flex-col space-y-0.5">
+                                  <h3 className="text-xs font-light text-gray-400">
+                                    Роль
+                                  </h3>
+                                  <p>{el.role}</p>
+                                </div>
                               </div>
                             </HoverCardContent>
                           </HoverCard>

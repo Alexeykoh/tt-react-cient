@@ -12,6 +12,7 @@ export interface Project {
   client: Client | null;
   members: {
     role: ProjectRole;
+    approve: boolean;
     user: {
       user_id: string;
       name: string;
