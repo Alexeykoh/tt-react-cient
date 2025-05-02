@@ -15,6 +15,7 @@ export interface Task {
   description: string;
   is_paid: boolean;
   payment_type: PAYMENT;
+  project_id: string;
   rate: number | string;
   created_at: string;
   currency: Currency;

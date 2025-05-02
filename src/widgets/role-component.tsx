@@ -1,3 +1,4 @@
+import RoleBadge from "@/components/role-badge";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -45,15 +46,14 @@ export default function RoleComponent({
       <Dialog open={dialog} onOpenChange={setDialog}>
         <div onClick={accessHandler} {...props}>
           <div
-            className={`${!access && "pointer-events-none"} relative grayscale-[100%] opacity-90`}
+            className={`${!access && "pointer-events-none grayscale-[100%] opacity-90"} relative`}
           >
             {!access && (
-              <Badge
-                variant={"secondary"}
-                className={`absolute p-1 bg-black/80 w-full h-full text-rose-400 z-10 bottom-1/2 left-1/2 -translate-x-1/2 translate-y-1/2 uppercase`}
-              >
-                <ShieldX />
-              </Badge>
+              <div className="absolute p-1 duration-75 bg-black/70 w-full h-full text-rose-400 z-10 bottom-1/2 left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center">
+                <Badge variant={"secondary"}>
+                  <ShieldX />
+                </Badge>
+              </div>
             )}
             {children}
           </div>
@@ -65,11 +65,9 @@ export default function RoleComponent({
 
             <div className="flex flex-col gap-2">
               <p>{`Эта функция доступна тольк опльзователям с ролью: `}</p>
-              <div className="pt-3 uppercase">
+              <div className=" uppercase space-x-3">
                 {Object.values(roles).map((el) => (
-                  <Badge key={el} className="mx-1">
-                    {el}
-                  </Badge>
+                  <RoleBadge key={el} role={el} />
                 ))}
               </div>
             </div>

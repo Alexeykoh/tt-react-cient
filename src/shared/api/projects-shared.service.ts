@@ -22,7 +22,7 @@ export interface UpdateProjectRequest {
 export const projectsSharedService = createApi({
   reducerPath: "project-shared-service",
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ["project-shared-service"],
+  tagTypes: ["project-shared-service", "project-shared-id-service"],
   endpoints: (builder) => ({
     getProjectsShared: builder.query<Array<ProjectShared>, void>({
       query: () => ({
@@ -33,13 +33,17 @@ export const projectsSharedService = createApi({
         response.data,
       providesTags: ["project-shared-service"],
     }),
-    getProjectSharedById: builder.query<ProjectShared, { project_id: string }>({
+    getProjectSharedById: builder.query<
+      Array<ProjectShared>,
+      { project_id: string }
+    >({
       query: ({ project_id: id }) => ({
         url: `projects/shared/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: ProjectShared }) => response.data,
-      providesTags: ["project-shared-service"],
+      transformResponse: (response: { data: Array<ProjectShared> }) =>
+        response.data,
+      providesTags: ["project-shared-id-service"],
     }),
     createProjectShared: builder.mutation<
       ProjectShared,

@@ -12,12 +12,17 @@ import { ROUTES } from "@/app/router/routes.enum";
 import { Button } from "@/components/ui/button";
 import { PanelTop } from "lucide-react";
 import TaskSharedUsers from "../shared-users/task-shared-users";
+import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 
 interface TaskCardProps {
   task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+  const { data: projectUsers } = useGetProjectSharedByIdQuery({
+    project_id: task?.project_id || "",
+  });
+
   const navigate = useNavigate();
   return (
     <Card className={"border-0 shadow-2xl p-0"} key={task.task_id}>
@@ -52,6 +57,7 @@ export function TaskCard({ task }: TaskCardProps) {
         <TaskSharedUsers
           taskMembers={task?.taskMembers}
           taskId={task.task_id}
+          projectMembers={projectUsers || []}
         />
       </CardContent>
     </Card>

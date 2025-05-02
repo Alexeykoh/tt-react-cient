@@ -22,10 +22,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ProjectMembers } from "@/shared/interfaces/project.interface";
+import { ProjectShared } from "@/shared/interfaces/project-shared.interface";
+import { ProjectRole } from "@/shared/enums/project-role.enum";
 
 interface props {
-  projectMembers: ProjectMembers[];
+  projectMembers: ProjectShared[];
   taskMembers: TaskMember[];
   taskId: string;
   max?: number;
@@ -43,51 +44,17 @@ export default function TaskSharedUsers({
   );
 
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
+
   const [assign, { isLoading: isLoadingAssign }] =
     useAssignUserToTaskMutation();
   const [remove, { isLoading: isLoadingRemove }] =
     useRemoveUserFromTaskMutation();
 
+  console.log("taskMembers", taskMembers);
+  console.log("projectMembers", projectMembers);
+
   return (
     <div className="flex items-center gap-1 py-2">
-      <Dialog
-        open={dialogIsOpen === "add"}
-        onOpenChange={(data) => setDialogIsOpen(data ? "add" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Пригласить пользователя</DialogTitle>
-          </DialogHeader>
-          <p>Выберите из списка друзей</p>
-          <div className="flex space-x-2 mt-4">
-            {projectMembers?.map((friend, ind) => (
-              <Button
-                key={friend?.user?.user_id || ind}
-                variant="outline"
-                isLoading={isLoadingAssign}
-                disabled={isLoadingAssign}
-                onClick={() => {
-                  setDialogIsOpen(null);
-                  assign({
-                    taskId,
-                    userData: {
-                      taskId: taskId,
-                      userId: userMe?.user_id || "",
-                    },
-                  });
-                }}
-              >
-                <UserAvatar
-                  size="xs"
-                  name={friend?.user?.name || ""}
-                  planId={SUBSCRIPTION.FREE}
-                />
-                <p>{friend?.user?.name || ""}</p>
-              </Button>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
       <Dialog
         open={dialogIsOpen === "delete"}
         onOpenChange={(data) => setDialogIsOpen(data ? "delete" : null)}
@@ -118,6 +85,7 @@ export default function TaskSharedUsers({
       <Popover>
         <PopoverTrigger>
           <div className="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer">
+            {taskMembers.length === 0 && <UserRoundPlus className="size-4" />}
             {taskMembers.slice(0, max).map((el) => (
               <UserAvatar
                 size="xs"
@@ -134,53 +102,67 @@ export default function TaskSharedUsers({
           <div>
             <div className="flex justify-between">
               <span>Участники задачи</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setDialogIsOpen("add");
-                }}
-              >
-                <UserRoundPlus className="size-4" />
-              </Button>
             </div>
             <p className="text-xs text-muted-foreground">
               {taskMembers.length} участников задачи
             </p>
           </div>
-          <div className="flex flex-col text-xs text-muted-foreground gap-1">
+          <div className="flex flex-col text-xs text-muted-foreground gap-1 py-4">
             <ScrollArea className="h-64 w-full">
-              {taskMembers.slice(0, 5).map((el) => (
-                <div className="flex items-center gap-2 justify-between">
-                  <div className="flex items-center gap-2">
-                    <UserAvatar
-                      size="xs"
-                      name={el.user.name}
-                      planId={SUBSCRIPTION.FREE}
-                    />
-                    <p>{el.user.name}</p>
+              {projectMembers
+                .filter((el) => el.role !== ProjectRole.OWNER)
+                .map((el) => (
+                  <div className="flex items-center gap-2 justify-between">
+                    <div className="flex items-center gap-2">
+                      <UserAvatar
+                        size="xs"
+                        name={el.user.name}
+                        planId={SUBSCRIPTION.FREE}
+                      />
+                      <p>{el.user.name}</p>
+                    </div>
+                    <div>
+                      {taskMembers?.find(
+                        (_el) => _el.user.user_id === el.user.user_id
+                      ) ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setUserToRemove(el.user.user_id);
+                            setDialogIsOpen("delete");
+                          }}
+                          disabled={isLoadingAssign}
+                          isLoading={isLoadingAssign}
+                        >
+                          <UserRoundX className="size-4" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            assign({
+                              taskId,
+                              userData: {
+                                taskId: taskId,
+                                userId: el.user.user_id,
+                              },
+                            });
+                          }}
+                          disabled={isLoadingRemove}
+                          isLoading={isLoadingRemove}
+                        >
+                          <UserRoundPlus className="size-4" />
+                        </Button>
+                      )}
+
+                      {userMe?.user_id === el.user.user_id && (
+                        <Badge>{"Вы"}</Badge>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    {userMe?.user_id !== el.user.user_id && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setUserToRemove(el.user.user_id);
-                          setDialogIsOpen("delete");
-                        }}
-                        disabled={isLoadingRemove}
-                        isLoading={isLoadingRemove}
-                      >
-                        <UserRoundX className="size-4" />
-                      </Button>
-                    )}
-                    {userMe?.user_id === el.user.user_id && (
-                      <Badge>{"Вы"}</Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
             </ScrollArea>
           </div>
         </PopoverContent>

@@ -50,8 +50,8 @@ import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.ser
 import { ProjectRole } from "@/shared/enums/project-role.enum";
 import InvitedUsers from "@/features/project/invited-users/invited-users";
 import { useGetUserQuery } from "@/shared/api/user.service";
-import { Badge } from "@/components/ui/badge";
 import RoleComponent from "@/widgets/role-component";
+import RoleBadge from "@/components/role-badge";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -276,13 +276,13 @@ const ProjectDetailPage: React.FC = () => {
 
                     <div className="flex items-center gap-2">
                       <ShieldUser className="w-4 h-4" />
-                      <Badge variant={"outline"}>
-                        {
+                      <RoleBadge
+                        role={
                           project?.members.find(
                             (el) => el.user?.user_id === userMe?.user_id
                           )?.role
                         }
-                      </Badge>
+                      />
                     </div>
                   </div>
                 </div>
@@ -297,17 +297,27 @@ const ProjectDetailPage: React.FC = () => {
                       }
                     />
                   </div>
+
                   <Dialog
                     open={dialogIsOpen === "create"}
                     onOpenChange={(data) =>
                       setDialogIsOpen(data ? "create" : null)
                     }
                   >
-                    <DialogTrigger asChild>
-                      <Button size={"sm"} className="w-fit">
-                        Добавить задачу
-                      </Button>
-                    </DialogTrigger>
+                    <RoleComponent
+                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                      userRole={
+                        project?.members.find(
+                          (m) => m.user?.user_id === userMe?.user_id
+                        )?.role as ProjectRole
+                      }
+                    >
+                      <DialogTrigger asChild>
+                        <Button size={"sm"} className="w-fit">
+                          Добавить задачу
+                        </Button>
+                      </DialogTrigger>
+                    </RoleComponent>
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Создать новую задачу</DialogTitle>

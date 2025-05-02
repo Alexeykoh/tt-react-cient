@@ -4,18 +4,12 @@ import {
   useGetTaskByIdQuery,
 } from "@/shared/api/task.service";
 import {
-  Calculator,
-  Calendar,
   CalendarDays,
   ChevronLeft,
-  CreditCard,
   HandCoins,
   MoreVerticalIcon,
   PencilIcon,
-  Settings,
-  Smile,
   TrashIcon,
-  User,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { formatDate } from "@/lib/dateUtils";
@@ -41,17 +35,8 @@ import { useGetTimeLogLogsQuery } from "@/shared/api/time-log.service";
 import TaskItem from "@/components/task-item";
 import { GanttChart } from "@/shared/ui/gantt-chart";
 import { GanttTask } from "@/shared/types/gantt.types";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
 import TaskSharedUsers from "@/features/tasks/shared-users/task-shared-users";
+import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
@@ -62,6 +47,10 @@ export default function TaskDetailPage() {
     { task_id: id || "" },
     { skip: !id }
   );
+  const { data: projectUsers } = useGetProjectSharedByIdQuery({
+    project_id: task?.project_id || "",
+  });
+  console.log("task", task);
 
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
@@ -199,8 +188,7 @@ export default function TaskDetailPage() {
                     <TaskSharedUsers
                       taskMembers={task?.taskMembers || []}
                       taskId={id || ""}
-                      // todo
-                      projectMembers={[]}
+                      projectMembers={projectUsers || []}
                     />
                   </div>
                 </div>
@@ -231,44 +219,6 @@ export default function TaskDetailPage() {
               />
             </Card>
           </div>
-          <Command className="rounded-lg border shadow-md w-64 h-full">
-            <CommandInput placeholder="Type a command or search..." />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Suggestions">
-                <CommandItem>
-                  <Calendar />
-                  <span>Calendar</span>
-                </CommandItem>
-                <CommandItem>
-                  <Smile />
-                  <span>Search Emoji</span>
-                </CommandItem>
-                <CommandItem disabled>
-                  <Calculator />
-                  <span>Calculator</span>
-                </CommandItem>
-              </CommandGroup>
-              <CommandSeparator />
-              <CommandGroup heading="Settings">
-                <CommandItem>
-                  <User />
-                  <span>Profile</span>
-                  <CommandShortcut>⌘P</CommandShortcut>
-                </CommandItem>
-                <CommandItem>
-                  <CreditCard />
-                  <span>Billing</span>
-                  <CommandShortcut>⌘B</CommandShortcut>
-                </CommandItem>
-                <CommandItem>
-                  <Settings />
-                  <span>Settings</span>
-                  <CommandShortcut>⌘S</CommandShortcut>
-                </CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </Command>
         </div>
       </div>
     </>

@@ -45,6 +45,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import UpdateTaskForm from "../forms/update-task.form";
 import TaskSharedUsers from "../shared-users/task-shared-users";
+import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 
 interface Props {
   task: Task;
@@ -60,6 +61,10 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
   const [selectedStatus, setSelectedStatus] = useState(
     task?.taskStatus?.taskStatusColumn?.id
   );
+
+  const { data: projectUsers } = useGetProjectSharedByIdQuery({
+    project_id: task?.project_id || "",
+  });
 
   function handleUpdateStatus(dto: UpdateTaskStatusDto) {
     updateStatus(dto);
@@ -177,7 +182,11 @@ export default function TaskTableRowFeature({ task, statusColumns }: Props) {
         {task.created_at && <p>{new Date(task.created_at).toLocaleString()}</p>}
       </TableCell>
       <TableCell className="w-[1/6]">
-        <TaskSharedUsers taskMembers={task.taskMembers} />
+        <TaskSharedUsers
+          taskMembers={task.taskMembers}
+          projectMembers={projectUsers || []}
+          taskId={""}
+        />
       </TableCell>
       <div className="flex justify-end pr-2">
         <DropdownMenu>

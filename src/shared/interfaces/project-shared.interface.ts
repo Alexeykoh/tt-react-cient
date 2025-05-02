@@ -8,6 +8,15 @@ export interface ProjectShared {
   approve: boolean;
   created_at: string;
   updated_at: string;
+  user: {
+    user_id: string;
+    name: string;
+    email: string;
+    // subscriptions: {
+    //   planId: string;
+    //   status: string;
+    // }[];
+  };
 }
 
 export interface ProjectSharedCreateDTO {
