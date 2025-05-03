@@ -290,11 +290,7 @@ const ProjectDetailPage: React.FC = () => {
                   <div className="flex flex-row gap-1">
                     <InvitedUsers
                       members={project?.members || []}
-                      userRole={
-                        project?.members.find(
-                          (el) => el.user?.user_id === userMe?.user_id
-                        )?.role as ProjectRole
-                      }
+                      project_id={project?.project_id || ""}
                     />
                   </div>
 

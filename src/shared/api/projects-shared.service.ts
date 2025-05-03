@@ -3,6 +3,7 @@ import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   ProjectShared,
   ProjectSharedCreateDTO,
+  ProjectSharedDeleteDTO,
 } from "../interfaces/project-shared.interface";
 
 export interface CreateProjectRequest {
@@ -74,6 +75,13 @@ export const projectsSharedService = createApi({
       }),
       invalidatesTags: ["project-shared-service"],
     }),
+    deleteRoleProjectShared: builder.mutation<void, ProjectSharedDeleteDTO>({
+      query: ({ project_id, user_id }) => ({
+        url: `projects/shared/${project_id}/${user_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["project-shared-service", "project-shared-id-service"],
+    }),
   }),
 });
 
@@ -83,4 +91,5 @@ export const {
   useCreateProjectSharedMutation,
   useApproveProjectSharedInvationMutation,
   useChangeRoleProjectSharedMutation,
+  useDeleteRoleProjectSharedMutation,
 } = projectsSharedService;

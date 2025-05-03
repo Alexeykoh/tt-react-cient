@@ -24,3 +24,8 @@ export interface ProjectSharedCreateDTO {
   user_id: string;
   role: ProjectRole;
 }
+
+export interface ProjectSharedDeleteDTO {
+  project_id: string;
+  user_id: string;
+}
