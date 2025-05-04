@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
+  FriendsOnProject,
   ProjectShared,
   ProjectSharedCreateDTO,
   ProjectSharedDeleteDTO,
@@ -23,7 +24,12 @@ export interface UpdateProjectRequest {
 export const projectsSharedService = createApi({
   reducerPath: "project-shared-service",
   baseQuery: baseQueryWithErrorHandling,
-  tagTypes: ["project-shared-service", "project-shared-id-service"],
+  tagTypes: [
+    "project-shared-service",
+    "project-shared-id-service",
+    "friends-on-project",
+    "project-shared-invitations",
+  ],
   endpoints: (builder) => ({
     getProjectsShared: builder.query<Array<ProjectShared>, void>({
       query: () => ({
@@ -34,6 +40,30 @@ export const projectsSharedService = createApi({
         response.data,
       providesTags: ["project-shared-service"],
     }),
+
+    getProjectsSharedInvations: builder.query<Array<ProjectShared>, void>({
+      query: () => ({
+        url: `projects/shared/invitations`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: Array<ProjectShared> }) =>
+        response.data,
+      providesTags: ["project-shared-invitations"],
+    }),
+
+    getFriendsOnProject: builder.query<
+      Array<FriendsOnProject>,
+      { project_id: string }
+    >({
+      query: ({ project_id }) => ({
+        url: `projects/shared/friends-on-project/${project_id}`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: Array<FriendsOnProject> }) =>
+        response.data,
+      providesTags: ["friends-on-project"],
+    }),
+
     getProjectSharedById: builder.query<
       Array<ProjectShared>,
       { project_id: string }
@@ -55,7 +85,7 @@ export const projectsSharedService = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["project-shared-service"],
+      invalidatesTags: ["project-shared-service", "friends-on-project"],
     }),
     approveProjectSharedInvation: builder.mutation<
       ProjectShared,
@@ -65,7 +95,7 @@ export const projectsSharedService = createApi({
         url: `projects/shared/${project_id}/approve-invitation`,
         method: "POST",
       }),
-      invalidatesTags: ["project-shared-service"],
+      invalidatesTags: ["project-shared-service", "friends-on-project"],
     }),
     changeRoleProjectShared: builder.mutation<void, ProjectSharedCreateDTO>({
       query: ({ project_id, ...data }) => ({
@@ -80,7 +110,11 @@ export const projectsSharedService = createApi({
         url: `projects/shared/${project_id}/${user_id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["project-shared-service", "project-shared-id-service"],
+      invalidatesTags: [
+        "project-shared-service",
+        "project-shared-id-service",
+        "friends-on-project",
+      ],
     }),
   }),
 });
@@ -88,8 +122,10 @@ export const projectsSharedService = createApi({
 export const {
   useGetProjectsSharedQuery,
   useGetProjectSharedByIdQuery,
-  useCreateProjectSharedMutation,
+  useGetFriendsOnProjectQuery,
+  useGetProjectsSharedInvationsQuery,
   useApproveProjectSharedInvationMutation,
+  useCreateProjectSharedMutation,
   useChangeRoleProjectSharedMutation,
   useDeleteRoleProjectSharedMutation,
 } = projectsSharedService;

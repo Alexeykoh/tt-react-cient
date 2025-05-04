@@ -14,9 +14,12 @@ import SearchWidget from "@/widgets/search.widget";
 import { Home, FileText, Clock, FolderGit2, ContactRound } from "lucide-react";
 import { Link } from "react-router";
 import SidebarItemFeature from "./sidebar-item";
+import { useGetProjectsSharedInvationsQuery } from "@/shared/api/projects-shared.service";
+import { Badge } from "@/components/ui/badge";
 
 export default function SidebarFeature() {
   const { data: user } = useGetUserQuery();
+  const { data: projectInvitations } = useGetProjectsSharedInvationsQuery();
 
   return (
     <Sidebar className="h-full">
@@ -55,10 +58,21 @@ export default function SidebarFeature() {
               <SidebarItemFeature
                 tooltip={"Проекты"}
                 pathname={`/${ROUTES.PROJECTS}`}
+                className="w-full"
               >
                 <Link to={`/${ROUTES.PROJECTS}`}>
                   <FolderGit2 className="h-4 w-4" />
-                  <span>Проекты</span>
+                  <div className="w-full flex items-center justify-between gap-2">
+                    <span>Проекты</span>
+                    {projectInvitations && projectInvitations?.length > 0 && (
+                      <Badge
+                        variant={"default"}
+                        className="flex h-4 w-4 items-center justify-center rounded-full text-xs"
+                      >
+                        {projectInvitations.length}
+                      </Badge>
+                    )}
+                  </div>
                 </Link>
               </SidebarItemFeature>
 

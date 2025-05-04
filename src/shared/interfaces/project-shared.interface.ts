@@ -29,3 +29,18 @@ export interface ProjectSharedDeleteDTO {
   project_id: string;
   user_id: string;
 }
+
+export interface FriendsOnProject {
+  user_id: string;
+  name: string;
+  email: string;
+  in_project: {
+    member_id: string;
+    project_id: string;
+    user_id: string;
+    role: ProjectRole;
+    approve: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+}

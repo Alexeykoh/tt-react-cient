@@ -23,7 +23,6 @@ import {
   Table,
   TrashIcon,
   User,
-  UserRoundPlus,
 } from "lucide-react";
 import {
   Dialog,
@@ -43,10 +42,6 @@ import EditProjectForm from "@/features/project/EditProjectForm";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
-import UserAvatar from "@/components/user-avatar";
-import { useGetFriendshipMeQuery } from "@/shared/api/friendship.service";
-import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.service";
 import { ProjectRole } from "@/shared/enums/project-role.enum";
 import InvitedUsers from "@/features/project/invited-users/invited-users";
 import { useGetUserQuery } from "@/shared/api/user.service";
@@ -58,9 +53,7 @@ const ProjectDetailPage: React.FC = () => {
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
 
-  const { data: friendsMe } = useGetFriendshipMeQuery();
   const { data: userMe } = useGetUserQuery();
-  const [inviteToProject] = useCreateProjectSharedMutation();
   const currentPageView = useMemo(
     () => extractLetterFromPath(location.pathname),
     [location.pathname]
@@ -130,41 +123,6 @@ const ProjectDetailPage: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={dialogIsOpen === "invite"}
-        onOpenChange={(data) => setDialogIsOpen(data ? "invite" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Пригласить пользователя</DialogTitle>
-          </DialogHeader>
-          <p>Выберите из списка друзей</p>
-          <div className="flex space-x-2 mt-4">
-            {friendsMe?.map((friend) => (
-              <Button
-                key={friend.friend.user_id}
-                variant="outline"
-                onClick={() => {
-                  setDialogIsOpen(null);
-                  inviteToProject({
-                    project_id: id || "",
-                    user_id: friend.friend.user_id,
-                    role: ProjectRole.EXECUTOR,
-                  });
-                }}
-              >
-                <UserAvatar
-                  size="xs"
-                  name={friend?.friend?.name}
-                  planId={SUBSCRIPTION.FREE}
-                />
-                <p>{friend?.friend?.name}</p>
-              </Button>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <div className="w-full h-full flex flex-col">
         <div className="w-full">
           <div className="flex justify-between w-full">
@@ -185,14 +143,24 @@ const ProjectDetailPage: React.FC = () => {
                       <div className="flex justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-                              size="icon"
+                            <RoleComponent
+                              roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                              userRole={
+                                project?.members.find(
+                                  (m) => m.user?.user_id === userMe?.user_id
+                                )?.role as ProjectRole
+                              }
+                              showChildren={false}
                             >
-                              <MoreVerticalIcon />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
+                              <Button
+                                variant="ghost"
+                                className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                                size="icon"
+                              >
+                                <MoreVerticalIcon />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </RoleComponent>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40">
                             <DropdownMenuItem
@@ -203,25 +171,6 @@ const ProjectDetailPage: React.FC = () => {
                               <PencilIcon className="mr-2 size-4" />
                               <span>Редактировать</span>
                             </DropdownMenuItem>
-                            <RoleComponent
-                              roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
-                              userRole={
-                                project?.members.find(
-                                  (m) => m.user?.user_id === userMe?.user_id
-                                )?.role as ProjectRole
-                              }
-
-                              // showChildren={false}
-                            >
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setDialogIsOpen("invite");
-                                }}
-                              >
-                                <UserRoundPlus className="mr-2 size-4" />
-                                <span>Пригласить</span>
-                              </DropdownMenuItem>
-                            </RoleComponent>
 
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
