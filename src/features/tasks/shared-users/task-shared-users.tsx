@@ -125,18 +125,22 @@ export default function TaskSharedUsers({
                       {taskMembers?.find(
                         (_el) => _el.user.user_id === el.user.user_id
                       ) ? (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setUserToRemove(el.user.user_id);
-                            setDialogIsOpen("delete");
-                          }}
-                          disabled={isLoadingAssign}
-                          isLoading={isLoadingAssign}
-                        >
-                          <UserRoundX className="size-4" />
-                        </Button>
+                        <>
+                          {userMe?.user_id !== el.user.user_id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setUserToRemove(el.user.user_id);
+                                setDialogIsOpen("delete");
+                              }}
+                              disabled={isLoadingAssign}
+                              isLoading={isLoadingAssign}
+                            >
+                              <UserRoundX className="size-4" />
+                            </Button>
+                          )}
+                        </>
                       ) : (
                         <Button
                           variant="ghost"

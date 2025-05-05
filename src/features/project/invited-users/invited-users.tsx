@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+
 import {
   Popover,
   PopoverContent,
@@ -18,19 +18,9 @@ import { useState } from "react";
 import { Clock, UserRoundPlus, UserRoundX } from "lucide-react";
 import RoleBadge from "@/components/role-badge";
 import {
-  useCreateProjectSharedMutation,
   useDeleteRoleProjectSharedMutation,
   useGetFriendsOnProjectQuery,
 } from "@/shared/api/projects-shared.service";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import {
   Command,
   CommandEmpty,
@@ -40,6 +30,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import InviteUserToProjectForm from "../forms/invite-user-to-project.form";
 
 interface InvitedUsersProps {
   members: Array<ProjectMembers>;
@@ -57,18 +48,13 @@ export default function InvitedUsers({
   });
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
   const [userToAssign, setUserToAssign] = useState<string | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<ProjectRole>(
-    ProjectRole.EXECUTOR
-  );
+
   const [dialogIsOpen, setDialogIsOpen] = useState<"add" | "delete" | null>(
     null
   );
 
   const [remove, { isLoading: isLoadingRemove }] =
     useDeleteRoleProjectSharedMutation();
-
-  const [assign, { isLoading: isLoadingAssign }] =
-    useCreateProjectSharedMutation();
 
   return (
     <>
@@ -107,7 +93,6 @@ export default function InvitedUsers({
         open={dialogIsOpen === "add"}
         onOpenChange={(data) => {
           setDialogIsOpen(data ? "add" : null);
-          setSelectedStatus(ProjectRole.EXECUTOR);
         }}
       >
         <DialogContent>
@@ -115,51 +100,17 @@ export default function InvitedUsers({
             <DialogTitle>Подтверждение приглашения</DialogTitle>
           </DialogHeader>
           <p>Вы уверены, что хотите пригласить этого пользователя на проект?</p>
-          <div>
-            <Select
-              value={selectedStatus}
-              onValueChange={(value: ProjectRole) => {
-                setSelectedStatus(value as ProjectRole);
-              }}
-            >
-              <SelectTrigger
-                className={`w-fit space-x-2 border-1 ring-0 focus:ring-0 focus:ring-offset-0`}
-              >
-                <SelectValue placeholder="Выберите статус" />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectGroup>
-                  {Array.from(Object.values(ProjectRole))
-                    .filter((el) => el !== ProjectRole.OWNER)
-                    .map((_role) => (
-                      <SelectItem key={_role} value={_role} className="">
-                        <RoleBadge role={_role} />
-                      </SelectItem>
-                    ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogIsOpen(null)}>
-              Отмена
-            </Button>
-            <Button
-              variant={"secondary"}
-              onClick={async () => {
-                setDialogIsOpen(null);
-                if (userToAssign && selectedStatus) {
-                  await assign({
-                    project_id: project_id,
-                    user_id: userToAssign,
-                    role: selectedStatus,
-                  });
-                }
-              }}
-            >
-              <span>Пригласить как </span> <RoleBadge role={selectedStatus} />
-            </Button>
-          </div>
+          <InviteUserToProjectForm
+            onSuccess={() => {
+              setDialogIsOpen(null);
+            }}
+            onClose={() => {
+              setDialogIsOpen(null);
+            }}
+            project_id={project_id}
+            user_id={userToAssign || ""}
+            memberRate={0}
+          />
         </DialogContent>
       </Dialog>
 
@@ -234,8 +185,6 @@ export default function InvitedUsers({
                               setUserToAssign(el.user_id);
                               setDialogIsOpen("add");
                             }}
-                            disabled={isLoadingAssign}
-                            isLoading={isLoadingAssign}
                           >
                             <UserRoundPlus className="size-4 text-emerald-200" />
                           </Button>

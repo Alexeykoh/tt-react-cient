@@ -23,6 +23,8 @@ export interface ProjectSharedCreateDTO {
   project_id: string;
   user_id: string;
   role: ProjectRole;
+  rate: number | string;
+  currency_id: string;
 }
 
 export interface ProjectSharedDeleteDTO {

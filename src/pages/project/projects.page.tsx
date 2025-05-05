@@ -23,16 +23,9 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import UserAvatar from "@/components/user-avatar";
 import { ProjectRole } from "@/shared/enums/project-role.enum";
-import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import {
-  useApproveProjectSharedInvationMutation,
-  useDeleteRoleProjectSharedMutation,
-  useGetProjectsSharedInvationsQuery,
-} from "@/shared/api/projects-shared.service";
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import RoleBadge from "@/components/role-badge";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import { Badge } from "@/components/ui/badge";
+import ProjectInvitationDialog from "@/features/project/invited-users/project-invitation-dialog";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -44,108 +37,19 @@ const ProjectsPage: React.FC = () => {
   const [dialogIsOpen, setDialogIsOpen] = useState<
     "create" | "invitations" | null
   >(null);
-  const { data: projectInvitations } = useGetProjectsSharedInvationsQuery();
-  const [approveInvitation, { isLoading: isLoadingInvitation }] =
-    useApproveProjectSharedInvationMutation();
-  const [deleteInvitation, { isLoading: isLoadingDelete }] =
-    useDeleteRoleProjectSharedMutation();
 
   return (
     <div className="w-full flex flex-col p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Проекты</h1>
-          {projectInvitations && projectInvitations?.length > 0 && (
-            <Dialog
-              open={dialogIsOpen === "invitations"}
-              onOpenChange={(_el) =>
-                setDialogIsOpen(_el ? "invitations" : null)
-              }
-            >
-              <DialogTrigger asChild>
-                <Button
-                  size={"icon"}
-                  variant={"outline"}
-                  className="rounded-full size-6"
-                >
-                  {projectInvitations?.length}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Приглашения на проект</DialogTitle>
-                </DialogHeader>
-                {projectInvitations.map((el) => (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        <div className="flex flex-col items-start flex-wrap gap-4">
-                          <div className="flex justify-between w-full flex-wrap gap-4">
-                            <div className="flex flex-col flex-wrap gap-1">
-                              <h3 className="text-xs text-gray-400">{`Отправитель:`}</h3>
-                              <div className="flex items-center flex-wrap gap-1">
-                                <UserAvatar
-                                  size="xs"
-                                  name={el.project.user.name}
-                                  planId={SUBSCRIPTION.FREE}
-                                />
-                                <span>{el.project.user.name}</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-col flex-wrap gap-1">
-                              <h3 className="text-xs text-gray-400">{`Роль:`}</h3>
-                              <div className="flex items-center flex-wrap gap-1">
-                                <RoleBadge role={el.role} />
-                              </div>
-                            </div>
-                            <div className="flex flex-col flex-wrap gap-1">
-                              <h3 className="text-xs text-gray-400">{`Проект:`}</h3>
-                              <div className="flex items-center flex-wrap gap-1">
-                                <span>{el.project.name}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardFooter className="self-end">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size={"sm"}
-                          variant={"ghost"}
-                          isLoading={isLoadingDelete}
-                          disabled={isLoadingDelete}
-                          onClick={() => {
-                            deleteInvitation({
-                              project_id: el.project_id,
-                              user_id: userMe?.user_id || "",
-                            });
-                            setDialogIsOpen(null);
-                          }}
-                        >
-                          Отклонить
-                        </Button>
-                        <Button
-                          size={"sm"}
-                          variant={"secondary"}
-                          isLoading={isLoadingInvitation}
-                          disabled={isLoadingInvitation}
-                          onClick={() => {
-                            approveInvitation({ project_id: el.project_id })
-                              .unwrap()
-                              .then(() => refetchProjects());
-                            setDialogIsOpen(null);
-                          }}
-                        >
-                          Принять
-                        </Button>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </DialogContent>
-            </Dialog>
-          )}
+          <ProjectInvitationDialog
+            dialogIsOpen={dialogIsOpen === "invitations"}
+            setDialogIsOpen={(_el) =>
+              setDialogIsOpen(_el ? "invitations" : null)
+            }
+            refetchProjects={() => refetchProjects()}
+          />
         </div>
         <Dialog
           open={dialogIsOpen === "create"}
@@ -175,7 +79,6 @@ const ProjectsPage: React.FC = () => {
                 <TableHead className="w-1/6">Наименование</TableHead>
                 <TableHead className="w-1/6">Пользователи</TableHead>
                 <TableHead className="w-1/6">Клиент</TableHead>
-                <TableHead className="w-1/6">Ставка / ч.</TableHead>
                 <TableHead className="w-1/6">Дата</TableHead>
               </TableRow>
             </TableHeader>
@@ -201,13 +104,6 @@ const ProjectsPage: React.FC = () => {
                           <PanelTop />
                         </Button>
                         <div className="flex items-center gap-2">
-                          {owner && (
-                            <UserAvatar
-                              size="xs"
-                              name={owner?.user?.name || ""}
-                              planId={owner?.user?.subscriptions[0]?.planId}
-                            />
-                          )}
                           <div className="flex flex-col">
                             <p> {el?.name}</p>
                             <p>
@@ -237,7 +133,6 @@ const ProjectsPage: React.FC = () => {
                       <TableCell className="w-1/6">
                         {el?.client?.name}
                       </TableCell>
-                      <TableCell className="w-1/6">{`${el?.currency?.symbol}${el?.rate}`}</TableCell>
                       <TableCell className="w-1/6">
                         {formatDate(el?.created_at)}
                       </TableCell>

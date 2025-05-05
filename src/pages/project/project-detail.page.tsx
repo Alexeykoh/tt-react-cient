@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Link,
   Outlet,
@@ -47,11 +47,14 @@ import InvitedUsers from "@/features/project/invited-users/invited-users";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import RoleComponent from "@/widgets/role-component";
 import RoleBadge from "@/components/role-badge";
+import { ProjectMembers } from "@/shared/interfaces/project.interface";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
+  const [ownerData, setOwnerData] = useState<ProjectMembers | null>(null);
+  const [meData, setMeData] = useState<ProjectMembers | null>(null);
 
   const { data: userMe } = useGetUserQuery();
   const currentPageView = useMemo(
@@ -68,6 +71,17 @@ const ProjectDetailPage: React.FC = () => {
     error,
     isLoading,
   } = useGetProjectByIdQuery({ id: id! });
+
+  useEffect(() => {
+    const owner = project?.members?.find((el) => el.role === ProjectRole.OWNER);
+    const me = project?.members?.find(
+      (el) => el.user.user_id === userMe?.user_id
+    );
+    if (owner && me) {
+      setOwnerData(owner);
+      setMeData(me);
+    }
+  }, [project?.members, userMe?.user_id]);
 
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки проекта</div>;
@@ -86,8 +100,8 @@ const ProjectDetailPage: React.FC = () => {
             projectId={project?.project_id || ""}
             initialData={{
               name: project?.name || "",
-              currency_id: project?.currency.code || "",
-              rate: parseFloat(project?.rate || ""),
+              currency_id: String(ownerData?.currency.currency_id || ""),
+              rate: Number(ownerData?.rate || 0),
               client_id: project?.client?.client_id,
               tag_ids: [],
             }}
@@ -200,23 +214,25 @@ const ProjectDetailPage: React.FC = () => {
                         <p>{project?.client?.name || "Не указан"}</p>
                       </div>
                     </RoleComponent>
-                    <RoleComponent
-                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
-                      userRole={
-                        project?.members.find(
-                          (m) => m.user?.user_id === userMe?.user_id
-                        )?.role as ProjectRole
-                      }
-                      showChildren={false}
-                    >
-                      <div className="flex items-center gap-2">
-                        <HandCoins className="w-4 h-4" />
-                        <p>
-                          {project?.currency?.symbol}
-                          {project?.rate}
-                        </p>
-                      </div>
-                    </RoleComponent>
+                    {meData && (
+                      <RoleComponent
+                        roles={[
+                          ProjectRole.OWNER,
+                          ProjectRole.MANAGER,
+                          ProjectRole.EXECUTOR,
+                        ]}
+                        userRole={meData?.role}
+                        showChildren={false}
+                      >
+                        <div className="flex items-center gap-2">
+                          <HandCoins className="w-4 h-4" />
+                          <p>
+                            {meData?.currency?.symbol}
+                            {meData?.rate}
+                          </p>
+                        </div>
+                      </RoleComponent>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4" />
@@ -271,7 +287,7 @@ const ProjectDetailPage: React.FC = () => {
                         onSuccess={() => setDialogIsOpen(null)}
                         onClose={() => setDialogIsOpen(null)}
                         projectId={project?.project_id || ""}
-                        projectRate={Number(project?.rate) || 0}
+                        projectRate={Number(ownerData?.rate || 0)}
                       />
                     </DialogContent>
                   </Dialog>

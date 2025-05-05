@@ -7,8 +7,6 @@ export interface Project {
   project_id: string;
   name: string;
   created_at: string;
-  rate: string;
-  currency: Currency;
   client: Client | null;
   members: Array<ProjectMembers>;
 }
@@ -16,13 +14,17 @@ export interface Project {
 export interface ProjectMembers {
   role: ProjectRole;
   approve: boolean;
-  user: {
-    user_id: string;
-    name: string;
-    email: string;
-    subscriptions: {
-      planId: SUBSCRIPTION;
-      status: SUBSCRIPTION_STATUS;
-    }[];
-  };
+  rate: string;
+  currency: Currency;
+  user: ProjectMembersUser;
+}
+
+export interface ProjectMembersUser {
+  user_id: string;
+  name: string;
+  email: string;
+  subscriptions: {
+    planId: SUBSCRIPTION;
+    status: SUBSCRIPTION_STATUS;
+  }[];
 }
