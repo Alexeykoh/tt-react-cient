@@ -19,7 +19,10 @@ import { Badge } from "@/components/ui/badge";
 
 export default function SidebarFeature() {
   const { data: user } = useGetUserQuery();
-  const { data: projectInvitations } = useGetProjectsSharedInvationsQuery();
+  const { data: projectInvitations } = useGetProjectsSharedInvationsQuery(
+    undefined,
+    { pollingInterval: 10000 }
+  );
 
   return (
     <Sidebar className="h-full">

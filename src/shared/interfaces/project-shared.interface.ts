@@ -44,3 +44,16 @@ export interface FriendsOnProject {
     updated_at: string;
   };
 }
+
+export interface ProjectInvitations {
+  member_id: string;
+  project_id: string;
+  role: ProjectRole;
+  project: {
+    name: string;
+    user: {
+      name: string;
+      email: string;
+    };
+  };
+}

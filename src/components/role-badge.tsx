@@ -49,21 +49,34 @@ export default function RoleBadge({
   showIcon = true,
   showText = true,
 }: props) {
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          {role && (
-            <Badge variant={"outline"} className={roleMap[role].border}>
-              {showIcon && roleMap[role].icon}
-              {showText && roleMap[role].text}
-            </Badge>
-          )}
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{role && roleMap[role].text}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
+  if (showText && role) {
+    return (
+      <Badge variant={"outline"} className={roleMap[role].border}>
+        {showIcon && roleMap[role].icon}
+        {showText && roleMap[role].text}
+      </Badge>
+    );
+  }
+
+  if (!showText && role) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            {role && (
+              <Badge variant={"outline"} className={roleMap[role].border}>
+                {showIcon && roleMap[role].icon}
+                {showText && roleMap[role].text}
+              </Badge>
+            )}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{role && roleMap[role].text}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return null;
 }

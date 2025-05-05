@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   FriendsOnProject,
+  ProjectInvitations,
   ProjectShared,
   ProjectSharedCreateDTO,
   ProjectSharedDeleteDTO,
@@ -41,12 +42,12 @@ export const projectsSharedService = createApi({
       providesTags: ["project-shared-service"],
     }),
 
-    getProjectsSharedInvations: builder.query<Array<ProjectShared>, void>({
+    getProjectsSharedInvations: builder.query<Array<ProjectInvitations>, void>({
       query: () => ({
         url: `projects/shared/invitations`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<ProjectShared> }) =>
+      transformResponse: (response: { data: Array<ProjectInvitations> }) =>
         response.data,
       providesTags: ["project-shared-invitations"],
     }),

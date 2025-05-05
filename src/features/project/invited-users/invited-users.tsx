@@ -166,9 +166,10 @@ export default function InvitedUsers({
       <Popover>
         <PopoverTrigger>
           <div className="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer">
-            {friendsOnProject?.filter((el) => el.in_project !== null)
-              .length === 0 && <UserRoundPlus className="size-4" />}
-            {friendsOnProject?.filter((el) => el.in_project !== null)
+            {friendsOnProject?.filter((el) => el.in_project !== null).length ===
+              0 && <UserRoundPlus className="size-4" />}
+            {friendsOnProject
+              ?.filter((el) => el.in_project !== null)
               .slice(0, max)
               .map((el) => (
                 <div
@@ -190,10 +191,7 @@ export default function InvitedUsers({
               <span>Участники проекта</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {
-                friendsOnProject?.filter((el) => el.in_project !== null)
-                  .length
-              }{" "}
+              {friendsOnProject?.filter((el) => el.in_project !== null).length}{" "}
               участников проекта
             </p>
           </div>
@@ -215,16 +213,15 @@ export default function InvitedUsers({
                           planId={SUBSCRIPTION.FREE}
                         />
                         <span>{el.name}</span>
-                        {el.in_project !== null &&
-                          el?.in_project?.approve === true && (
-                            <RoleBadge
-                              role={el.in_project?.role}
-                              showText={false}
-                            />
-                          )}
+                        {el.in_project !== null && (
+                          <RoleBadge
+                            role={el.in_project?.role}
+                            showText={false}
+                          />
+                        )}
                         {el?.in_project?.approve === false && (
                           <Button variant="ghost" size="icon">
-                            <Clock className="size-4" />
+                            <Clock className="size-4 text-sky-200" />
                           </Button>
                         )}
                       </div>
@@ -240,7 +237,7 @@ export default function InvitedUsers({
                             disabled={isLoadingAssign}
                             isLoading={isLoadingAssign}
                           >
-                            <UserRoundPlus className="size-4" />
+                            <UserRoundPlus className="size-4 text-emerald-200" />
                           </Button>
                         )}
 
@@ -255,7 +252,7 @@ export default function InvitedUsers({
                             disabled={isLoadingRemove}
                             isLoading={isLoadingRemove}
                           >
-                            <UserRoundX className="size-4" />
+                            <UserRoundX className="size-4 text-rose-200" />
                           </Button>
                         )}
                       </div>
