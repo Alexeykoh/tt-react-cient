@@ -144,7 +144,7 @@ const ProjectDetailPage: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <RoleComponent
-                              roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                              roles={[ProjectRole.OWNER]}
                               userRole={
                                 project?.members.find(
                                   (m) => m.user?.user_id === userMe?.user_id

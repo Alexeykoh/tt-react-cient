@@ -32,6 +32,7 @@ import {
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import RoleBadge from "@/components/role-badge";
 import { useGetUserQuery } from "@/shared/api/user.service";
+import { Badge } from "@/components/ui/badge";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -132,9 +133,7 @@ const ProjectsPage: React.FC = () => {
                           onClick={() => {
                             approveInvitation({ project_id: el.project_id })
                               .unwrap()
-                              .then(() =>
-                                refetchProjects()
-                              );
+                              .then(() => refetchProjects());
                             setDialogIsOpen(null);
                           }}
                         >
@@ -174,7 +173,7 @@ const ProjectsPage: React.FC = () => {
               <TableHead></TableHead>
               <TableRow>
                 <TableHead className="w-1/6">Наименование</TableHead>
-                <TableHead className="w-1/6">Владелец</TableHead>
+                <TableHead className="w-1/6">Пользователи</TableHead>
                 <TableHead className="w-1/6">Клиент</TableHead>
                 <TableHead className="w-1/6">Ставка / ч.</TableHead>
                 <TableHead className="w-1/6">Дата</TableHead>
@@ -183,10 +182,9 @@ const ProjectsPage: React.FC = () => {
             <TableBody className="flex-1">
               {data?.data &&
                 data?.data.map((el) => {
-                  const owner = el?.members?.find(
-                    (el) => el.role === ProjectRole.OWNER
-                  )?.user;
-
+                  const owner = el.members.find(
+                    (_el) => _el.role === ProjectRole.OWNER
+                  );
                   return (
                     <TableRow key={el.project_id}>
                       <TableCell className="font-medium w-1/6 flex items-center">
@@ -202,19 +200,38 @@ const ProjectsPage: React.FC = () => {
                           <span className="sr-only">Перейти к проекту</span>
                           <PanelTop />
                         </Button>
-                        {el?.name}
+                        <div className="flex items-center gap-2">
+                          {owner && (
+                            <UserAvatar
+                              size="xs"
+                              name={owner?.user?.name || ""}
+                              planId={owner?.user?.subscriptions[0]?.planId}
+                            />
+                          )}
+                          <div className="flex flex-col">
+                            <p> {el?.name}</p>
+                            <p>
+                              <span className="text-xs text-gray-400">
+                                Владелец:{" "}
+                              </span>
+                              {userMe?.user_id === owner?.user.user_id ? (
+                                <Badge>Вы</Badge>
+                              ) : (
+                                owner?.user.name
+                              )}
+                            </p>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className="w-1/6">
                         <div className="flex items-center gap-2">
-                          <UserAvatar
-                            size="xs"
-                            name={owner?.name || ""}
-                            planId={
-                              owner?.subscriptions[0].planId ||
-                              SUBSCRIPTION.FREE
-                            }
-                          />
-                          {owner?.name}
+                          {el.members.slice(0, 5).map((_el) => (
+                            <UserAvatar
+                              size="xs"
+                              name={_el?.user.name || ""}
+                              planId={_el?.user?.subscriptions[0]?.planId}
+                            />
+                          ))}
                         </div>
                       </TableCell>
                       <TableCell className="w-1/6">
