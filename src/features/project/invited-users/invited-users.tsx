@@ -1,26 +1,10 @@
 import { ProjectMembers } from "@/shared/interfaces/project.interface";
 import UserAvatar from "@/components/user-avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useState } from "react";
 import { Clock, UserRoundPlus, UserRoundX } from "lucide-react";
-import RoleBadge from "@/components/role-badge";
-import {
-  useDeleteRoleProjectSharedMutation,
-  useGetFriendsOnProjectQuery,
-} from "@/shared/api/projects-shared.service";
+import { useGetFriendsOnProjectQuery } from "@/shared/api/projects-shared.service";
 import {
   Command,
   CommandEmpty,
@@ -30,7 +14,12 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import InviteUserToProjectForm from "../forms/invite-user-to-project.form";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import RemoveUserFromProjectDialog from "../remove-user-from-project/remove-user-from-project.dialog";
+import InviteUserToProjectDialog from "../invite-user-to-project/invite-user-to-project.dialog";
+import { Separator } from "@radix-ui/react-separator";
+import { PAYMENT } from "@/shared/interfaces/task.interface";
+import ChangeMemberRole from "./change-member-role.dialog";
 
 interface InvitedUsersProps {
   members: Array<ProjectMembers>;
@@ -43,79 +32,42 @@ export default function InvitedUsers({
   max = 5,
   project_id,
 }: InvitedUsersProps) {
-  const { data: friendsOnProject } = useGetFriendsOnProjectQuery({
-    project_id,
-  });
+  const { data: friendsOnProject, refetch } = useGetFriendsOnProjectQuery(
+    {
+      project_id,
+    },
+    { skip: !project_id }
+  );
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
   const [userToAssign, setUserToAssign] = useState<string | null>(null);
-
-  const [dialogIsOpen, setDialogIsOpen] = useState<"add" | "delete" | null>(
-    null
-  );
-
-  const [remove, { isLoading: isLoadingRemove }] =
-    useDeleteRoleProjectSharedMutation();
+  const [dialogIsOpen, setDialogIsOpen] = useState<
+    "add" | "delete" | "change-role" | null
+  >(null);
 
   return (
     <>
-      <Dialog
-        open={dialogIsOpen === "delete"}
-        onOpenChange={(data) => setDialogIsOpen(data ? "delete" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Подтверждение удаления</DialogTitle>
-          </DialogHeader>
-          <p>Вы уверены, что хотите удалить этого пользователя с проекта?</p>
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogIsOpen(null)}>
-              Отмена
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                setDialogIsOpen(null);
-                if (userToRemove) {
-                  await remove({
-                    project_id: project_id,
-                    user_id: userToRemove,
-                  });
-                }
-              }}
-            >
-              Удалить
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={dialogIsOpen === "add"}
-        onOpenChange={(data) => {
+      <RemoveUserFromProjectDialog
+        user_id={userToRemove || ""}
+        project_id={project_id}
+        dialogIsOpen={dialogIsOpen === "delete"}
+        setDialogIsOpen={(data) => setDialogIsOpen(data ? "delete" : null)}
+      />
+      <InviteUserToProjectDialog
+        project_id={project_id}
+        user_id={userToAssign || ""}
+        dialogIsOpen={dialogIsOpen === "add"}
+        setDialogIsOpen={(data) => {
           setDialogIsOpen(data ? "add" : null);
         }}
+      />
+      <Sheet
+        onOpenChange={(data) => {
+          if (data) {
+            refetch();
+          }
+        }}
       >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Подтверждение приглашения</DialogTitle>
-          </DialogHeader>
-          <p>Вы уверены, что хотите пригласить этого пользователя на проект?</p>
-          <InviteUserToProjectForm
-            onSuccess={() => {
-              setDialogIsOpen(null);
-            }}
-            onClose={() => {
-              setDialogIsOpen(null);
-            }}
-            project_id={project_id}
-            user_id={userToAssign || ""}
-            memberRate={0}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Popover>
-        <PopoverTrigger>
+        <SheetTrigger asChild>
           <div className="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer">
             {friendsOnProject?.filter((el) => el.in_project !== null).length ===
               0 && <UserRoundPlus className="size-4" />}
@@ -135,8 +87,8 @@ export default function InvitedUsers({
               ))}
             {members.length > max && <p>{`+${members.length - max}`}</p>}
           </div>
-        </PopoverTrigger>
-        <PopoverContent className="space-y-4 p-0">
+        </SheetTrigger>
+        <SheetContent>
           <div className="px-3 py-1">
             <div className="flex justify-between items-center">
               <span>Участники проекта</span>
@@ -156,54 +108,81 @@ export default function InvitedUsers({
 
                 <CommandGroup heading="Ваши друзья">
                   {friendsOnProject?.map((el) => (
-                    <CommandItem className="justify-between">
-                      <div className="flex gap-2 items-center">
-                        <UserAvatar
-                          size="xs"
-                          name={el.name}
-                          planId={SUBSCRIPTION.FREE}
-                        />
-                        <span>{el.name}</span>
-                        {el.in_project !== null && (
-                          <RoleBadge
-                            role={el.in_project?.role}
-                            showText={false}
-                          />
-                        )}
-                        {el?.in_project?.approve === false && (
-                          <Button variant="ghost" size="icon">
-                            <Clock className="size-4 text-sky-200" />
-                          </Button>
-                        )}
+                    <CommandItem className="flex-col gap-1 w-full">
+                      <div className="flex w-full justify-end">
+                        <div className="flex items-center gap-2">
+                          {el?.in_project?.approve === false && (
+                            <>
+                              <Clock className="size-3 text-sky-200" />
+                              <p className="text-xs">Запрос отправлен</p>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        {el.in_project === null && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setUserToAssign(el.user_id);
-                              setDialogIsOpen("add");
-                            }}
-                          >
-                            <UserRoundPlus className="size-4 text-emerald-200" />
-                          </Button>
-                        )}
+                      <div className="flex justify-between gap-1 w-full">
+                        <div className="flex gap-2 items-center">
+                          <UserAvatar
+                            size="xs"
+                            name={el.name}
+                            planId={SUBSCRIPTION.FREE}
+                          />
+                          <span>{el.name}</span>
+                        </div>
+                        <div>
+                          {el.in_project === null && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setUserToAssign(el.user_id);
+                                setDialogIsOpen("add");
+                              }}
+                            >
+                              <UserRoundPlus className="size-4 text-emerald-200" />
+                            </Button>
+                          )}
 
-                        {el.in_project !== null && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setUserToRemove(el.user_id);
-                              setDialogIsOpen("delete");
-                            }}
-                            disabled={isLoadingRemove}
-                            isLoading={isLoadingRemove}
-                          >
-                            <UserRoundX className="size-4 text-rose-200" />
-                          </Button>
-                        )}
+                          {el.in_project !== null && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setUserToRemove(el.user_id);
+                                setDialogIsOpen("delete");
+                              }}
+                            >
+                              <UserRoundX className="size-4 text-rose-200" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      <Separator className="border-1 w-full" />
+                      <div className="flex justify-between items-center w-full pt-2">
+                        <div>
+                          {el.in_project !== null && (
+                            <ChangeMemberRole
+                              currentRole={el.in_project?.role}
+                              
+                            />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {el.in_project !== null && (
+                            <>
+                              <span>
+                                {el.in_project.currency.symbol}
+                                {el.in_project.rate}
+                              </span>
+                              <span>{"/"}</span>
+                              <span>
+                                {el.in_project.payment_type === PAYMENT.FIXED &&
+                                  "фикс."}
+                                {el.in_project.payment_type ===
+                                  PAYMENT.HOURLY && "ч."}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </CommandItem>
                   ))}
@@ -211,8 +190,8 @@ export default function InvitedUsers({
               </CommandList>
             </Command>
           )}
-        </PopoverContent>
-      </Popover>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

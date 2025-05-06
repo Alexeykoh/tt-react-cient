@@ -1,21 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import { PaginatedResponse } from "../interfaces/api.interface";
-import { Project } from "../interfaces/project.interface";
-
-export interface CreateProjectRequest {
-  name: string;
-  currency_id: string;
-  rate: number;
-  tag_ids: string[];
-  client_id: string | null;
-}
-
-export interface UpdateProjectRequest {
-  name?: string;
-  currency_id?: string;
-  rate?: number;
-}
+import {
+  CreateProjectDTO,
+  Project,
+  UpdateProjectDTO,
+} from "../interfaces/project.interface";
 
 export const projectsService = createApi({
   reducerPath: "project-service",
@@ -37,7 +27,7 @@ export const projectsService = createApi({
       }),
       providesTags: ["project-service"],
     }),
-    createProject: builder.mutation<Project, CreateProjectRequest>({
+    createProject: builder.mutation<Project, CreateProjectDTO>({
       query: (data) => ({
         url: "projects/create",
         method: "POST",
@@ -47,7 +37,7 @@ export const projectsService = createApi({
     }),
     updateProject: builder.mutation<
       Project,
-      { id: string; data: UpdateProjectRequest }
+      { id: string; data: UpdateProjectDTO }
     >({
       query: ({ id, data }) => ({
         url: `projects/${id}`,

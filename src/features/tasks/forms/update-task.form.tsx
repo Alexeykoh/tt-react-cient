@@ -23,13 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UpdateTaskDto } from "@/shared/interfaces/task.interface";
+import { PAYMENT, UpdateTaskDto } from "@/shared/interfaces/task.interface";
 import { Currency } from "@/shared/interfaces/currency.interface";
-
-export enum PAYMENT {
-  FIXED = "fixed",
-  HOURLY = "hourly",
-}
 
 // Схема валидации формы
 const updateTaskSchema = z.object({

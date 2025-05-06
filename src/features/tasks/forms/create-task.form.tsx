@@ -23,11 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PAYMENT } from "@/shared/interfaces/task.interface";
 
-export enum PAYMENT {
-  FIXED = "fixed",
-  HOURLY = "hourly",
-}
 
 // Схема валидации формы
 const createTaskSchema = z.object({

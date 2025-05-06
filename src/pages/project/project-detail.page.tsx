@@ -38,16 +38,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import EditProjectForm from "@/features/project/EditProjectForm";
+import EditProjectForm from "@/features/project/forms/edit-project.form";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import extractLetterFromPath from "@/lib/extractPageView";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import InvitedUsers from "@/features/project/invited-users/invited-users";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import RoleComponent from "@/widgets/role-component";
 import RoleBadge from "@/components/role-badge";
 import { ProjectMembers } from "@/shared/interfaces/project.interface";
+import { PAYMENT } from "@/shared/interfaces/task.interface";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -73,7 +74,9 @@ const ProjectDetailPage: React.FC = () => {
   } = useGetProjectByIdQuery({ id: id! });
 
   useEffect(() => {
-    const owner = project?.members?.find((el) => el.role === ProjectRole.OWNER);
+    const owner = project?.members?.find(
+      (el) => el.role === PROJECT_ROLE.OWNER
+    );
     const me = project?.members?.find(
       (el) => el.user.user_id === userMe?.user_id
     );
@@ -158,11 +161,11 @@ const ProjectDetailPage: React.FC = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <RoleComponent
-                              roles={[ProjectRole.OWNER]}
+                              roles={[PROJECT_ROLE.OWNER]}
                               userRole={
                                 project?.members.find(
                                   (m) => m.user?.user_id === userMe?.user_id
-                                )?.role as ProjectRole
+                                )?.role as PROJECT_ROLE
                               }
                               showChildren={false}
                             >
@@ -201,11 +204,11 @@ const ProjectDetailPage: React.FC = () => {
                   </div>
                   <div className="flex gap-4 flex-wrap text-gray-400 text-xs items-center">
                     <RoleComponent
-                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                      roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
                       userRole={
                         project?.members.find(
                           (m) => m.user?.user_id === userMe?.user_id
-                        )?.role as ProjectRole
+                        )?.role as PROJECT_ROLE
                       }
                       showChildren={false}
                     >
@@ -217,9 +220,9 @@ const ProjectDetailPage: React.FC = () => {
                     {meData && (
                       <RoleComponent
                         roles={[
-                          ProjectRole.OWNER,
-                          ProjectRole.MANAGER,
-                          ProjectRole.EXECUTOR,
+                          PROJECT_ROLE.OWNER,
+                          PROJECT_ROLE.MANAGER,
+                          PROJECT_ROLE.EXECUTOR,
                         ]}
                         userRole={meData?.role}
                         showChildren={false}
@@ -229,6 +232,13 @@ const ProjectDetailPage: React.FC = () => {
                           <p>
                             {meData?.currency?.symbol}
                             {meData?.rate}
+                          </p>
+                          <span> {"/"}</span>
+                          <p>
+                            {meData?.payment_type === PAYMENT.FIXED &&
+                              "Фиксированная ставка"}
+                            {meData?.payment_type === PAYMENT.HOURLY &&
+                              "Почасовая оплата"}
                           </p>
                         </div>
                       </RoleComponent>
@@ -266,11 +276,11 @@ const ProjectDetailPage: React.FC = () => {
                     }
                   >
                     <RoleComponent
-                      roles={[ProjectRole.OWNER, ProjectRole.MANAGER]}
+                      roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
                       userRole={
                         project?.members.find(
                           (m) => m.user?.user_id === userMe?.user_id
-                        )?.role as ProjectRole
+                        )?.role as PROJECT_ROLE
                       }
                     >
                       <DialogTrigger asChild>

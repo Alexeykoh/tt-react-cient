@@ -15,17 +15,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import CreateProjectForm from "@/features/project/CreateProjectForm";
+import CreateProjectForm from "@/features/project/forms/create-project.form";
 import { PanelTop } from "lucide-react";
 import React, { useState } from "react";
 import { formatDate } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import UserAvatar from "@/components/user-avatar";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import { Badge } from "@/components/ui/badge";
-import ProjectInvitationDialog from "@/features/project/invited-users/project-invitation-dialog";
+import ProjectInvitationDialog from "@/features/project/project-invitation/project-invitation.dialog";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const ProjectsPage: React.FC = () => {
               {data?.data &&
                 data?.data.map((el) => {
                   const owner = el.members.find(
-                    (_el) => _el.role === ProjectRole.OWNER
+                    (_el) => _el.role === PROJECT_ROLE.OWNER
                   );
                   return (
                     <TableRow key={el.project_id}>
@@ -123,6 +123,7 @@ const ProjectsPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           {el.members.slice(0, 5).map((_el) => (
                             <UserAvatar
+                              key={_el.user.user_id}
                               size="xs"
                               name={_el?.user.name || ""}
                               planId={_el?.user?.subscriptions[0]?.planId}

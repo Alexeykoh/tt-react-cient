@@ -1,4 +1,4 @@
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { Badge } from "./ui/badge";
 import { BriefcaseBusiness, CircleCheck, Crown, User } from "lucide-react";
 import {
@@ -9,35 +9,35 @@ import {
 } from "@/components/ui/tooltip";
 
 interface props {
-  role: ProjectRole | undefined;
+  role: PROJECT_ROLE | undefined;
   showIcon?: boolean;
   showText?: boolean;
 }
 
 const roleMap: Record<
-  ProjectRole,
+  PROJECT_ROLE,
   {
     icon: React.ReactNode;
     text: string;
     border: string;
   }
 > = {
-  [ProjectRole.OWNER]: {
+  [PROJECT_ROLE.OWNER]: {
     icon: <Crown className="size-5" />,
     text: "Владелец",
     border: "border-primary/60",
   },
-  [ProjectRole.EXECUTOR]: {
+  [PROJECT_ROLE.EXECUTOR]: {
     icon: <CircleCheck className="size-5" />,
     text: "Исполнитель",
     border: "border-orange-400/40",
   },
-  [ProjectRole.MANAGER]: {
+  [PROJECT_ROLE.MANAGER]: {
     icon: <BriefcaseBusiness className="size-5" />,
     text: "Менеджер",
     border: "border-sky-400/40",
   },
-  [ProjectRole.GUEST]: {
+  [PROJECT_ROLE.GUEST]: {
     icon: <User className="size-5" />,
     text: "Гость",
     border: "border-gray-400/40",

@@ -6,13 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { ShieldX } from "lucide-react";
 import { HTMLAttributes, useEffect, useState, useCallback } from "react";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-  roles: Array<ProjectRole>;
-  userRole: ProjectRole;
+  roles: Array<PROJECT_ROLE>;
+  userRole: PROJECT_ROLE;
   showChildren?: boolean;
 }
 

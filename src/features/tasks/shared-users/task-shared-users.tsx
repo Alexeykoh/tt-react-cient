@@ -1,9 +1,3 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useState } from "react";
 import { TaskMember } from "@/shared/interfaces/task.interface";
 import UserAvatar from "@/components/user-avatar";
@@ -11,10 +5,7 @@ import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { Button } from "@/components/ui/button";
 import { UserRoundPlus, UserRoundX } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useAssignUserToTaskMutation,
-  useRemoveUserFromTaskMutation,
-} from "@/shared/api/task.service";
+import { useAssignUserToTaskMutation } from "@/shared/api/task.service";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,7 +14,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ProjectShared } from "@/shared/interfaces/project-shared.interface";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
+import RemoveUserFromTaskDialog from "../remove-user-from-task/remove-user-from-tasl.dialog";
 
 interface props {
   projectMembers: ProjectShared[];
@@ -47,41 +39,16 @@ export default function TaskSharedUsers({
 
   const [assign, { isLoading: isLoadingAssign }] =
     useAssignUserToTaskMutation();
-  const [remove, { isLoading: isLoadingRemove }] =
-    useRemoveUserFromTaskMutation();
-
-  console.log("taskMembers", taskMembers);
-  console.log("projectMembers", projectMembers);
 
   return (
     <div className="flex items-center gap-1 py-2">
-      <Dialog
-        open={dialogIsOpen === "delete"}
-        onOpenChange={(data) => setDialogIsOpen(data ? "delete" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Подтверждение удаления</DialogTitle>
-          </DialogHeader>
-          <p>Вы уверены, что хотите удалить этого пользователя с проекта?</p>
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogIsOpen(null)}>
-              Отмена
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                setDialogIsOpen(null);
-                if (userToRemove) {
-                  await remove({ taskId, userId: userToRemove });
-                }
-              }}
-            >
-              Удалить
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <RemoveUserFromTaskDialog
+        user_id={userToRemove || ""}
+        task_id={taskId}
+        dialogIsOpen={dialogIsOpen === "delete"}
+        setDialogIsOpen={(data) => setDialogIsOpen(data ? "delete" : null)}
+      />
+
       <Popover>
         <PopoverTrigger>
           <div className="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer">
@@ -110,7 +77,7 @@ export default function TaskSharedUsers({
           <div className="flex flex-col text-xs text-muted-foreground gap-1 py-4">
             <ScrollArea className="h-64 w-full">
               {projectMembers
-                .filter((el) => el.role !== ProjectRole.OWNER)
+                .filter((el) => el.role !== PROJECT_ROLE.OWNER)
                 .map((el) => (
                   <div className="flex items-center gap-2 justify-between">
                     <div className="flex items-center gap-2">
@@ -154,8 +121,6 @@ export default function TaskSharedUsers({
                               },
                             });
                           }}
-                          disabled={isLoadingRemove}
-                          isLoading={isLoadingRemove}
                         >
                           <UserRoundPlus className="size-4" />
                         </Button>

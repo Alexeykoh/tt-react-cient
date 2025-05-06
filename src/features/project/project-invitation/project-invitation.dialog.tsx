@@ -79,6 +79,15 @@ export default function ProjectInvitationDialog({
                           </div>
                         </div>
                         <div className="flex flex-col flex-wrap gap-1">
+                          <h3 className="text-xs text-gray-400">{`Ставка:`}</h3>
+                          <div className="flex items-center flex-wrap gap-1">
+                            <span>
+                              {el.currency.symbol}
+                              {el.rate}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col flex-wrap gap-1">
                           <h3 className="text-xs text-gray-400">{`Проект:`}</h3>
                           <div className="flex items-center flex-wrap gap-1">
                             <span>{el.project.name}</span>

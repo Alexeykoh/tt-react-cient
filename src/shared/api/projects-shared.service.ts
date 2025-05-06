@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   FriendsOnProject,
+  GetProjectSharedMembersDTO,
   ProjectInvitations,
   ProjectShared,
   ProjectSharedCreateDTO,
@@ -30,6 +31,7 @@ export const projectsSharedService = createApi({
     "project-shared-id-service",
     "friends-on-project",
     "project-shared-invitations",
+    "project-shared-filter",
   ],
   endpoints: (builder) => ({
     getProjectsShared: builder.query<Array<ProjectShared>, void>({
@@ -40,6 +42,19 @@ export const projectsSharedService = createApi({
       transformResponse: (response: { data: Array<ProjectShared> }) =>
         response.data,
       providesTags: ["project-shared-service"],
+    }),
+
+    getProjectsSharedFilter: builder.query<
+      Array<ProjectShared>,
+      GetProjectSharedMembersDTO
+    >({
+      query: ({ role, project_id }) => ({
+        url: `projects/shared/project-members/${project_id}?role=${role}`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: Array<ProjectShared> }) =>
+        response.data,
+      providesTags: ["project-shared-filter"],
     }),
 
     getProjectsSharedInvations: builder.query<Array<ProjectInvitations>, void>({
@@ -125,6 +140,7 @@ export const {
   useGetProjectSharedByIdQuery,
   useGetFriendsOnProjectQuery,
   useGetProjectsSharedInvationsQuery,
+  useGetProjectsSharedFilterQuery,
   useApproveProjectSharedInvationMutation,
   useCreateProjectSharedMutation,
   useChangeRoleProjectSharedMutation,

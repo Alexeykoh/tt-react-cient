@@ -1,5 +1,5 @@
 import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
-import { ProjectRole } from "@/shared/enums/project-role.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -23,11 +23,13 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.service";
 import { Input } from "@/components/ui/input";
+import { PAYMENT } from "@/shared/interfaces/task.interface";
 
 const addUserToProjectSchema = z.object({
   project_id: z.string().min(1, "Название задачи обязательно"),
   user_id: z.string().min(1, "Проект обязателен"),
-  role: z.nativeEnum(ProjectRole),
+  role: z.nativeEnum(PROJECT_ROLE),
+  payment_type: z.nativeEnum(PAYMENT),
   rate: z.union([z.number().min(0), z.string()]).transform((val) => {
     if (typeof val === "string") {
       return parseFloat(val) || 0;
@@ -64,7 +66,8 @@ export default function InviteUserToProjectForm({
     defaultValues: {
       project_id: project_id,
       user_id: user_id,
-      role: ProjectRole.EXECUTOR,
+      payment_type: PAYMENT.HOURLY,
+      role: PROJECT_ROLE.EXECUTOR,
       rate: memberRate,
       currency_id: "USD",
     },
@@ -101,11 +104,43 @@ export default function InviteUserToProjectForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Array.from(Object.values(ProjectRole))
-                    .filter((el) => el !== ProjectRole.OWNER)
+                  {Array.from(Object.values(PROJECT_ROLE))
+                    .filter((el) => el !== PROJECT_ROLE.OWNER)
                     .map((_role) => (
                       <SelectItem key={_role} value={_role} className="">
                         <RoleBadge role={_role} />
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="payment_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Тип расчета оплаты</FormLabel>
+              <Select
+                disabled={isLoadingCurrencies}
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите способ расчета оплаты" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Array.from(Object.values(PAYMENT))
+
+                    .map((_el) => (
+                      <SelectItem key={_el} value={_el} className="">
+                        {_el === PAYMENT.FIXED && "Фиксированая стоимость"}
+                        {_el === PAYMENT.HOURLY && "Почасовая оплата"}
                       </SelectItem>
                     ))}
                 </SelectContent>

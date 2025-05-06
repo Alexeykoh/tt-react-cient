@@ -1,28 +1,34 @@
-import { ProjectRole } from "../enums/project-role.enum";
+import { PAYMENT } from "@/shared/interfaces/task.interface";
+import { PROJECT_ROLE } from "../enums/project-role.enum";
+import { Currency } from "./currency.interface";
 
 export interface ProjectShared {
   member_id: string;
   project_id: string;
   user_id: string;
-  role: ProjectRole;
+  role: PROJECT_ROLE;
   approve: boolean;
+  payment_type: PAYMENT;
+  rate: string | number;
   created_at: string;
   updated_at: string;
   user: {
     user_id: string;
     name: string;
     email: string;
-    // subscriptions: {
-    //   planId: string;
-    //   status: string;
-    // }[];
   };
+  currency: Currency;
+}
+
+export interface GetProjectSharedMembersDTO {
+  role: "all" | "owner" | "shared";
+  project_id: string;
 }
 
 export interface ProjectSharedCreateDTO {
   project_id: string;
   user_id: string;
-  role: ProjectRole;
+  role: PROJECT_ROLE;
   rate: number | string;
   currency_id: string;
 }
@@ -40,7 +46,10 @@ export interface FriendsOnProject {
     member_id: string;
     project_id: string;
     user_id: string;
-    role: ProjectRole;
+    role: PROJECT_ROLE;
+    rate: string | number;
+    payment_type: PAYMENT;
+    currency: Currency;
     approve: boolean;
     created_at: string;
     updated_at: string;
@@ -50,7 +59,10 @@ export interface FriendsOnProject {
 export interface ProjectInvitations {
   member_id: string;
   project_id: string;
-  role: ProjectRole;
+  role: PROJECT_ROLE;
+  currency: Currency;
+  rate: string;
+  payment_type: PAYMENT;
   project: {
     name: string;
     user: {
