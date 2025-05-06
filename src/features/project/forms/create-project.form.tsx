@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 // Схема валидации формы
 const createProjectSchema = z.object({
@@ -55,7 +56,7 @@ function CreateProjectForm({ onSuccess, onClose }: CreateProjectFormProps) {
     defaultValues: {
       name: "",
       rate: 0,
-      client_id: "",
+      client_id: String(currencies?.data[0]?.currency_id || 0),
       tag_ids: [],
     },
   });
@@ -94,51 +95,6 @@ function CreateProjectForm({ onSuccess, onClose }: CreateProjectFormProps) {
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name="currency_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Валюта</FormLabel>
-              <Select
-                disabled={isLoadingCurrencies}
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите валюту" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {currencies?.data?.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.name} ({currency.symbol})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="rate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ставка</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Введите ставку" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="client_id"
@@ -182,6 +138,60 @@ function CreateProjectForm({ onSuccess, onClose }: CreateProjectFormProps) {
             </FormItem>
           )}
         />
+
+        <Separator />
+        <div>
+          <h2 className="font-semibold">Настройки стоимости ваших услуг</h2>
+          <div className="flex flex-col gap-4 pl-4 pt-4">
+            <FormField
+              control={form.control}
+              name="currency_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Валюта</FormLabel>
+                  <Select
+                    disabled={isLoadingCurrencies}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Выберите валюту" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {currencies?.data?.map((currency) => (
+                        <SelectItem key={currency.code} value={currency.code}>
+                          {currency.name} ({currency.symbol})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="rate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ставка</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Введите ставку"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
         <DialogFooter>
           <Button type="submit" disabled={isCreating}>

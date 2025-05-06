@@ -20,6 +20,8 @@ import InviteUserToProjectDialog from "../invite-user-to-project/invite-user-to-
 import { Separator } from "@radix-ui/react-separator";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import ChangeMemberRole from "./change-member-role.dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface InvitedUsersProps {
   members: Array<ProjectMembers>;
@@ -109,81 +111,85 @@ export default function InvitedUsers({
                 <CommandGroup heading="Ваши друзья">
                   {friendsOnProject?.map((el) => (
                     <CommandItem className="flex-col gap-1 w-full">
-                      <div className="flex w-full justify-end">
-                        <div className="flex items-center gap-2">
-                          {el?.in_project?.approve === false && (
-                            <>
-                              <Clock className="size-3 text-sky-200" />
-                              <p className="text-xs">Запрос отправлен</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between gap-1 w-full">
-                        <div className="flex gap-2 items-center">
-                          <UserAvatar
-                            size="xs"
-                            name={el.name}
-                            planId={SUBSCRIPTION.FREE}
-                          />
-                          <span>{el.name}</span>
-                        </div>
-                        <div>
-                          {el.in_project === null && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setUserToAssign(el.user_id);
-                                setDialogIsOpen("add");
-                              }}
-                            >
-                              <UserRoundPlus className="size-4 text-emerald-200" />
-                            </Button>
-                          )}
+                      <Card className="p-1 w-full">
+                        <CardContent className="p-1 w-full">
+                          <div className="flex w-full justify-end">
+                            {el?.in_project?.approve === false && (
+                              <Badge
+                                variant={"outline"}
+                                className="flex items-center gap-2"
+                              >
+                                <Clock className="size-3 text-sky-200" />
+                                <p className="text-xs">Запрос отправлен</p>
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex justify-between gap-1 w-full">
+                            <div className="flex gap-2 items-center">
+                              <UserAvatar
+                                size="xs"
+                                name={el.name}
+                                planId={SUBSCRIPTION.FREE}
+                              />
+                              <span>{el.name}</span>
+                            </div>
+                            <div>
+                              {el.in_project === null && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    setUserToAssign(el.user_id);
+                                    setDialogIsOpen("add");
+                                  }}
+                                >
+                                  <UserRoundPlus className="size-4 text-emerald-200" />
+                                </Button>
+                              )}
 
-                          {el.in_project !== null && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setUserToRemove(el.user_id);
-                                setDialogIsOpen("delete");
-                              }}
-                            >
-                              <UserRoundX className="size-4 text-rose-200" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <Separator className="border-1 w-full" />
-                      <div className="flex justify-between items-center w-full pt-2">
-                        <div>
-                          {el.in_project !== null && (
-                            <ChangeMemberRole
-                              currentRole={el.in_project?.role}
-                              
-                            />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {el.in_project !== null && (
-                            <>
-                              <span>
-                                {el.in_project.currency.symbol}
-                                {el.in_project.rate}
-                              </span>
-                              <span>{"/"}</span>
-                              <span>
-                                {el.in_project.payment_type === PAYMENT.FIXED &&
-                                  "фикс."}
-                                {el.in_project.payment_type ===
-                                  PAYMENT.HOURLY && "ч."}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
+                              {el.in_project !== null && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    setUserToRemove(el.user_id);
+                                    setDialogIsOpen("delete");
+                                  }}
+                                >
+                                  <UserRoundX className="size-4 text-rose-200" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          <Separator className="border-1 w-full" />
+                          <div className="flex justify-between items-center w-full pt-2">
+                            <div>
+                              {el.in_project !== null && (
+                                <ChangeMemberRole
+                                  currentRole={el.in_project?.role}
+                                />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              {el.in_project !== null && (
+                                <>
+                                  <span>
+                                    {el?.in_project?.currency?.symbol}
+                                    {el?.in_project?.rate}
+                                  </span>
+                                  <span>{"/"}</span>
+                                  <span>
+                                    {el.in_project.payment_type ===
+                                      PAYMENT.FIXED && "фикс."}
+                                    {el.in_project.payment_type ===
+                                      PAYMENT.HOURLY && "ч."}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </CommandItem>
                   ))}
                 </CommandGroup>

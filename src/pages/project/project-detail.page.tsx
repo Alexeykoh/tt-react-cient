@@ -262,12 +262,22 @@ const ProjectDetailPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-row gap-1">
-                    <InvitedUsers
-                      members={project?.members || []}
-                      project_id={project?.project_id || ""}
-                    />
-                  </div>
+                  <RoleComponent
+                    roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
+                    userRole={
+                      project?.members.find(
+                        (m) => m.user?.user_id === userMe?.user_id
+                      )?.role as PROJECT_ROLE
+                    }
+                    showChildren={false}
+                  >
+                    <div className="flex flex-row gap-1">
+                      <InvitedUsers
+                        members={project?.members || []}
+                        project_id={project?.project_id || ""}
+                      />
+                    </div>
+                  </RoleComponent>
 
                   <Dialog
                     open={dialogIsOpen === "create"}
@@ -282,6 +292,7 @@ const ProjectDetailPage: React.FC = () => {
                           (m) => m.user?.user_id === userMe?.user_id
                         )?.role as PROJECT_ROLE
                       }
+                      showChildren={false}
                     >
                       <DialogTrigger asChild>
                         <Button size={"sm"} className="w-fit">
@@ -297,7 +308,6 @@ const ProjectDetailPage: React.FC = () => {
                         onSuccess={() => setDialogIsOpen(null)}
                         onClose={() => setDialogIsOpen(null)}
                         projectId={project?.project_id || ""}
-                        projectRate={Number(ownerData?.rate || 0)}
                       />
                     </DialogContent>
                   </Dialog>

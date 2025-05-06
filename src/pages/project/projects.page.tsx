@@ -43,6 +43,8 @@ const ProjectsPage: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Проекты</h1>
+        </div>
+        <div className="flex gap-6 items-center">
           <ProjectInvitationDialog
             dialogIsOpen={dialogIsOpen === "invitations"}
             setDialogIsOpen={(_el) =>
@@ -50,24 +52,24 @@ const ProjectsPage: React.FC = () => {
             }
             refetchProjects={() => refetchProjects()}
           />
+          <Dialog
+            open={dialogIsOpen === "create"}
+            onOpenChange={(_el) => setDialogIsOpen(_el ? "create" : null)}
+          >
+            <DialogTrigger asChild>
+              <Button size={"sm"}>Добавить проект</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Создать новый проект</DialogTitle>
+              </DialogHeader>
+              <CreateProjectForm
+                onSuccess={() => setDialogIsOpen(null)}
+                onClose={() => setDialogIsOpen(null)}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
-        <Dialog
-          open={dialogIsOpen === "create"}
-          onOpenChange={(_el) => setDialogIsOpen(_el ? "create" : null)}
-        >
-          <DialogTrigger asChild>
-            <Button size={"sm"}>Добавить проект</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Создать новый проект</DialogTitle>
-            </DialogHeader>
-            <CreateProjectForm
-              onSuccess={() => setDialogIsOpen(null)}
-              onClose={() => setDialogIsOpen(null)}
-            />
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="flex-1 flex flex-col">

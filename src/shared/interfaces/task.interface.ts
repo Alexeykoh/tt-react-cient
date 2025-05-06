@@ -50,9 +50,6 @@ export interface CreateTaskDto {
   description: string;
   is_paid: boolean;
   order: number;
-  payment_type: PAYMENT;
-  rate: number | string;
-  currency_id: string;
   tag_ids: Array<string>;
 }
 

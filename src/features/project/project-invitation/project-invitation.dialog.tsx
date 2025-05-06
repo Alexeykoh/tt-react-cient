@@ -16,6 +16,8 @@ import {
 } from "@/shared/api/projects-shared.service";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
+import { Bell } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface props {
   dialogIsOpen: boolean;
@@ -45,10 +47,13 @@ export default function ProjectInvitationDialog({
           <DialogTrigger asChild>
             <Button
               size={"icon"}
-              variant={"outline"}
-              className="rounded-full size-6"
+              variant={"ghost"}
+              className="rounded-full size-6 relative"
             >
-              {projectInvitations?.length}
+              <Bell />
+              <Badge className="rounded-full size-4 border-primary absolute -top-2 -right-2.5" variant={"default"}>
+                {projectInvitations?.length}
+              </Badge>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -82,8 +87,8 @@ export default function ProjectInvitationDialog({
                           <h3 className="text-xs text-gray-400">{`Ставка:`}</h3>
                           <div className="flex items-center flex-wrap gap-1">
                             <span>
-                              {el.currency.symbol}
-                              {el.rate}
+                              {el?.currency?.symbol}
+                              {el?.rate}
                             </span>
                           </div>
                         </div>
@@ -106,7 +111,7 @@ export default function ProjectInvitationDialog({
                       disabled={isLoadingDelete}
                       onClick={() => {
                         deleteInvitation({
-                          project_id: el.project_id,
+                          project_id: el?.project_id,
                           user_id: userMe?.user_id || "",
                         });
                         setDialogIsOpen(null);
@@ -120,7 +125,7 @@ export default function ProjectInvitationDialog({
                       isLoading={isLoadingInvitation}
                       disabled={isLoadingInvitation}
                       onClick={() => {
-                        approveInvitation({ project_id: el.project_id })
+                        approveInvitation({ project_id: el?.project_id })
                           .unwrap()
                           .then(() => refetchProjects());
                         setDialogIsOpen(null);
