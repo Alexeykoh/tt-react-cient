@@ -26,7 +26,7 @@ import { X } from "lucide-react";
 
 // Схема валидации формы
 const editProjectSchema = z.object({
-  name: z.string().min(1, "Название проекта обязательно"),
+  name: z.string().min(1, "Название проекта обязательно").max(120,'Максимум 120 символов'),
   client_id: z.string().optional(),
   tag_ids: z.array(z.string()).default([]),
 });

@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator";
 
 // Схема валидации формы
 const createProjectSchema = z.object({
-  name: z.string().min(1, "Название проекта обязательно"),
+  name: z.string().min(1, "Название проекта обязательно").max(120,'Максимум 120 символов'),
   currency_id: z.string().min(1, "Выберите валюту"),
   rate: z.coerce.number().min(0, "Ставка должна быть положительным числом"),
   client_id: z.string().optional(),
