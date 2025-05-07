@@ -3,7 +3,13 @@ import UserAvatar from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { useState } from "react";
-import { Clock, UserRoundPlus, UserRoundX } from "lucide-react";
+import {
+  Clock,
+  MoreVerticalIcon,
+  UserRoundPen,
+  UserRoundPlus,
+  UserRoundX,
+} from "lucide-react";
 import { useGetFriendsOnProjectQuery } from "@/shared/api/projects-shared.service";
 import {
   Command,
@@ -14,13 +20,21 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import RemoveUserFromProjectDialog from "../remove-user-from-project/remove-user-from-project.dialog";
-import InviteUserToProjectDialog from "../invite-user-to-project/invite-user-to-project.dialog";
-import { PAYMENT } from "@/shared/interfaces/task.interface";
-import ChangeMemberRole from "./change-member-role.dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import InviteUserToProjectDialog from "../invite-user-to-project/invite-user-to-project.dialog";
+import { Separator } from "@/components/ui/separator";
+import RoleBadge from "@/components/role-badge";
+import PaymentType from "@/shared/ui/payment-type";
+import EditProjectMemberDialog from "../edit-project.member.dialog";
 
 interface InvitedUsersProps {
   members: Array<ProjectMembers>;
@@ -39,14 +53,21 @@ export default function InvitedUsers({
     },
     { skip: !project_id }
   );
+  const [memberToEdit, setMemberToEdit] = useState<string | null>(null);
   const [userToRemove, setUserToRemove] = useState<string | null>(null);
   const [userToAssign, setUserToAssign] = useState<string | null>(null);
   const [dialogIsOpen, setDialogIsOpen] = useState<
-    "add" | "delete" | "change-role" | null
+    "add" | "delete" | "edit" | null
   >(null);
 
   return (
     <>
+      <EditProjectMemberDialog
+        dialogIsOpen={dialogIsOpen === "edit"}
+        setDialogIsOpen={(data) => setDialogIsOpen(data ? "edit" : null)}
+        project_id={project_id}
+        member_id={memberToEdit || ""}
+      />
       <RemoveUserFromProjectDialog
         user_id={userToRemove || ""}
         project_id={project_id}
@@ -112,80 +133,105 @@ export default function InvitedUsers({
                     <CommandItem className="flex-col gap-1 w-full">
                       <Card className="p-1 w-full">
                         <CardContent className="flex flex-col p-1 w-full gap-1">
+                          <div className="flex justify-between gap-1 w-full">
+                            <div className="flex flex-col gap-2 w-full">
+                              <div className="flex w-full justify-between gap-1">
+                                <div className="flex gap-2 items-center">
+                                  <UserAvatar
+                                    size="xs"
+                                    name={el.name}
+                                    planId={SUBSCRIPTION.FREE}
+                                  />
+                                  <span>{el.name}</span>
+                                </div>
+                                <div>
+                                  {el.in_project === null && (
+                                    <>
+                                      <Button
+                                        variant={"ghost"}
+                                        size={"icon"}
+                                        onClick={() => {
+                                          setUserToAssign(el.user_id);
+                                          setDialogIsOpen("add");
+                                        }}
+                                      >
+                                        <UserRoundPlus className="size-4 text-emerald-200" />
+                                      </Button>
+                                    </>
+                                  )}
+                                  {el.in_project !== null && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                                          size="icon"
+                                        >
+                                          <MoreVerticalIcon />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+
+                                      <DropdownMenuContent align="end">
+                                        {el.in_project !== null && (
+                                          <>
+                                            <DropdownMenuItem
+                                              onClick={() => {
+                                                setMemberToEdit(
+                                                  el.in_project.member_id
+                                                );
+                                                setDialogIsOpen("edit");
+                                              }}
+                                            >
+                                              <UserRoundPen className="size-4 text-orange-200" />
+                                              <span>Редактировать</span>
+                                            </DropdownMenuItem>
+                                            <Separator />
+                                            <DropdownMenuItem
+                                              onClick={() => {
+                                                setUserToRemove(el.user_id);
+                                                setDialogIsOpen("delete");
+                                              }}
+                                            >
+                                              <UserRoundX className="size-4 text-rose-200" />
+                                              <span>Удалить</span>
+                                            </DropdownMenuItem>
+                                          </>
+                                        )}
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  )}
+                                </div>
+                              </div>
+                              {el.in_project !== null && (
+                                <div className="flex w-full justify-between">
+                                  <Badge variant={"outline"}>
+                                    {el?.in_project?.currency?.symbol}
+                                    {el?.in_project?.rate}
+                                    <span>{" / "}</span>
+                                    <span>
+                                      <PaymentType
+                                        type={
+                                          el?.in_project?.payment_type || ""
+                                        }
+                                        varian={"sm"}
+                                      />
+                                    </span>
+                                  </Badge>
+                                  <RoleBadge role={el?.in_project?.role} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
                           <div className="flex w-full justify-end">
                             {el?.in_project?.approve === false && (
                               <Badge
                                 variant={"outline"}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 border-primary/50"
                               >
-                                <Clock className="size-3 text-sky-200" />
+                                <Clock className="size-4" />
                                 <p className="text-xs">Запрос отправлен</p>
                               </Badge>
                             )}
-                          </div>
-                          <div className="flex justify-between gap-1 w-full">
-                            <div className="flex gap-2 items-center">
-                              <UserAvatar
-                                size="xs"
-                                name={el.name}
-                                planId={SUBSCRIPTION.FREE}
-                              />
-                              <span>{el.name}</span>
-                            </div>
-                            <div>
-                              {el.in_project === null && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    setUserToAssign(el.user_id);
-                                    setDialogIsOpen("add");
-                                  }}
-                                >
-                                  <UserRoundPlus className="size-4 text-emerald-200" />
-                                </Button>
-                              )}
-
-                              {el.in_project !== null && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    setUserToRemove(el.user_id);
-                                    setDialogIsOpen("delete");
-                                  }}
-                                >
-                                  <UserRoundX className="size-4 text-rose-200" />
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                          {/* <Separator className="border-1 w-full" /> */}
-                          <div className="flex justify-between items-center w-full">
-                            <div>
-                              {el.in_project !== null && (
-                                <ChangeMemberRole
-                                  currentRole={el.in_project?.role}
-                                />
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {el.in_project !== null && (
-                                <>
-                                  <span>
-                                    {el?.in_project?.currency?.symbol}
-                                    {el?.in_project?.rate}
-                                  </span>
-                                  <span>{"/"}</span>
-                                  <span>
-                                    {el.in_project.payment_type ===
-                                      PAYMENT.FIXED && "фикс."}
-                                    {el.in_project.payment_type ===
-                                      PAYMENT.HOURLY && "ч."}
-                                  </span>
-                                </>
-                              )}
-                            </div>
                           </div>
                         </CardContent>
                       </Card>

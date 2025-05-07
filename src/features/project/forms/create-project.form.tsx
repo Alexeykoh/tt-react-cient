@@ -55,8 +55,8 @@ function CreateProjectForm({ onSuccess, onClose }: CreateProjectFormProps) {
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: "",
-      rate: 0,
-      client_id: String(currencies?.data[0]?.currency_id || 0),
+      rate: 1,
+      currency_id: String(currencies?.data[0]?.code || 'USD'),
       tag_ids: [],
     },
   });

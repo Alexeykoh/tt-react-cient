@@ -33,6 +33,12 @@ export interface ProjectSharedCreateDTO {
   currency_id: string;
 }
 
+export interface ProjectSharedPatchDTO {
+  role: PROJECT_ROLE;
+  rate: number | string;
+  currency_id: string;
+  payment_type: PAYMENT;
+}
 export interface ProjectSharedDeleteDTO {
   project_id: string;
   user_id: string;

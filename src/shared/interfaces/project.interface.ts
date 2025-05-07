@@ -27,6 +27,7 @@ export interface UpdateProjectDTO {
 }
 
 export interface ProjectMembers {
+  member_id: string;
   role: PROJECT_ROLE;
   approve: boolean;
   rate: string;

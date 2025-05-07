@@ -49,6 +49,7 @@ import RoleComponent from "@/widgets/role-component";
 import RoleBadge from "@/components/role-badge";
 import { ProjectMembers } from "@/shared/interfaces/project.interface";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
+import LeaveProjectDialog from "@/features/project/leave-project.dialog";
 
 const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const ProjectDetailPage: React.FC = () => {
 
   const [deleteProject] = useDeleteProjectMutation();
   const [dialogIsOpen, setDialogIsOpen] = useState<
-    "create" | "edit" | "delete" | "invite" | null
+    "create" | "edit" | "delete" | "invite" | "leave" | null
   >(null);
   const {
     data: project,
@@ -89,6 +90,18 @@ const ProjectDetailPage: React.FC = () => {
 
   return (
     <>
+      <LeaveProjectDialog
+        project_id={project?.project_id || ""}
+        member_id={
+          project?.members.find((el) => el.user.user_id === userMe?.user_id)
+            ?.member_id || ""
+        }
+        dialogIsOpen={dialogIsOpen === "leave"}
+        setDialogIsOpen={(data) => setDialogIsOpen(data ? "leave" : null)}
+        projectRefetch={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
       <Dialog
         open={dialogIsOpen === "edit"}
         onOpenChange={(data) => setDialogIsOpen(data ? "edit" : null)}
@@ -118,6 +131,10 @@ const ProjectDetailPage: React.FC = () => {
             <DialogTitle>Подтверждение удаления</DialogTitle>
           </DialogHeader>
           <p>Вы уверены, что хотите удалить этот проект?</p>
+          <p className="text-gray-400">
+            Все приглашенные пользователи получат уведомление об удалении
+            проекта.
+          </p>
           <div className="flex justify-end space-x-2 mt-4">
             <Button variant="outline" onClick={() => setDialogIsOpen(null)}>
               Отмена
@@ -218,7 +235,7 @@ const ProjectDetailPage: React.FC = () => {
                             >
                               <DropdownMenuItem
                                 className="text-destructive focus:text-destructive"
-                                onClick={() => setDialogIsOpen("delete")}
+                                onClick={() => setDialogIsOpen("leave")}
                               >
                                 <LogOut className="mr-2 size-4" />
                                 <span>Покинуть проект</span>
@@ -341,18 +358,6 @@ const ProjectDetailPage: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-4">
-                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${id}`}>
-                  <Button
-                    size={"sm"}
-                    variant={
-                      currentPageView === TASKS_VIEW.TABLE ? "outline" : "ghost"
-                    }
-                  >
-                    <Table />
-                    <span>Таблица</span>
-                  </Button>
-                </Link>
-                {/*  */}
                 <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.BOARD}/${id}`}>
                   <Button
                     size={"sm"}
@@ -362,6 +367,17 @@ const ProjectDetailPage: React.FC = () => {
                   >
                     <Kanban />
                     <span>Доска</span>
+                  </Button>
+                </Link>
+                <Link to={`/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${id}`}>
+                  <Button
+                    size={"sm"}
+                    variant={
+                      currentPageView === TASKS_VIEW.TABLE ? "outline" : "ghost"
+                    }
+                  >
+                    <Table />
+                    <span>Таблица</span>
                   </Button>
                 </Link>
               </div>

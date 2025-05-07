@@ -7,6 +7,7 @@ import {
   ProjectShared,
   ProjectSharedCreateDTO,
   ProjectSharedDeleteDTO,
+  ProjectSharedPatchDTO,
 } from "../interfaces/project-shared.interface";
 
 export interface CreateProjectRequest {
@@ -32,6 +33,7 @@ export const projectsSharedService = createApi({
     "friends-on-project",
     "project-shared-invitations",
     "project-shared-filter",
+    "project-shared-member",
   ],
   endpoints: (builder) => ({
     getProjectsShared: builder.query<Array<ProjectShared>, void>({
@@ -42,6 +44,17 @@ export const projectsSharedService = createApi({
       transformResponse: (response: { data: Array<ProjectShared> }) =>
         response.data,
       providesTags: ["project-shared-service"],
+    }),
+    getProjectsSharedByMemberId: builder.query<
+      ProjectShared,
+      { member_id: string }
+    >({
+      query: ({ member_id }) => ({
+        url: `projects/shared/member/${member_id}`,
+        method: "GET",
+      }),
+      transformResponse: (response: { data: ProjectShared }) => response.data,
+      providesTags: ["project-shared-member"],
     }),
 
     getProjectsSharedFilter: builder.query<
@@ -132,11 +145,42 @@ export const projectsSharedService = createApi({
         "friends-on-project",
       ],
     }),
+    leaveProjectShared: builder.mutation<
+      void,
+      { project_id: string; member_id: string }
+    >({
+      query: ({ project_id, member_id }) => ({
+        url: `projects/shared/leave/${project_id}/${member_id}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: [
+        "project-shared-service",
+        "project-shared-id-service",
+        "friends-on-project",
+      ],
+    }),
+    patchProjectMember: builder.mutation<
+      void,
+      { project_id: string; member_id: string; data: ProjectSharedPatchDTO }
+    >({
+      query: ({ project_id, member_id, data }) => ({
+        url: `projects/shared/${project_id}/${member_id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: [
+        "project-shared-service",
+        "project-shared-id-service",
+        "friends-on-project",
+        "project-shared-member",
+      ],
+    }),
   }),
 });
 
 export const {
   useGetProjectsSharedQuery,
+  useGetProjectsSharedByMemberIdQuery,
   useGetProjectSharedByIdQuery,
   useGetFriendsOnProjectQuery,
   useGetProjectsSharedInvationsQuery,
@@ -145,4 +189,6 @@ export const {
   useCreateProjectSharedMutation,
   useChangeRoleProjectSharedMutation,
   useDeleteRoleProjectSharedMutation,
+  useLeaveProjectSharedMutation,
+  usePatchProjectMemberMutation,
 } = projectsSharedService;

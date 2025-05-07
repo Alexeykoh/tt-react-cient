@@ -21,13 +21,13 @@ import { z } from "zod";
 import RoleBadge from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { useCreateProjectSharedMutation } from "@/shared/api/projects-shared.service";
+import { usePatchProjectMemberMutation } from "@/shared/api/projects-shared.service";
 import { Input } from "@/components/ui/input";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 
 const schema = z.object({
-  project_id: z.string().min(1, "Название задачи обязательно"),
-  user_id: z.string().min(1, "Проект обязателен"),
+  project_id: z.string().min(1, "ID проекта обязателен"),
+  member_id: z.string().min(1, "ID участника робязателен"),
   role: z.nativeEnum(PROJECT_ROLE),
   payment_type: z.nativeEnum(PAYMENT),
   rate: z.union([z.number().min(0), z.string()]).transform((val) => {
@@ -44,38 +44,39 @@ type schemaDTO = z.infer<typeof schema>;
 interface props {
   onSuccess: () => void;
   onClose: () => void;
-  project_id: string;
-  user_id: string;
-  memberRate: number;
+  initialData: schemaDTO;
 }
 
-export default function InviteUserToProjectForm({
+export default function EditProjectMemberForm({
   onSuccess,
   onClose,
-  project_id,
-  user_id,
-  memberRate,
+  initialData,
 }: props) {
   const { data: currencies, isLoading: isLoadingCurrencies } =
     useGetCurrenciesQuery();
-  const [assign, { isLoading: isLoadingAssign }] =
-    useCreateProjectSharedMutation();
+  const [patch, { isLoading: isLoadingPatch }] =
+    usePatchProjectMemberMutation();
 
   const form = useForm<schemaDTO>({
     resolver: zodResolver(schema),
     defaultValues: {
-      project_id: project_id,
-      user_id: user_id,
-      payment_type: PAYMENT.HOURLY,
-      role: PROJECT_ROLE.EXECUTOR,
-      rate: memberRate,
-      currency_id: "USD",
+      ...initialData,
+      currency_id: String(currencies?.data[0]?.code || "USD"),
     },
   });
 
   async function onSubmit(values: schemaDTO) {
     try {
-      await assign(values).unwrap();
+      await patch({
+        project_id: values.project_id,
+        member_id: values.member_id,
+        data: {
+          role: values.role,
+          rate: values.rate,
+          currency_id: values.currency_id,
+          payment_type: values.payment_type,
+        },
+      }).unwrap();
       form.reset();
       onSuccess();
       onClose();
@@ -211,8 +212,8 @@ export default function InviteUserToProjectForm({
           </Button>
           <Button
             type="submit"
-            disabled={isLoadingAssign}
-            isLoading={isLoadingAssign}
+            disabled={isLoadingPatch}
+            isLoading={isLoadingPatch}
           >
             {"Пригласить"}
           </Button>

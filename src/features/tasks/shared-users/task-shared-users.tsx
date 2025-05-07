@@ -51,14 +51,25 @@ export default function TaskSharedUsers({
 
       <Popover>
         <PopoverTrigger>
-          <div className="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer">
+          <div
+            className={`flex items-center text-xs text-muted-foreground gap-1 cursor-pointer`}
+          >
             {taskMembers.length === 0 && <UserRoundPlus className="size-4" />}
             {taskMembers.slice(0, max).map((el) => (
-              <UserAvatar
-                size="xs"
-                name={el.user.name}
-                planId={SUBSCRIPTION.FREE}
-              />
+              <div
+                className={`${projectMembers.find((_el) => _el.user_id === el.user.user_id)?.approve === false && "grayscale-100"}`}
+              >
+                <UserAvatar
+                  size="xs"
+                  name={el.user.name}
+                  planId={SUBSCRIPTION.FREE}
+                  metaText={
+                    projectMembers.find(
+                      (_el) => _el.user_id === el.user.user_id
+                    )?.approve === false ? "Снят с проекта" : ''
+                  }
+                />
+              </div>
             ))}
             {taskMembers.length > max && (
               <p>{`+${taskMembers.length - max}`}</p>

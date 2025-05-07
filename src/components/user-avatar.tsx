@@ -13,9 +13,15 @@ interface Props {
   name: string;
   planId: SUBSCRIPTION;
   size?: "xs" | "small" | "large";
+  metaText?: string;
 }
 
-export default function UserAvatar({ name, planId, size = "small" }: Props) {
+export default function UserAvatar({
+  name,
+  planId,
+  size = "small",
+  metaText = "",
+}: Props) {
   function setSize(size: "xs" | "small" | "large") {
     switch (size) {
       case "xs":
@@ -30,22 +36,25 @@ export default function UserAvatar({ name, planId, size = "small" }: Props) {
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Avatar
-            className={`${setSize(size)} rounded-full ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
-          >
-            <AvatarImage src={getAvatarUrl(name, planId)} alt={name} />
-            <AvatarFallback className="rounded-full">
-              <Loader className="animate-spin" />
-            </AvatarFallback>
-          </Avatar>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{name}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Avatar
+              className={`${setSize(size)} rounded-full ${planId === SUBSCRIPTION.BASIC && "ring-2 ring-emerald-600"} ${planId === SUBSCRIPTION.PREMIUM && "ring-2 ring-purple-600"}`}
+            >
+              <AvatarImage src={getAvatarUrl(name, planId)} alt={name} />
+              <AvatarFallback className="rounded-full">
+                <Loader className="animate-spin" />
+              </AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{name}</p>
+            {metaText && <p>{metaText}</p>}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
   );
 }

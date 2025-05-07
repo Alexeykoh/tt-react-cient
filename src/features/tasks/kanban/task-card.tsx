@@ -4,13 +4,14 @@ import {
   CardTitle,
   CardContent,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { Task } from "@/shared/interfaces/task.interface";
 import TaskItem from "@/components/task-item";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/router/routes.enum";
 import { Button } from "@/components/ui/button";
-import { PanelTop } from "lucide-react";
+import { CalendarDays, PanelTop } from "lucide-react";
 import TaskSharedUsers from "../shared-users/task-shared-users";
 import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 
@@ -45,20 +46,19 @@ export function TaskCard({ task }: TaskCardProps) {
             <TaskItem variant="icon" task_id={task.task_id} showTime={false} />
           </div>
         </div>
-        <CardDescription className="mb-2 line-clamp-2 text-sm text-muted-foreground">
-          {task.description || "Нет описания"}
+        <CardDescription className="py-2 line-clamp-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CalendarDays className="w-4 h-4" />
+            <span>{new Date(task.created_at).toLocaleDateString()}</span>
+          </div>
         </CardDescription>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>
-            Ставка: {task.rate} {task.currency?.symbol || ""}
-          </span>
-          <span>{new Date(task.created_at).toLocaleDateString()}</span>
-        </div>
-        <TaskSharedUsers
-          taskMembers={task?.taskMembers}
-          taskId={task.task_id}
-          projectMembers={projectUsers || []}
-        />
+        <CardFooter className="px-0">
+          <TaskSharedUsers
+            taskMembers={task?.taskMembers}
+            taskId={task.task_id}
+            projectMembers={projectUsers || []}
+          />
+        </CardFooter>
       </CardContent>
     </Card>
   );
