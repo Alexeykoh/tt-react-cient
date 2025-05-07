@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,19 +12,46 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLoginMutation } from "@/shared/api/auth.service";
 import { ROUTES } from "@/app/router/routes.enum";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
 const loginSchema = z.object({
   email: z.string().email("Неверный формат email").min(1, "Email обязателен"),
   password: z.string().min(6, "Пароль должен содержать не менее 6 символов"),
 });
 
+const plansDefault = {
+  [SUBSCRIPTION.FREE]: {
+    email: "free@example.com",
+    password: "password123",
+  },
+  [SUBSCRIPTION.PREMIUM]: {
+    email: "premium@example.com",
+    password: "password123",
+  },
+  [SUBSCRIPTION.BASIC]: { email: "basic@example.com", password: "password123" },
+};
+
 const LoginForm: React.FC = () => {
+  const [defaultUser, setDefaultUser] = useState<SUBSCRIPTION>(
+    SUBSCRIPTION.FREE
+  );
   const form = useForm({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: plansDefault[defaultUser].email,
+      password: plansDefault[defaultUser].password,
+    },
   });
 
   const navigate = useNavigate();
@@ -44,6 +71,28 @@ const LoginForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+      <Select
+        onValueChange={(data: SUBSCRIPTION) => {
+          setDefaultUser(data);
+          form.setValue("email", plansDefault[data].email);
+          form.setValue("password", plansDefault[data].password);
+        }}
+        value={defaultUser}
+        defaultValue={defaultUser}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Выберите клиента (опционально)" />
+        </SelectTrigger>
+
+        <SelectContent>
+          {Array.from(Object.values(SUBSCRIPTION)).map((el) => (
+            <SelectItem key={el} value={el}>
+              {el}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <FormProvider {...form}>
         <FormField
           control={form.control}

@@ -101,9 +101,9 @@ export function NotificationCard({ notification }: NotificationCardProps) {
               {parseAndHighlight(notification.message)}
             </p>
           </div>
-          {notificationVariant.actionButton && (
+          {/* {notificationVariant.actionButton && (
             <div className="mt-1">{notificationVariant.actionButton}</div>
-          )}
+          )} */}
           {!notification.isRead && (
             <Badge variant="default" className="ml-2 shrink-0 ">
               Новое
