@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-import { useGetCurrenciesQuery } from "@/shared/api/currency.service";
 import { useGetClientsQuery } from "@/shared/api/client.service";
 import { useUpdateProjectMutation } from "@/shared/api/projects.service";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -29,8 +27,6 @@ import { X } from "lucide-react";
 // Схема валидации формы
 const editProjectSchema = z.object({
   name: z.string().min(1, "Название проекта обязательно"),
-  currency_id: z.string().min(1, "Выберите валюту"),
-  rate: z.coerce.number().min(0, "Ставка должна быть положительным числом"),
   client_id: z.string().optional(),
   tag_ids: z.array(z.string()).default([]),
 });
@@ -50,8 +46,6 @@ function EditProjectForm({
   onSuccess,
   onClose,
 }: EditProjectFormProps) {
-  const { data: currencies, isLoading: isLoadingCurrencies } =
-    useGetCurrenciesQuery();
   const { data: clients, isLoading: isLoadingClients } = useGetClientsQuery({
     page: 1,
   });
@@ -92,50 +86,6 @@ function EditProjectForm({
               <FormLabel>Название проекта</FormLabel>
               <FormControl>
                 <Input placeholder="Введите название проекта" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="currency_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Валюта</FormLabel>
-              <Select
-                disabled={isLoadingCurrencies}
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите валюту" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {currencies?.data?.map((currency) => (
-                    <SelectItem key={currency.code} value={currency.code}>
-                      {currency.name} ({currency.symbol})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="rate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ставка</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Введите ставку" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -1,57 +1,48 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { useGetNotificationsQuery } from "@/shared/api/notification.service";
+import {
+  useGetNotificationsQuery,
+  useReadAllNotificationsMutation,
+} from "@/shared/api/notification.service";
 import { Bell, CheckCheck } from "lucide-react";
 import { INotification } from "@/shared/interfaces/notifications.interface";
 import { NotificationCard } from "@/features/notification/notification-card";
 
-export default function NotificationsPage() {
+export default function NotificationsFeature() {
   const { data: rawNotifications, isLoading } = useGetNotificationsQuery();
   const notifications: INotification[] = rawNotifications?.data ?? [];
   const unreadCount = notifications.filter(
     (notification: INotification) => !notification.isRead
   ).length;
+  const [readAllNotifications] = useReadAllNotificationsMutation();
 
-  const handleMarkAsRead = async () => {
-    // Mock implementation since we don't have the actual service
-    console.log("Marking all notifications as read");
-    // In a real implementation, you would call your API here
-  };
+  function markAllAsReadHendlre() {
+    readAllNotifications();
+  }
 
   return (
     <div className="w-full h-full flex flex-col ">
-      <div className="flex flex-wrap justify-between gap-2 p-4">
-        <h1 className="text-2xl font-bold mb-4">Уведомления</h1>
-      </div>
-
-      <div className="flex-1 flex flex-col p-4 overflow-scroll">
-        <Card className={cn("w-full")}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <div className="flex-1 flex flex-col h-full overflow-scroll">
+        <div className={cn("w-full")}>
+          <div className="flex flex-col items-center justify-between space-y-0 py-4">
             <div>
-              <CardTitle className="text-xl">Уведомления</CardTitle>
-              <CardDescription>
-                {unreadCount > 0
-                  ? `У вас ${unreadCount} непрочитанных уведомлений`
-                  : "Нет новых уведомлений"}
-              </CardDescription>
+              {unreadCount > 0
+                ? `У вас ${unreadCount} непрочитанных уведомлений`
+                : ""}
             </div>
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={handleMarkAsRead}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={markAllAsReadHendlre}
+              >
                 <CheckCheck className="mr-2 h-4 w-4" />
                 Отметить все как прочитанные
               </Button>
             )}
-          </CardHeader>
-          <CardContent className="pb-2">
+          </div>
+          <div className="pb-2">
             {isLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -79,13 +70,13 @@ export default function NotificationsPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-          <CardFooter className="pt-2">
+          </div>
+          <div className="pt-2">
             <Button variant="outline" className="w-full" size="sm">
               Показать все уведомления
             </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

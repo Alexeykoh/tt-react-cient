@@ -5,6 +5,16 @@ import TaskFloatBarWidget from "@/widgets/task-float-bar.widget";
 import { useGetSubscriptionsQuery } from "@/shared/api/subscriptions.service";
 import SidebarFeature from "@/features/sidebar/sidebar";
 import { useGetNotificationsQuery } from "@/shared/api/notification.service";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { RootState } from "@/app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { toggle } from "@/features/notification/notification.slice";
+import NotificationsFeature from "@/features/notification/notifications.feature";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -13,6 +23,11 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { isLoading: currenciesLoading } = useGetCurrenciesQuery();
   const { isLoading: subscriptionLoading } = useGetSubscriptionsQuery();
+  const dispatch = useDispatch();
+  const notificationIsOpen = useSelector(
+    (state: RootState) => state.notification.isOpen
+  );
+
   useGetNotificationsQuery(undefined, {
     pollingInterval: 10000,
     refetchOnMountOrArgChange: true,
@@ -20,8 +35,23 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     refetchOnFocus: true,
   });
 
+  function sheetHandler(state: boolean) {
+    dispatch(toggle(state));
+  }
+
   return (
     <>
+      <Sheet
+        open={notificationIsOpen}
+        onOpenChange={(data) => sheetHandler(data)}
+      >
+        <SheetContent className="w-[400px] sm:w-[540px]">
+          <SheetHeader>
+            <SheetTitle>Уведомления</SheetTitle>
+            <NotificationsFeature/>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
       <SidebarProvider className="w-screen h-screen flex">
         {!currenciesLoading && !subscriptionLoading && <SidebarFeature />}
         <div className="w-screen h-screen flex flex-col overflow-hidden">

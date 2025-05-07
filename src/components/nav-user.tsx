@@ -31,6 +31,8 @@ import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import UserAvatar from "./user-avatar";
 import { useGetNotificationsQuery } from "@/shared/api/notification.service";
 import { Badge } from "./ui/badge";
+import { useDispatch } from "react-redux";
+import { toggle } from "@/features/notification/notification.slice";
 
 interface NavUserProps {
   name: string;
@@ -40,11 +42,16 @@ interface NavUserProps {
 }
 
 export function NavUser({ name, email, avatar, user_id }: NavUserProps) {
+  const dispatch = useDispatch();
   const { isMobile } = useSidebar();
   const { isLoading, error } = useGetUserQuery();
   const { data: subscriptionData } = useGetSubscriptionsQuery();
   const user = { name, email, avatar, user_id: email };
   const { data: rawNotifications } = useGetNotificationsQuery();
+
+  function sheetHandler(state: boolean) {
+    dispatch(toggle(state));
+  }
 
   // Подсчет непрочитанных уведомлений
   const unreadCount =
@@ -142,17 +149,18 @@ export function NavUser({ name, email, avatar, user_id }: NavUserProps) {
                     Настройки
                   </DropdownMenuItem>
                 </Link>
-                <Link to={ROUTES.NOTIFICATIONS}>
-                  <DropdownMenuItem className="relative">
-                    <Bell className="mr-2 h-4 w-4" />
-                    Уведомления
-                    {unreadCount > 0 && (
-                      <Badge className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full text-xs text-white">
-                        {unreadCount > 9 ? "9+" : unreadCount}
-                      </Badge>
-                    )}
-                  </DropdownMenuItem>
-                </Link>
+                <DropdownMenuItem
+                  className="relative"
+                  onClick={() => sheetHandler(true)}
+                >
+                  <Bell className="mr-2 h-4 w-4" />
+                  Уведомления
+                  {unreadCount > 0 && (
+                    <Badge className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full text-xs text-white">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  )}
+                </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem

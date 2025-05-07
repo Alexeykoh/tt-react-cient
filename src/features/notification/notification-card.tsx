@@ -3,12 +3,15 @@ import { useReadNotificationsMutation } from "@/shared/api/notification.service"
 import { INotification } from "@/shared/interfaces/notifications.interface";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, LucideProps } from "lucide-react";
-import { Badge } from "./ui/badge";
+
 import { NotificationType } from "@/shared/enums/notification-type.enum";
 import { JSX, useState } from "react";
-import { Button } from "./ui/button";
+
 import { useAcceptFriendshipMutation } from "@/shared/api/friendship.service";
 import { Friendship } from "@/shared/interfaces/friends.interface";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import parseAndHighlight from "@/lib/parse-notification-message";
 
 interface NotificationCardProps {
   notification: INotification;
@@ -47,7 +50,7 @@ export function NotificationCard({ notification }: NotificationCardProps) {
               onClick={() => {
                 const friendship = JSON.parse(
                   notification.data || ""
-                ) as Friendship
+                ) as Friendship;
                 acceptFriendship(friendship.friendship_id);
               }}
             >
@@ -95,14 +98,14 @@ export function NotificationCard({ notification }: NotificationCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className={cn("text-sm", !notification.isRead && "font-medium")}>
-              {notification.message}
+              {parseAndHighlight(notification.message)}
             </p>
           </div>
           {notificationVariant.actionButton && (
             <div className="mt-1">{notificationVariant.actionButton}</div>
           )}
           {!notification.isRead && (
-            <Badge variant="secondary" className="ml-2 shrink-0">
+            <Badge variant="default" className="ml-2 shrink-0 ">
               Новое
             </Badge>
           )}

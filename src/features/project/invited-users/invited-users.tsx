@@ -17,7 +17,6 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import RemoveUserFromProjectDialog from "../remove-user-from-project/remove-user-from-project.dialog";
 import InviteUserToProjectDialog from "../invite-user-to-project/invite-user-to-project.dialog";
-import { Separator } from "@radix-ui/react-separator";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import ChangeMemberRole from "./change-member-role.dialog";
 import { Card, CardContent } from "@/components/ui/card";
@@ -112,7 +111,7 @@ export default function InvitedUsers({
                   {friendsOnProject?.map((el) => (
                     <CommandItem className="flex-col gap-1 w-full">
                       <Card className="p-1 w-full">
-                        <CardContent className="p-1 w-full">
+                        <CardContent className="flex flex-col p-1 w-full gap-1">
                           <div className="flex w-full justify-end">
                             {el?.in_project?.approve === false && (
                               <Badge
@@ -161,8 +160,8 @@ export default function InvitedUsers({
                               )}
                             </div>
                           </div>
-                          <Separator className="border-1 w-full" />
-                          <div className="flex justify-between items-center w-full pt-2">
+                          {/* <Separator className="border-1 w-full" /> */}
+                          <div className="flex justify-between items-center w-full">
                             <div>
                               {el.in_project !== null && (
                                 <ChangeMemberRole

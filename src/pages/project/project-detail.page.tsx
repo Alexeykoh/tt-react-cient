@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   HandCoins,
   Kanban,
+  LogOut,
   MoreVerticalIcon,
   PencilIcon,
   ShieldUser,
@@ -35,7 +36,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EditProjectForm from "@/features/project/forms/edit-project.form";
@@ -54,7 +54,6 @@ const ProjectDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
-  const [ownerData, setOwnerData] = useState<ProjectMembers | null>(null);
   const [meData, setMeData] = useState<ProjectMembers | null>(null);
 
   const { data: userMe } = useGetUserQuery();
@@ -81,7 +80,6 @@ const ProjectDetailPage: React.FC = () => {
       (el) => el.user.user_id === userMe?.user_id
     );
     if (owner && me) {
-      setOwnerData(owner);
       setMeData(me);
     }
   }, [project?.members, userMe?.user_id]);
@@ -103,8 +101,6 @@ const ProjectDetailPage: React.FC = () => {
             projectId={project?.project_id || ""}
             initialData={{
               name: project?.name || "",
-              currency_id: String(ownerData?.currency.currency_id || ""),
-              rate: Number(ownerData?.rate || 0),
               client_id: project?.client?.client_id,
               tag_ids: [],
             }}
@@ -160,6 +156,16 @@ const ProjectDetailPage: React.FC = () => {
                       <div className="flex justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+                              size="icon"
+                            >
+                              <MoreVerticalIcon />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent align="end">
                             <RoleComponent
                               roles={[PROJECT_ROLE.OWNER]}
                               userRole={
@@ -169,34 +175,55 @@ const ProjectDetailPage: React.FC = () => {
                               }
                               showChildren={false}
                             >
-                              <Button
-                                variant="ghost"
-                                className="flex size-6 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-                                size="icon"
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setDialogIsOpen("edit");
+                                }}
                               >
-                                <MoreVerticalIcon />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
+                                <PencilIcon className="mr-2 size-4" />
+                                <span>Редактировать</span>
+                              </DropdownMenuItem>
                             </RoleComponent>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setDialogIsOpen("edit");
-                              }}
-                            >
-                              <PencilIcon className="mr-2 size-4" />
-                              <span>Редактировать</span>
-                            </DropdownMenuItem>
 
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => setDialogIsOpen("delete")}
+                            <RoleComponent
+                              roles={[PROJECT_ROLE.OWNER]}
+                              userRole={
+                                project?.members.find(
+                                  (m) => m.user?.user_id === userMe?.user_id
+                                )?.role as PROJECT_ROLE
+                              }
+                              showChildren={false}
                             >
-                              <TrashIcon className="mr-2 size-4" />
-                              <span>Удалить</span>
-                            </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDialogIsOpen("delete")}
+                              >
+                                <TrashIcon className="mr-2 size-4" />
+                                <span>Удалить</span>
+                              </DropdownMenuItem>
+                            </RoleComponent>
+
+                            <RoleComponent
+                              roles={[
+                                PROJECT_ROLE.GUEST,
+                                PROJECT_ROLE.EXECUTOR,
+                                PROJECT_ROLE.MANAGER,
+                              ]}
+                              userRole={
+                                project?.members.find(
+                                  (m) => m.user?.user_id === userMe?.user_id
+                                )?.role as PROJECT_ROLE
+                              }
+                              showChildren={false}
+                            >
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive"
+                                onClick={() => setDialogIsOpen("delete")}
+                              >
+                                <LogOut className="mr-2 size-4" />
+                                <span>Покинуть проект</span>
+                              </DropdownMenuItem>
+                            </RoleComponent>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
