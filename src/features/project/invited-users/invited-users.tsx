@@ -133,7 +133,7 @@ export default function InvitedUsers({
                     <CommandItem className="flex-col gap-1 w-full">
                       <Card className="p-1 w-full">
                         <CardContent className="flex flex-col p-1 w-full gap-1">
-                          <div className="flex justify-between gap-1 w-full">
+                          <div className="flex justify-between gap-1 w-full px-2">
                             <div className="flex flex-col gap-2 w-full">
                               <div className="flex w-full justify-between gap-1">
                                 <div className="flex gap-2 items-center">

@@ -151,7 +151,7 @@ export const projectsSharedService = createApi({
     >({
       query: ({ project_id, member_id }) => ({
         url: `projects/shared/leave/${project_id}/${member_id}`,
-        method: "PATCH",
+        method: "POST",
       }),
       invalidatesTags: [
         "project-shared-service",

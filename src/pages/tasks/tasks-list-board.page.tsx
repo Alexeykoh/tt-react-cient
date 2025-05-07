@@ -72,6 +72,7 @@ export function TasksListBoardPage() {
   // Предполагаем, что задачи приходят отдельно (нужно добавить запрос)
   const { data: tasks = [] } = useGetTasksByProjectQuery(id || "", {
     skip: !id,
+    pollingInterval: 5000,
   });
 
   useEffect(() => {
