@@ -9,7 +9,11 @@ interface SortableTaskProps {
   activeTaskId?: string | null;
 }
 
-export function SortableTask({ task, overId, activeTaskId }: SortableTaskProps) {
+export function SortableTask({
+  task,
+  overId,
+  activeTaskId,
+}: SortableTaskProps) {
   const {
     attributes,
     listeners,
@@ -34,15 +38,18 @@ export function SortableTask({ task, overId, activeTaskId }: SortableTaskProps) 
     transition,
     opacity: isDragging ? 0.8 : 1,
     cursor: "grab",
-    boxShadow: isDropTarget ? "0 0 0 3px #50b4ff" : undefined,
-    borderBottom: isDropTarget ? "2px solid #50b4ff" : undefined,
-    borderRadius: isDropTarget ? "8px" : undefined,
     background: isDropTarget ? "rgba(80,180,255,0.10)" : undefined,
     zIndex: isDropTarget ? 2 : undefined,
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      className={`${isDropTarget && " border-1 border-primary rounded-lg"}`}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
       <TaskCard task={task} />
     </div>
   );

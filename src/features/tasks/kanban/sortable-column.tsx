@@ -17,7 +17,11 @@ interface SortableColumnProps {
   activeTaskId: string | null;
 }
 
-export function SortableColumn({ column, overId, activeTaskId }: SortableColumnProps) {
+export function SortableColumn({
+  column,
+  overId,
+  activeTaskId,
+}: SortableColumnProps) {
   const { setNodeRef, attributes, isDragging, transform, transition } =
     useSortable({
       id: column.id,
@@ -30,8 +34,7 @@ export function SortableColumn({ column, overId, activeTaskId }: SortableColumnP
   }, [column.color]);
 
   // Подсветка колонки как drop-зоны, если на неё перетаскивают задачу
-  const isDropColumnActive =
-    overId === column.id && !!activeTaskId;
+  const isDropColumnActive = overId === column.id && !!activeTaskId;
 
   return (
     <Card
@@ -43,11 +46,10 @@ export function SortableColumn({ column, overId, activeTaskId }: SortableColumnP
         backgroundColor: isDropColumnActive
           ? "rgba(80,180,255,0.15)"
           : column.color
-          ? backgroundColor
-          : "",
-        border: isDropColumnActive ? "2px solid #50b4ff" : undefined,
+            ? backgroundColor
+            : "",
       }}
-      className="shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden"
+      className={`shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden ${isDropColumnActive && "border-1 border-primary"}`}
       {...attributes}
       // {...listeners}
     >
