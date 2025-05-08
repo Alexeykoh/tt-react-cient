@@ -17,7 +17,10 @@ import {
   Task,
 } from "@/shared/interfaces/task.interface";
 import KanbanItem from "./kanban-item";
-import { useUpdateTaskStatusMutation } from "@/shared/api/task.service";
+import {
+  useUpdateTaskMutation,
+  useUpdateTaskStatusMutation,
+} from "@/shared/api/task.service";
 
 interface porps {
   tasks: Task[];
@@ -28,8 +31,8 @@ export default function KanbanBoard({
   tasks: tasks_1,
   columns: columns_1,
 }: porps) {
-const [updateTaskStatus] = useUpdateTaskStatusMutation()
-
+  const [updateTaskStatus] = useUpdateTaskStatusMutation();
+  const [updateTask] = useUpdateTaskMutation();
 
   const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1 ?? []);
   const [tasks, setTasks] = useState<Task[]>(tasks_1 ?? []);
@@ -90,8 +93,8 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
               tasksInTargetColumn.length > 0
                 ? Math.max(...tasksInTargetColumn.map((t) => t.order)) + 1
                 : 0;
-
             return {
+              // Обновляем задачу
               ...task,
               taskStatus: {
                 ...task.taskStatus,
@@ -102,9 +105,11 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
               order: highestOrder,
             };
           }
+          // Корректируем порядок других задач в целевой колонке
           return task;
         });
 
+        // Обновляем задачи
         setTasks(updatedTasks as Task[]);
       }
     } else {
@@ -168,7 +173,9 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     // Проверяем, перетаскиваем ли мы на задачу (для сортировки внутри одной колонки)
     const isOverTask = tasks.some((task) => task.task_id === overId);
 
+    // Если перетаскиваем на другую задачу
     if (isOverTask && activeId !== overId) {
+      // Находим задачу, которую перетаскивали
       const overTask = tasks.find((task) => task.task_id === overId)!;
 
       // Если задачи в одной колонке, меняем их порядок
@@ -184,26 +191,59 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
         const overIndex = columnTasks.indexOf(overId);
 
         if (activeIndex !== -1 && overIndex !== -1) {
+          // Переставляем задачи внутри колонки
           const newOrder = arrayMove(columnTasks, activeIndex, overIndex);
 
           // Обновляем порядок задач в колонке
           const updatedTasks = tasks.map((task) => {
             const newIndex = newOrder.indexOf(task.task_id);
+            updateTask({
+              taskId: task.task_id,
+              updateData: { order: newIndex },
+            });
             if (
+              // Находим задачу, которую перетаскивали
               newIndex !== -1 &&
               task.taskStatus.taskStatusColumn.id ===
                 activeTask.taskStatus.taskStatusColumn.id
             ) {
+              // Обновляем порядок
               return {
                 ...task,
                 order: newIndex,
               };
             }
+            // Оставляем задачу без изменений
             return task;
           });
 
           setTasks(updatedTasks);
         }
+      }
+    }
+
+    // --- Вызов updateTaskStatus при смене колонки ---
+    // Проверяем, перетащили ли задачу на другую колонку
+    // Если overId — это id колонки, и колонка отличается от исходной
+    const isOverColumn = columns.some((col) => col.id === overId);
+    console.log("overId", overId);
+    if (isOverColumn && activeTask.taskStatus.taskStatusColumn.id !== overId) {
+      updateTaskStatus({
+        task_id: activeTask.task_id,
+        task_status_column_id: overId,
+      });
+    }
+    // Если перетащили на задачу в другой колонке
+    if (isOverTask && activeId !== overId) {
+      const overTask = tasks.find((task) => task.task_id === overId)!;
+      if (
+        activeTask.taskStatus.taskStatusColumn.id !==
+        overTask.taskStatus.taskStatusColumn.id
+      ) {
+        updateTaskStatus({
+          task_id: activeTask.task_id,
+          task_status_column_id: overTask.taskStatus.taskStatusColumn.id,
+        });
       }
     }
   };
