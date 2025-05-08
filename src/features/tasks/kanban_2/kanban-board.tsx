@@ -37,146 +37,62 @@ export default function KanbanBoard({
   const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1 ?? []);
   const [tasks, setTasks] = useState<Task[]>(tasks_1 ?? []);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [prevTaskStatusColumnId, setPrevTaskStatusColumnId] = useState<string | null>(null);
 
-  // Настраиваем сенсоры для drag-and-drop (перетаскивания)
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Минимальное расстояние для активации перетаскивания
+        distance: 8,
       },
     })
   );
 
-  // Группируем задачи по колонкам
   const getTasksByColumn = (columnId: string) => {
     return [...tasks]
       ?.filter((task) => task.taskStatus.taskStatusColumn.id === columnId)
       ?.sort((a, b) => a.order - b.order);
   };
 
-  // Обработчик начала перетаскивания задачи
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const activeId = active.id as string;
-
-    // Находим задачу, которую начали перетаскивать
     const foundTask = tasks.find((task) => task.task_id === activeId);
     if (foundTask) {
       setActiveTask(foundTask);
+      setPrevTaskStatusColumnId(foundTask.taskStatus.taskStatusColumn.id);
     }
   };
 
-  // Обработчик перемещения задачи во время drag-and-drop
   const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Находим задачу, которую перетаскиваем
-    const activeTask = tasks.find((task) => task.task_id === activeId);
-    if (!activeTask) return;
-
-    // Проверяем, перетаскиваем ли мы на колонку или на другую задачу
-    const isOverColumn = columns.some((col) => col.id === overId);
-
-    if (isOverColumn) {
-      // Перетаскиваем на колонку
-      if (activeTask.taskStatus.taskStatusColumn.id !== overId) {
-        // Перемещаем задачу в другую колонку
-        const updatedTasks = tasks.map((task) => {
-          if (task.task_id === activeId) {
-            // Находим максимальный order в целевой колонке
-            const tasksInTargetColumn = getTasksByColumn(overId);
-            const highestOrder =
-              tasksInTargetColumn.length > 0
-                ? Math.max(...tasksInTargetColumn.map((t) => t.order)) + 1
-                : 0;
-            return {
-              // Обновляем задачу
-              ...task,
-              taskStatus: {
-                ...task.taskStatus,
-                taskStatusColumn: {
-                  ...columns.find((col) => col.id === overId)!,
-                },
-              },
-              order: highestOrder,
-            };
-          }
-          // Корректируем порядок других задач в целевой колонке
-          return task;
-        });
-
-        // Обновляем задачи
-        setTasks(updatedTasks as Task[]);
-      }
-    } else {
-      // Перетаскиваем на другую задачу
-      const overTask = tasks.find((task) => task.task_id === overId);
-      if (!overTask) return;
-
-      // Если задачи в разных колонках
-      if (
-        activeTask.taskStatus.taskStatusColumn.id !==
-        overTask.taskStatus.taskStatusColumn.id
-      ) {
-        const updatedTasks = tasks.map((task) => {
-          if (task.task_id === activeId) {
-            return {
-              ...task,
-              taskStatus: {
-                ...task.taskStatus,
-                taskStatusColumn: {
-                  ...overTask.taskStatus.taskStatusColumn,
-                },
-              },
-              order: overTask.order,
-            };
-          }
-
-          // Корректируем порядок других задач в целевой колонке
-          if (
-            task.taskStatus.taskStatusColumn.id ===
-              overTask.taskStatus.taskStatusColumn.id &&
-            task.order >= overTask.order
-          ) {
-            return {
-              ...task,
-              order: task.order + 1,
-            };
-          }
-
-          return task;
-        });
-
-        setTasks(updatedTasks);
-      }
-    }
+    // Оставляем обработчик пустым — визуальное перемещение только через DragOverlay, состояние фиксируется в onDragEnd
   };
 
-  // Обработчик окончания перетаскивания задачи
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
+    setPrevTaskStatusColumnId(null);
 
     const { active, over } = event;
-    if (!over) return;
+    console.log("handleDragEnd вызван", { event, active, over });
+    if (!over) {
+      console.log("over отсутствует");
+      return;
+    }
 
     const activeId = active.id as string;
     const overId = over.id as string;
-
-    // Находим задачу, которую перетаскивали
     const activeTask = tasks.find((task) => task.task_id === activeId);
-    if (!activeTask) return;
+    console.log("activeId:", activeId, "overId:", overId, "activeTask:", activeTask);
+    if (!activeTask) {
+      console.log("activeTask не найден");
+      return;
+    }
 
-    // Проверяем, перетаскиваем ли мы на задачу (для сортировки внутри одной колонки)
     const isOverTask = tasks.some((task) => task.task_id === overId);
+    console.log("isOverTask:", isOverTask);
 
-    // Если перетаскиваем на другую задачу
     if (isOverTask && activeId !== overId) {
-      // Находим задачу, которую перетаскивали
       const overTask = tasks.find((task) => task.task_id === overId)!;
+      console.log("overTask:", overTask);
 
       // Если задачи в одной колонке, меняем их порядок
       if (
@@ -190,11 +106,11 @@ export default function KanbanBoard({
         const activeIndex = columnTasks.indexOf(activeId);
         const overIndex = columnTasks.indexOf(overId);
 
+        console.log("columnTasks:", columnTasks, "activeIndex:", activeIndex, "overIndex:", overIndex);
+
         if (activeIndex !== -1 && overIndex !== -1) {
-          // Переставляем задачи внутри колонки
           const newOrder = arrayMove(columnTasks, activeIndex, overIndex);
 
-          // Обновляем порядок задач в колонке
           const updatedTasks = tasks.map((task) => {
             const newIndex = newOrder.indexOf(task.task_id);
             updateTask({
@@ -202,54 +118,105 @@ export default function KanbanBoard({
               updateData: { order: newIndex },
             });
             if (
-              // Находим задачу, которую перетаскивали
               newIndex !== -1 &&
               task.taskStatus.taskStatusColumn.id ===
                 activeTask.taskStatus.taskStatusColumn.id
             ) {
-              // Обновляем порядок
               return {
                 ...task,
                 order: newIndex,
               };
             }
-            // Оставляем задачу без изменений
             return task;
           });
 
           setTasks(updatedTasks);
         }
-      }
-    }
+      } else {
+        // === Перемещение задачи в другую колонку через задачу ===
+        const column = columns.find(
+          (col) => col.id === overTask.taskStatus.taskStatusColumn.id
+        );
+        if (column) {
+          const updatedTasks = tasks.map((task) => {
+            if (task.task_id === activeId) {
+              return {
+                ...task,
+                taskStatus: {
+                  ...task.taskStatus,
+                  taskStatusColumn: {
+                    ...overTask.taskStatus.taskStatusColumn,
+                  },
+                },
+                order: overTask.order,
+              };
+            }
+            if (
+              task.taskStatus.taskStatusColumn.id ===
+                overTask.taskStatus.taskStatusColumn.id &&
+              task.order >= overTask.order
+            ) {
+              return {
+                ...task,
+                order: task.order + 1,
+              };
+            }
+            return task;
+          });
+          setTasks(updatedTasks);
 
-    // --- Вызов updateTaskStatus при смене колонки ---
-    // Проверяем, перетащили ли задачу на другую колонку
-    // Если overId — это id колонки, и колонка отличается от исходной
-    const isOverColumn = columns.some((col) => col.id === overId);
-    console.log("overId", overId);
-    if (isOverColumn && activeTask.taskStatus.taskStatusColumn.id !== overId) {
-      updateTaskStatus({
-        task_id: activeTask.task_id,
-        task_status_column_id: overId,
-      });
-    }
-    // Если перетащили на задачу в другой колонке
-    if (isOverTask && activeId !== overId) {
-      const overTask = tasks.find((task) => task.task_id === overId)!;
-      if (
-        activeTask.taskStatus.taskStatusColumn.id !==
-        overTask.taskStatus.taskStatusColumn.id
-      ) {
-        updateTaskStatus({
-          task_id: activeTask.task_id,
-          task_status_column_id: overTask.taskStatus.taskStatusColumn.id,
+          console.log(
+            `Задача реально перемещена в новую колонку (через задачу), id новой колонки: ${column.id}`
+          );
+          const updateDto = {
+            task_id: activeTask.task_id,
+            task_status_column_id: column.id,
+          };
+          updateTaskStatus(updateDto);
+        }
+      }
+    } else {
+      // Если перетаскиваем на саму колонку
+      const column = columns.find((col) => col.id === overId);
+      if (!column) {
+        console.log("Дроп не на колонку: overId не является id колонки, updateTaskStatus не вызывается");
+      } else if (activeTask.taskStatus.taskStatusColumn.id !== column.id) {
+        const tasksInTargetColumn = getTasksByColumn(column.id);
+        const highestOrder =
+          tasksInTargetColumn.length > 0
+            ? Math.max(...tasksInTargetColumn.map((t) => t.order)) + 1
+            : 0;
+
+        const updatedTasks = tasks.map((task) => {
+          if (task.task_id === activeId) {
+            return {
+              ...task,
+              taskStatus: {
+                ...task.taskStatus,
+                taskStatusColumn: {
+                  ...column,
+                  color: column.color || "",
+                },
+              },
+              order: highestOrder,
+            };
+          }
+          return task;
         });
+        setTasks(updatedTasks);
+
+        console.log(
+          `Задача реально перемещена в новую колонку (через колонку), id новой колонки: ${column.id}`
+        );
+        const updateDto = {
+          task_id: activeTask.task_id,
+          task_status_column_id: column.id,
+        };
+        updateTaskStatus(updateDto);
       }
     }
   };
 
-  // Добавить новую задачу в колонку
-  // Можно расширить: добавить валидацию, уведомления и т.д.
   const handleAddTask = (columnId: string, taskName: string) => {
     if (taskName.trim() === "") return;
 
@@ -296,29 +263,34 @@ export default function KanbanBoard({
     setTasks([...tasks, newTask]);
   };
 
-  // Удалить колонку и все задачи в ней
   const handleDeleteColumn = (columnId: string) => {
-    // Удаляем колонку
     setColumns(columns.filter((column) => column.id !== columnId));
-
-    // Удаляем все задачи из этой колонки
     setTasks(
       tasks.filter((task) => task.taskStatus.taskStatusColumn.id !== columnId)
     );
   };
 
-  // Удалить задачу
   const handleDeleteTask = (taskId: string) => {
     setTasks(tasks.filter((task) => task.task_id !== taskId));
   };
 
+  console.log("KanbanBoard рендерится");
   return (
     <div className="space-y-4">
       <DndContext
         sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
+        onDragStart={(e) => {
+          console.log("onDragStart DndContext", e);
+          handleDragStart(e);
+        }}
+        onDragOver={(e) => {
+          console.log("onDragOver DndContext", e);
+          handleDragOver(e);
+        }}
+        onDragEnd={(e) => {
+          console.log("onDragEnd DndContext", e);
+          handleDragEnd(e);
+        }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...columns]
@@ -343,8 +315,6 @@ export default function KanbanBoard({
               );
             })}
         </div>
-
-        {/* Оверлей при перетаскивании задачи для визуальной обратной связи */}
         <DragOverlay>
           {activeTask && (
             <div className="opacity-80">
