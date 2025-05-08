@@ -1,104 +1,70 @@
-"use client";
-
-import { useState } from "react";
+import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
-import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-
+import { Card } from "@/components/ui/card";
 import KanbanItem from "./kanban-item";
-
-type Item = {
-  id: string;
-  content: string;
-};
+import { Task } from "@/shared/interfaces/task.interface";
+import { convertToRgba } from "@/lib/convert-to-rgba";
+import { Badge } from "@/components/ui/badge";
 
 interface KanbanColumnProps {
   id: string;
   title: string;
-  items: Item[];
-  onAddItem: (content: string) => void;
-  onDeleteItem: (itemId: string) => void;
+  color: string | null;
+  tasks: Task[];
+  onAddTask: (name: string) => void;
+  onDeleteTask: (taskId: string) => void;
   onDeleteColumn: () => void;
 }
 
 export default function KanbanColumn({
   id,
   title,
-  items,
-  onAddItem,
-  onDeleteItem,
-  onDeleteColumn,
-}: KanbanColumnProps) {
-  const [newItemContent, setNewItemContent] = useState("");
-  const [showNewItemInput, setShowNewItemInput] = useState(false);
+  color,
+  tasks,
 
+  onDeleteTask,
+}: KanbanColumnProps) {
   // Set up droppable area
   const { setNodeRef } = useDroppable({
     id,
   });
 
-  const handleAddItem = () => {
-    if (newItemContent.trim() !== "") {
-      onAddItem(newItemContent);
-      setNewItemContent("");
-      setShowNewItemInput(false);
-    }
-  };
+  const backgroundColor = useMemo(() => {
+    if (!color) return "";
+    return convertToRgba(color, "0.04");
+  }, [color]);
 
   return (
-    <Card className="flex flex-col w-72 rounded-lg p-2 overflow-y-hidden">
-      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-        <h3 className="font-medium text-sm">{title}</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={onDeleteColumn}
-              className="text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Column
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      <CardContent
-        ref={setNodeRef}
-        className="flex-1 p-4 pt-2 overflow-y-auto min-h-[200px]"
-      >
-        <SortableContext items={items.map((item) => item.id)}>
+    <Card
+      style={{ backgroundColor }}
+      className={`shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden`}
+    >
+      <div className="flex justify-between items-center h-fit">
+        <div className="text-sm text-gray-500 flex items-center gap-3">
+          <Badge
+            style={{ backgroundColor: color || "" }}
+            className="font-medium text-gray-800"
+          >
+            {title}
+          </Badge>
+        </div>
+        <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
+      </div>
+      <div ref={setNodeRef} className="flex-1 overflow-y-auto min-h-[200px]">
+        <SortableContext items={tasks.map((task) => task.task_id)}>
           <div className="space-y-2">
-            {items.map((item) => (
+            {tasks.map((task) => (
               <KanbanItem
-                key={item.id}
-                id={item.id}
-                content={item.content}
-                onDelete={() => onDeleteItem(item.id)}
+                key={task.task_id}
+                id={task.task_id}
+                task={task}
+                onDelete={() => onDeleteTask(task.task_id)}
               />
             ))}
           </div>
         </SortableContext>
-      </CardContent>
+      </div>
     </Card>
   );
 }
