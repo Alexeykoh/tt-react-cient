@@ -17,10 +17,10 @@ interface KanbanItemProps {
 }
 
 export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
-  // Set up sortable item
+  // Настраиваем элемент для сортировки (drag-and-drop)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
 
-  // Apply styles for dragging
+  // Применяем стили для перетаскивания задачи
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -28,7 +28,7 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
     zIndex: isDragging ? 1 : 0,
   }
 
-  // Format the payment information
+  // Форматируем информацию об оплате задачи
   const formatPayment = () => {
     if (!task.is_paid) return null
 
@@ -50,6 +50,7 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
       {...listeners}
     >
       <CardContent className="p-3 space-y-2">
+        {/* Заголовок задачи и кнопка удаления */}
         <div className="flex justify-between items-start">
           <h4 className="text-sm font-medium">{task.name}</h4>
           {onDelete && (
@@ -63,20 +64,24 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
               }}
             >
               <Trash2 className="h-3 w-3" />
-              <span className="sr-only">Delete</span>
+              <span className="sr-only">Удалить</span>
             </Button>
           )}
         </div>
 
+        {/* Описание задачи, если есть */}
         {task.description && <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>}
 
+        {/* Бейджи с информацией о проекте, оплате, участниках и времени создания */}
         <div className="flex flex-wrap gap-2 items-center text-xs">
+          {/* Название проекта */}
           {task.project.name && (
             <Badge variant="outline" className="text-xs font-normal">
               {task.project.name}
             </Badge>
           )}
 
+          {/* Информация об оплате */}
           {task.is_paid && (
             <TooltipProvider>
               <Tooltip>
@@ -86,11 +91,14 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
                     {formatPayment()}
                   </Badge>
                 </TooltipTrigger>
-                <TooltipContent>{task.payment_type === PAYMENT.FIXED ? "Fixed payment" : "Hourly rate"}</TooltipContent>
+                <TooltipContent>
+                  {task.payment_type === PAYMENT.FIXED ? "Фиксированная оплата" : "Почасовая ставка"}
+                </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
 
+          {/* Участники задачи */}
           {task.taskMembers.length > 0 && (
             <TooltipProvider>
               <Tooltip>
@@ -102,6 +110,7 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="text-xs">
+                    {/* Список участников задачи */}
                     {task.taskMembers.map((member) => (
                       <div key={member.member_id}>{member.user.name}</div>
                     ))}
@@ -111,6 +120,7 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
             </TooltipProvider>
           )}
 
+          {/* Дата создания задачи */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -119,7 +129,7 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
                   {new Date(task.created_at).toLocaleDateString()}
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent>Created on {new Date(task.created_at).toLocaleString()}</TooltipContent>
+              <TooltipContent>Создано {new Date(task.created_at).toLocaleString()}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>

@@ -49,33 +49,45 @@ export const taskService = createApi({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["task"], // отключаем, т.к. обновляем оптимистично
-      // async onQueryStarted(updateDto, { dispatch, queryFulfilled }) {
-      //   // Предположим, что updateDto содержит taskId и новый статус
-      //   const { task_id, task_status_column_id } = updateDto;
+      // invalidatesTags: ["task"], // отключаем, т.к. обновляем оптимистично
+      async onQueryStarted(updateDto, { dispatch, queryFulfilled, getState }) {
+        // Предположим, что updateDto содержит taskId и новый статус
+        const { task_id, task_status_column_id } = updateDto;
 
-      //   // Оптимистично обновим кэш getTaskById
-      //   const patchResult = dispatch(
-      //     taskService.util.updateQueryData("getTaskById", task_id, (draft) => {
-      //       draft.taskStatus.id = task_status_column_id;
-      //     })
-      //   );
+        // Оптимистично обновим кэш getTaskById
+        const patchResult = dispatch(
+          taskService.util.updateQueryData("getTaskById", task_id, (draft) => {
+            draft.taskStatus.id = task_status_column_id;
+          })
+        );
 
-      //   // Можно также обновить список задач по проекту, если нужно:
-      //   dispatch(
-      //     taskService.util.updateQueryData("getTasksByProject", projectId, (draft) => {
-      //       const task = draft.find(t => t.task_id === taskId);
-      //       if (task) task.status = status;
-      //     })
-      //   );
+        // Получаем projectId из кэша getTaskById через getState
+        const state = getState();
+        const getTaskByIdCache =
+          state["task-service"].queries?.[`getTaskById("${task_id}")`]?.data;
+        const projectId =
+          getTaskByIdCache &&
+          typeof getTaskByIdCache === "object" &&
+          "project_id" in getTaskByIdCache
+            ? getTaskByIdCache.project_id
+            : undefined;
 
-      //   try {
-      //     await queryFulfilled;
-      //   } catch {
-      //     // Если запрос не удался - откатим изменения
-      //     patchResult.undo();
-      //   }
-      // },
+        if (typeof projectId === "string") {
+          dispatch(
+            taskService.util.updateQueryData("getTasksByProject", projectId, (draft) => {
+              const task = draft.find(t => t.task_id === task_id);
+              if (task) task.taskStatus.id = task_status_column_id;
+            })
+          );
+        }
+
+        try {
+          await queryFulfilled;
+        } catch {
+          // Если запрос не удался - откатим изменения
+          patchResult.undo();
+        }
+      },
     }),
 
     createTask: builder.mutation<Task, CreateTaskDto>({

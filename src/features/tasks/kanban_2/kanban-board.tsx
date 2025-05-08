@@ -35,35 +35,35 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
   const [tasks, setTasks] = useState<Task[]>(tasks_1 ?? []);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
-  // Configure sensors for drag and drop
+  // Настраиваем сенсоры для drag-and-drop (перетаскивания)
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 8, // Минимальное расстояние для активации перетаскивания
       },
     })
   );
 
-  // Group tasks by column
+  // Группируем задачи по колонкам
   const getTasksByColumn = (columnId: string) => {
     return [...tasks]
       ?.filter((task) => task.taskStatus.taskStatusColumn.id === columnId)
       ?.sort((a, b) => a.order - b.order);
   };
 
-  // Handle drag start
+  // Обработчик начала перетаскивания задачи
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
     const activeId = active.id as string;
 
-    // Find the task being dragged
+    // Находим задачу, которую начали перетаскивать
     const foundTask = tasks.find((task) => task.task_id === activeId);
     if (foundTask) {
       setActiveTask(foundTask);
     }
   };
 
-  // Handle drag over
+  // Обработчик перемещения задачи во время drag-and-drop
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -71,20 +71,20 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Find the task being dragged
+    // Находим задачу, которую перетаскиваем
     const activeTask = tasks.find((task) => task.task_id === activeId);
     if (!activeTask) return;
 
-    // Check if dragging over a column or a task
+    // Проверяем, перетаскиваем ли мы на колонку или на другую задачу
     const isOverColumn = columns.some((col) => col.id === overId);
 
     if (isOverColumn) {
-      // Dragging over a column
+      // Перетаскиваем на колонку
       if (activeTask.taskStatus.taskStatusColumn.id !== overId) {
-        // Move task to a different column
+        // Перемещаем задачу в другую колонку
         const updatedTasks = tasks.map((task) => {
           if (task.task_id === activeId) {
-            // Find the highest order in the target column
+            // Находим максимальный order в целевой колонке
             const tasksInTargetColumn = getTasksByColumn(overId);
             const highestOrder =
               tasksInTargetColumn.length > 0
@@ -108,11 +108,11 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
         setTasks(updatedTasks as Task[]);
       }
     } else {
-      // Dragging over another task
+      // Перетаскиваем на другую задачу
       const overTask = tasks.find((task) => task.task_id === overId);
       if (!overTask) return;
 
-      // If tasks are in different columns
+      // Если задачи в разных колонках
       if (
         activeTask.taskStatus.taskStatusColumn.id !==
         overTask.taskStatus.taskStatusColumn.id
@@ -131,7 +131,7 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
             };
           }
 
-          // Adjust orders of other tasks in the target column
+          // Корректируем порядок других задач в целевой колонке
           if (
             task.taskStatus.taskStatusColumn.id ===
               overTask.taskStatus.taskStatusColumn.id &&
@@ -151,7 +151,7 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     }
   };
 
-  // Handle drag end
+  // Обработчик окончания перетаскивания задачи
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
 
@@ -161,17 +161,17 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Find the task being dragged
+    // Находим задачу, которую перетаскивали
     const activeTask = tasks.find((task) => task.task_id === activeId);
     if (!activeTask) return;
 
-    // Check if dragging over a task (for reordering within the same column)
+    // Проверяем, перетаскиваем ли мы на задачу (для сортировки внутри одной колонки)
     const isOverTask = tasks.some((task) => task.task_id === overId);
 
     if (isOverTask && activeId !== overId) {
       const overTask = tasks.find((task) => task.task_id === overId)!;
 
-      // If tasks are in the same column, reorder them
+      // Если задачи в одной колонке, меняем их порядок
       if (
         activeTask.taskStatus.taskStatusColumn.id ===
         overTask.taskStatus.taskStatusColumn.id
@@ -186,7 +186,7 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
         if (activeIndex !== -1 && overIndex !== -1) {
           const newOrder = arrayMove(columnTasks, activeIndex, overIndex);
 
-          // Update orders based on new positions
+          // Обновляем порядок задач в колонке
           const updatedTasks = tasks.map((task) => {
             const newIndex = newOrder.indexOf(task.task_id);
             if (
@@ -208,7 +208,8 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     }
   };
 
-  // Add a new task to a column
+  // Добавить новую задачу в колонку
+  // Можно расширить: добавить валидацию, уведомления и т.д.
   const handleAddTask = (columnId: string, taskName: string) => {
     if (taskName.trim() === "") return;
 
@@ -255,18 +256,18 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
     setTasks([...tasks, newTask]);
   };
 
-  // Delete a column
+  // Удалить колонку и все задачи в ней
   const handleDeleteColumn = (columnId: string) => {
-    // Remove the column
+    // Удаляем колонку
     setColumns(columns.filter((column) => column.id !== columnId));
 
-    // Remove all tasks in that column
+    // Удаляем все задачи из этой колонки
     setTasks(
       tasks.filter((task) => task.taskStatus.taskStatusColumn.id !== columnId)
     );
   };
 
-  // Delete a task
+  // Удалить задачу
   const handleDeleteTask = (taskId: string) => {
     setTasks(tasks.filter((task) => task.task_id !== taskId));
   };
@@ -303,7 +304,7 @@ const [updateTaskStatus] = useUpdateTaskStatusMutation()
             })}
         </div>
 
-        {/* Drag overlay for visual feedback */}
+        {/* Оверлей при перетаскивании задачи для визуальной обратной связи */}
         <DragOverlay>
           {activeTask && (
             <div className="opacity-80">

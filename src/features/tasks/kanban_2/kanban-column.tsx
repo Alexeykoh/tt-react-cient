@@ -25,11 +25,12 @@ export default function KanbanColumn({
 
   onDeleteTask,
 }: KanbanColumnProps) {
-  // Set up droppable area
+  // Настраиваем область для сброса (droppable) — сюда можно перетаскивать задачи
   const { setNodeRef } = useDroppable({
     id,
   });
 
+  // Вычисляем цвет фона для колонки на основе цвета статуса
   const backgroundColor = useMemo(() => {
     if (!color) return "";
     return convertToRgba(color, "0.04");
@@ -40,6 +41,7 @@ export default function KanbanColumn({
       style={{ backgroundColor }}
       className={`shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden`}
     >
+      {/* Заголовок колонки и счетчик задач */}
       <div className="flex justify-between items-center h-fit">
         <div className="text-sm text-gray-500 flex items-center gap-3">
           <Badge
@@ -51,6 +53,7 @@ export default function KanbanColumn({
         </div>
         <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
       </div>
+      {/* Список задач в колонке */}
       <div ref={setNodeRef} className="flex-1 overflow-y-auto min-h-[200px]">
         <SortableContext items={tasks.map((task) => task.task_id)}>
           <div className="space-y-2">
@@ -59,7 +62,7 @@ export default function KanbanColumn({
                 key={task.task_id}
                 id={task.task_id}
                 task={task}
-                onDelete={() => onDeleteTask(task.task_id)}
+                onDelete={() => onDeleteTask(task.task_id)} // Удаление задачи
               />
             ))}
           </div>
