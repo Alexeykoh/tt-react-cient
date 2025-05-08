@@ -9,7 +9,8 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-  closestCorners,
+  DragOverEvent,
+  pointerWithin,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -34,6 +35,7 @@ export function TasksListBoardPage() {
   const { id } = useParams<{ id: string }>();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [columns, setColumns] = useState<TaskStatusColumn[]>([]);
+  const [overId, setOverId] = useState<string | null>(null);
   const [updateStatus] = useUpdateTaskStatusMutation();
   const [updateTask] = useUpdateTaskMutation();
 
@@ -98,8 +100,13 @@ export function TasksListBoardPage() {
     }
   };
 
+  const handleDragOver = (event: DragOverEvent) => {
+    setOverId(event.over?.id?.toString() || null);
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+    setOverId(null);
     if (!over || active.id === over.id) return;
 
     const previousColumns = [...columns];
@@ -226,8 +233,9 @@ export function TasksListBoardPage() {
     <div className="space-y-4 flex w-full h-full p-4">
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
@@ -236,7 +244,12 @@ export function TasksListBoardPage() {
         >
           <div className="flex overflow-x-auto gap-4 pb-4 w-full h-full">
             {columns.map((column) => (
-              <SortableColumn key={column.id} column={column} />
+              <SortableColumn
+                key={column.id}
+                column={column}
+                overId={overId}
+                activeTaskId={activeTask?.task_id || null}
+              />
             ))}
           </div>
         </SortableContext>

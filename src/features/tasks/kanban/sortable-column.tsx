@@ -11,7 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { convertToRgba } from "@/lib/convert-to-rgba";
 import { useMemo } from "react";
 
-export function SortableColumn({ column }: { column: TaskStatusColumn }) {
+interface SortableColumnProps {
+  column: TaskStatusColumn;
+  overId: string | null;
+  activeTaskId: string | null;
+}
+
+export function SortableColumn({ column, overId, activeTaskId }: SortableColumnProps) {
   const { setNodeRef, attributes, isDragging, transform, transition } =
     useSortable({
       id: column.id,
@@ -23,6 +29,10 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
     return convertToRgba(column.color, "0.04");
   }, [column.color]);
 
+  // Подсветка колонки как drop-зоны, если на неё перетаскивают задачу
+  const isDropColumnActive =
+    overId === column.id && !!activeTaskId;
+
   return (
     <Card
       ref={setNodeRef}
@@ -30,7 +40,12 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
         opacity: isDragging ? 0.5 : 1,
         transform: CSS.Transform.toString(transform),
         transition,
-        backgroundColor: column.color ? backgroundColor : "",
+        backgroundColor: isDropColumnActive
+          ? "rgba(80,180,255,0.15)"
+          : column.color
+          ? backgroundColor
+          : "",
+        border: isDropColumnActive ? "2px solid #50b4ff" : undefined,
       }}
       className="shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden"
       {...attributes}
@@ -55,7 +70,12 @@ export function SortableColumn({ column }: { column: TaskStatusColumn }) {
       >
         <div className="space-y-2 flex-1 flex-col overflow-y-auto">
           {column.tasks?.map((task) => (
-            <SortableTask key={task.task_id} task={task} />
+            <SortableTask
+              key={task.task_id}
+              task={task}
+              overId={overId}
+              activeTaskId={activeTaskId}
+            />
           ))}
         </div>
       </SortableContext>
