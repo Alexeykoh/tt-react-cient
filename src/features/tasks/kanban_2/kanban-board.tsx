@@ -17,6 +17,7 @@ import {
   Task,
 } from "@/shared/interfaces/task.interface";
 import KanbanItem from "./kanban-item";
+import { useUpdateTaskStatusMutation } from "@/shared/api/task.service";
 
 interface porps {
   tasks: Task[];
@@ -27,6 +28,9 @@ export default function KanbanBoard({
   tasks: tasks_1,
   columns: columns_1,
 }: porps) {
+const [updateTaskStatus] = useUpdateTaskStatusMutation()
+
+
   const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1 ?? []);
   const [tasks, setTasks] = useState<Task[]>(tasks_1 ?? []);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
