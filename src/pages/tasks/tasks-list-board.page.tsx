@@ -11,6 +11,7 @@ import {
   DragStartEvent,
   DragOverEvent,
   pointerWithin,
+  closestCenter,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -233,7 +234,7 @@ export function TasksListBoardPage() {
     <div className="space-y-4 flex w-full h-full p-4">
       <DndContext
         sensors={sensors}
-        collisionDetection={pointerWithin}
+        collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}

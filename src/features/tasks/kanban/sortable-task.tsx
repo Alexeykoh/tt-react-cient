@@ -42,6 +42,11 @@ export function SortableTask({
     zIndex: isDropTarget ? 2 : undefined,
   };
 
+  if (isDragging) {
+    // Не рендерим карточку в списке, если она сейчас перетаскивается (DragOverlay покажет фантом)
+    return null;
+  }
+
   return (
     <div
       ref={setNodeRef}
