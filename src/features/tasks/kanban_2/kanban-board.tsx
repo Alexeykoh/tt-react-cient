@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   type DragEndEvent,
@@ -35,6 +35,14 @@ export default function KanbanBoard({
 
   const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1);
   const [tasks, setTasks] = useState<Task[]>(tasks_1);
+
+  // Синхронизация локального состояния с props
+  useEffect(() => {
+    setColumns(columns_1 ?? []);
+  }, [columns_1]);
+  useEffect(() => {
+    setTasks(tasks_1 ?? []);
+  }, [tasks_1]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const sensors = useSensors(
