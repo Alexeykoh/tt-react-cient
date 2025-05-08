@@ -12,8 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { convertToRgba } from "@/lib/convert-to-rgba";
 import { useMemo } from "react";
 
+interface TaskWithTasks extends TaskStatusColumn {
+  tasks?: import("@/shared/interfaces/task.interface").Task[];
+}
+
 interface SortableColumnProps {
-  column: TaskStatusColumn;
+  column: TaskWithTasks;
   overId: string | null;
   activeTaskId: string | null;
 }
@@ -72,64 +76,14 @@ export function SortableColumn({
         strategy={verticalListSortingStrategy}
       >
         <div className="space-y-2 flex-1 flex-col overflow-y-auto">
-          {(column.tasks ?? []).map((task) => {
-            // Вставляем фантом (placeholder) перед задачей, если overId совпадает с task_id
-            const shouldShowPlaceholder =
-              overId === task.task_id &&
-              activeTaskId &&
-              overId !== activeTaskId &&
-              overId !== column.id;
-
-            return (
-              <React.Fragment key={task.task_id}>
-                {shouldShowPlaceholder && (
-                  <div
-                    key={`${task.task_id}-placeholder`}
-                    className="rounded-lg border-2 border-dashed border-primary bg-primary/10 animate-pulse"
-                    style={{
-                      height: 64,
-                      marginBottom: 8,
-                      transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-                    }}
-                  />
-                )}
-                <SortableTask
-                  task={task}
-                  overId={overId}
-                  activeTaskId={activeTaskId}
-                />
-              </React.Fragment>
-            );
-          })}
-          {/* Если перетаскиваем в пустую колонку или в конец */}
-          {(column.tasks?.length ?? 0) === 0 &&
-            overId === column.id &&
-            activeTaskId &&
-            overId !== activeTaskId && (
-              <div
-                className="rounded-lg border-2 border-dashed border-primary bg-primary/10 animate-pulse"
-                style={{
-                  height: 64,
-                  marginBottom: 8,
-                  transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-                }}
-              />
-            )}
-          {(column.tasks?.length ?? 0) > 0 &&
-            overId &&
-            !(column.tasks ?? []).some((t) => t.task_id === overId) &&
-            overId === column.id &&
-            activeTaskId &&
-            overId !== activeTaskId && (
-              <div
-                className="rounded-lg border-2 border-dashed border-primary bg-primary/10 animate-pulse"
-                style={{
-                  height: 64,
-                  marginBottom: 8,
-                  transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-                }}
-              />
-            )}
+          {(column.tasks ?? []).map((task: import("@/shared/interfaces/task.interface").Task) => (
+            <SortableTask
+              key={task.task_id}
+              task={task}
+              overId={overId}
+              activeTaskId={activeTaskId}
+            />
+          ))}
         </div>
       </SortableContext>
     </Card>

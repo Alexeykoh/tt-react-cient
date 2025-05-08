@@ -42,7 +42,7 @@ export function SortableTask({
     zIndex: isDropTarget ? 2 : undefined,
   };
 
-  if (isDragging) {
+  if (activeTaskId === task.task_id) {
     // Не рендерим карточку в списке, если она сейчас перетаскивается (DragOverlay покажет фантом)
     return null;
   }
