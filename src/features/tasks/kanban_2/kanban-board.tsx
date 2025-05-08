@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   DndContext,
   type DragEndEvent,
-  type DragOverEvent,
   type DragStartEvent,
   PointerSensor,
   useSensor,
@@ -34,10 +33,9 @@ export default function KanbanBoard({
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [updateTask] = useUpdateTaskMutation();
 
-  const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1 ?? []);
-  const [tasks, setTasks] = useState<Task[]>(tasks_1 ?? []);
+  const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1);
+  const [tasks, setTasks] = useState<Task[]>(tasks_1);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-  const [prevTaskStatusColumnId, setPrevTaskStatusColumnId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -59,17 +57,15 @@ export default function KanbanBoard({
     const foundTask = tasks.find((task) => task.task_id === activeId);
     if (foundTask) {
       setActiveTask(foundTask);
-      setPrevTaskStatusColumnId(foundTask.taskStatus.taskStatusColumn.id);
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
+  const handleDragOver = () => {
     // Оставляем обработчик пустым — визуальное перемещение только через DragOverlay, состояние фиксируется в onDragEnd
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
-    setPrevTaskStatusColumnId(null);
 
     const { active, over } = event;
     console.log("handleDragEnd вызван", { event, active, over });
@@ -81,7 +77,14 @@ export default function KanbanBoard({
     const activeId = active.id as string;
     const overId = over.id as string;
     const activeTask = tasks.find((task) => task.task_id === activeId);
-    console.log("activeId:", activeId, "overId:", overId, "activeTask:", activeTask);
+    console.log(
+      "activeId:",
+      activeId,
+      "overId:",
+      overId,
+      "activeTask:",
+      activeTask
+    );
     if (!activeTask) {
       console.log("activeTask не найден");
       return;
@@ -106,7 +109,14 @@ export default function KanbanBoard({
         const activeIndex = columnTasks.indexOf(activeId);
         const overIndex = columnTasks.indexOf(overId);
 
-        console.log("columnTasks:", columnTasks, "activeIndex:", activeIndex, "overIndex:", overIndex);
+        console.log(
+          "columnTasks:",
+          columnTasks,
+          "activeIndex:",
+          activeIndex,
+          "overIndex:",
+          overIndex
+        );
 
         if (activeIndex !== -1 && overIndex !== -1) {
           const newOrder = arrayMove(columnTasks, activeIndex, overIndex);
@@ -179,7 +189,9 @@ export default function KanbanBoard({
       // Если перетаскиваем на саму колонку
       const column = columns.find((col) => col.id === overId);
       if (!column) {
-        console.log("Дроп не на колонку: overId не является id колонки, updateTaskStatus не вызывается");
+        console.log(
+          "Дроп не на колонку: overId не является id колонки, updateTaskStatus не вызывается"
+        );
       } else if (activeTask.taskStatus.taskStatusColumn.id !== column.id) {
         const tasksInTargetColumn = getTasksByColumn(column.id);
         const highestOrder =

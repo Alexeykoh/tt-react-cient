@@ -1,24 +1,37 @@
-"use client"
-
-import { useSortable } from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { Clock, DollarSign, Trash2, User } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { PAYMENT, Task } from "@/shared/interfaces/task.interface"
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card";
+import { Task } from "@/shared/interfaces/task.interface";
+import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/app/router/routes.enum";
+import { CalendarDays, PanelTop } from "lucide-react";
+import TaskItem from "@/components/task-item";
+import TaskSharedUsers from "../shared-users/task-shared-users";
 
 interface KanbanItemProps {
-  id: string
-  task: Task
-  onDelete?: () => void
+  id: string;
+  task: Task;
+  onDelete?: () => void;
 }
 
-export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
+export default function KanbanItem({ id, task }: KanbanItemProps) {
   // Настраиваем элемент для сортировки (drag-and-drop)
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
 
   // Применяем стили для перетаскивания задачи
   const style = {
@@ -26,114 +39,56 @@ export default function KanbanItem({ id, task, onDelete }: KanbanItemProps) {
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 1 : 0,
-  }
+  };
 
   // Форматируем информацию об оплате задачи
-  const formatPayment = () => {
-    if (!task.is_paid) return null
+  const { data: projectUsers } = useGetProjectSharedByIdQuery({
+    project_id: task?.project_id || "",
+  });
 
-    const symbol = task.currency.symbol
-
-    if (task.payment_type === PAYMENT.FIXED) {
-      return `${symbol}${task.rate}`
-    } else {
-      return `${symbol}${task.rate}/hr`
-    }
-  }
+  const navigate = useNavigate();
 
   return (
     <Card
       ref={setNodeRef}
       style={style}
-      className="cursor-grab active:cursor-grabbing group"
+      className="cursor-grab active:cursor-grabbing group border-0 shadow-2xl p-0"
       {...attributes}
       {...listeners}
     >
-      <CardContent className="p-3 space-y-2">
-        {/* Заголовок задачи и кнопка удаления */}
-        <div className="flex justify-between items-start">
-          <h4 className="text-sm font-medium">{task.name}</h4>
-          {onDelete && (
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-base font-semibold truncate break-words text-wrap">
+            {task.name}
+          </CardTitle>
+          <div className="flex items-center space-x-1">
             <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete()
+              onClickCapture={() => {
+                navigate(`/${ROUTES.TASKS}/${task.task_id}`);
               }}
+              size={"icon"}
+              variant={"outline"}
+              className="size-6"
             >
-              <Trash2 className="h-3 w-3" />
-              <span className="sr-only">Удалить</span>
+              <PanelTop className="size-3" />
             </Button>
-          )}
+            <TaskItem variant="icon" task_id={task.task_id} showTime={false} />
+          </div>
         </div>
-
-        {/* Описание задачи, если есть */}
-        {task.description && <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>}
-
-        {/* Бейджи с информацией о проекте, оплате, участниках и времени создания */}
-        <div className="flex flex-wrap gap-2 items-center text-xs">
-          {/* Название проекта */}
-          {task.project.name && (
-            <Badge variant="outline" className="text-xs font-normal">
-              {task.project.name}
-            </Badge>
-          )}
-
-          {/* Информация об оплате */}
-          {task.is_paid && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" />
-                    {formatPayment()}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {task.payment_type === PAYMENT.FIXED ? "Фиксированная оплата" : "Почасовая ставка"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-
-          {/* Участники задачи */}
-          {task.taskMembers.length > 0 && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge variant="outline" className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    {task.taskMembers.length}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="text-xs">
-                    {/* Список участников задачи */}
-                    {task.taskMembers.map((member) => (
-                      <div key={member.member_id}>{member.user.name}</div>
-                    ))}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-
-          {/* Дата создания задачи */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge variant="outline" className="flex items-center gap-1 ml-auto">
-                  <Clock className="h-3 w-3" />
-                  {new Date(task.created_at).toLocaleDateString()}
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>Создано {new Date(task.created_at).toLocaleString()}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <CardDescription className="py-2 line-clamp-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CalendarDays className="w-4 h-4" />
+            <span>{new Date(task.created_at).toLocaleDateString()}</span>
+          </div>
+        </CardDescription>
+        <CardFooter className="px-0">
+          <TaskSharedUsers
+            taskMembers={task?.taskMembers}
+            taskId={task.task_id}
+            projectMembers={projectUsers || []}
+          />
+        </CardFooter>
       </CardContent>
     </Card>
-  )
+  );
 }
