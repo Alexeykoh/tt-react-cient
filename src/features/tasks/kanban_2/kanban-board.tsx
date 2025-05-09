@@ -3,11 +3,13 @@ import {
   DndContext,
   type DragEndEvent,
   type DragStartEvent,
+  type DragOverEvent,
   PointerSensor,
   useSensor,
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core";
+import { motion, AnimatePresence } from "framer-motion";
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import KanbanColumn from "./kanban-column";
 import {
@@ -44,6 +46,8 @@ export default function KanbanBoard({
     setTasks(tasks_1 ?? []);
   }, [tasks_1]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  // id колонки, над которой сейчас drag-over
+  const [overColumnId, setOverColumnId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -68,12 +72,19 @@ export default function KanbanBoard({
     }
   };
 
-  const handleDragOver = () => {
-    // Оставляем обработчик пустым — визуальное перемещение только через DragOverlay, состояние фиксируется в onDragEnd
+  const handleDragOver = (event: DragOverEvent) => {
+    // Определяем, над какой колонкой сейчас drag-over
+    const { over } = event;
+    if (over) {
+      setOverColumnId(over.id as string);
+    } else {
+      setOverColumnId(null);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
+    setOverColumnId(null);
 
     const { active, over } = event;
     console.log("handleDragEnd вызван", { event, active, over });
@@ -317,6 +328,10 @@ export default function KanbanBoard({
             ?.sort((a, b) => a.order - b.order)
             .map((column) => {
               const columnTasks = getTasksByColumn(column.id);
+              // определяем, подсвечивать ли колонку (если drag-over над ней или над ее задачей)
+              const isOver =
+                overColumnId === column.id ||
+                columnTasks.some((task) => overColumnId === task.task_id);
               return (
                 <SortableContext
                   key={column.id}
@@ -330,21 +345,36 @@ export default function KanbanBoard({
                     onAddTask={(name) => handleAddTask(column.id, name)}
                     onDeleteTask={handleDeleteTask}
                     onDeleteColumn={() => handleDeleteColumn(column.id)}
+                    isOver={isOver}
+                    isDragging={!!activeTask}
                   />
                 </SortableContext>
               );
             })}
         </div>
         <DragOverlay>
-          {activeTask && (
-            <div className="opacity-80">
-              <KanbanItem
-                id={activeTask.task_id}
-                task={activeTask}
-                onDelete={() => handleDeleteTask(activeTask.task_id)}
-              />
-            </div>
-          )}
+          <AnimatePresence>
+            {activeTask && (
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0.7, boxShadow: "0 0 0 0 var(--primary)" }}
+                animate={{
+                  scale: 1.05,
+                  opacity: 1,
+                  boxShadow: "0 8px 8px 0 var(--primary)",
+                  transition: { type: "spring", stiffness: 300, damping: 25 },
+                }}
+                exit={{ scale: 0.95, opacity: 0.7, boxShadow: "0 0 0 0 var(--primary)" }}
+                style={{ borderRadius: 12, zIndex: 1000 }}
+              >
+                <div className=""></div>
+                <KanbanItem
+                  id={activeTask.task_id}
+                  task={activeTask}
+                  onDelete={() => handleDeleteTask(activeTask.task_id)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </DragOverlay>
       </DndContext>
     </div>

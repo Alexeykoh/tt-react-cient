@@ -15,6 +15,8 @@ interface KanbanColumnProps {
   onAddTask: (name: string) => void;
   onDeleteTask: (taskId: string) => void;
   onDeleteColumn: () => void;
+  isOver: boolean;
+  isDragging: boolean;
 }
 
 export default function KanbanColumn({
@@ -22,8 +24,9 @@ export default function KanbanColumn({
   title,
   color,
   tasks,
-
   onDeleteTask,
+  isOver,
+  isDragging,
 }: KanbanColumnProps) {
   // Настраиваем область для сброса (droppable) — сюда можно перетаскивать задачи
   const { setNodeRef } = useDroppable({
@@ -36,10 +39,17 @@ export default function KanbanColumn({
     return convertToRgba(color, "0.04");
   }, [color]);
 
+  // Подсветка рамки: если isOver — яркая рамка, если isDragging — полупрозрачная
+  const borderClass = isOver
+    ? "border-2 border-primary/50"
+    : isDragging
+    ? "border-2 border-primary/20"
+    : "border border-transparent";
+
   return (
     <Card
       style={{ backgroundColor }}
-      className={`shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden`}
+      className={`shrink-0 h-full w-72 rounded-lg p-2 overflow-y-hidden transition-all duration-150 ${borderClass}`}
     >
       {/* Заголовок колонки и счетчик задач */}
       <div className="flex justify-between items-center h-fit">
