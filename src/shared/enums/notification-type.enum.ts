@@ -1,4 +1,4 @@
-export enum NotificationType {
+export enum NOTIFICATION_TYPE {
   FRIENDSHIP_INVITATION = "friendship_invitation",
   FRIENDSHIP_INVITATION_ACCEPTED = "friendship_invitation_accepted",
   FRIENDSHIP_INVITATION_DECLINED = "friendship_invitation_declined",

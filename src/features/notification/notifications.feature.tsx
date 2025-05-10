@@ -22,7 +22,7 @@ export default function NotificationsFeature() {
   }
 
   return (
-    <div className={"w-full h-full flex flex-col"}>
+    <div className={"w-full h-full flex flex-col items-start"}>
       <div className="flex flex-col items-center justify-between space-y-0 py-4">
         <div>
           {unreadCount > 0
@@ -36,7 +36,7 @@ export default function NotificationsFeature() {
           </Button>
         )}
       </div>
-      <div className="flex w-full h-full">
+      <div className="flex w-full h-full ">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
@@ -56,7 +56,7 @@ export default function NotificationsFeature() {
           </div>
         ) : (
           <ScrollArea className="h-full w-full rounded-md border p-4">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 ">
               {notifications.map((notification: INotification) => (
                 <NotificationCard
                   notification={notification}

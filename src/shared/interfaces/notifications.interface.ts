@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { NotificationType } from "../enums/notification-type.enum";
+import { NOTIFICATION_TYPE } from "../enums/notification-type.enum";
 
 export const notificationsSchema = z.object({
   id: z.string(),
   message: z.string(),
   isRead: z.boolean(),
-  type: z.nativeEnum(NotificationType).optional(),
+  type: z.nativeEnum(NOTIFICATION_TYPE).optional(),
   data: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),

@@ -151,7 +151,7 @@ const HomePage: React.FC = () => {
             <h2 className="text-xl">Последние задачи</h2>
             <Button>Создать</Button>
           </div>
-          <div className="w-full">
+          <div className="w-full flex flex-wrap gap-4">
             {searchData?.tasks?.length === 0 && (
               <AdvantageCarousel items={TASK_ADVANTAGES} />
             )}
