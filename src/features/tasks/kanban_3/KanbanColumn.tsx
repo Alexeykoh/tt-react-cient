@@ -1,6 +1,8 @@
 import { Task, TaskStatusColumn } from "@/shared/interfaces/task.interface";
 import { AnimatePresence, motion } from "framer-motion";
 import KanbanTask from "./KanbanTask";
+import { Badge } from "@/components/ui/badge";
+import { convertToRgba } from "@/lib/convert-to-rgba";
 
 export default function KanbanColumn({
   column,
@@ -22,6 +24,9 @@ export default function KanbanColumn({
   }) => void;
   onDragEnd: (columnId?: string, position?: number) => void;
 }) {
+  const backgroundColor = column.color
+    ? convertToRgba(column.color, "0.04")
+    : "";
   const handleDragOver = (e: React.DragEvent, position: number) => {
     e.preventDefault();
     setHoverState({
@@ -33,7 +38,8 @@ export default function KanbanColumn({
   return (
     <motion.div
       layout
-      className={`w-72 shrink-0 flex flex-col gap-2 p-4 rounded-lg border transition-colors
+      style={{ backgroundColor }}
+      className={`w-72 h-full flex flex-col rounded-lg border transition-colors
         ${draggedTask && hoverState.columnId === column.id ? "border-primary/50 bg-accent/20" : "border-border"}`}
       onDragLeave={() => setHoverState({ columnId: null, position: null })}
       onDrop={(e) => {
@@ -48,15 +54,19 @@ export default function KanbanColumn({
         }
       }}
     >
-      <div className="flex items-center gap-2 mb-2">
-        <div
-          className="w-3 h-3 rounded-full"
-          style={{ backgroundColor: column.color || "#ccc" }}
-        />
-        <h3 className="font-semibold">{column.name}</h3>
+      <div className="flex justify-between items-center h-fit p-4">
+        <div className="text-sm text-gray-500 flex items-center gap-3">
+          <Badge
+            style={{ backgroundColor: column.color || "" }}
+            className="font-medium text-gray-800"
+          >
+            {column.name}
+          </Badge>
+        </div>
+        <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col h-full gap-2 overflow-y-auto py-2 px-4">
         <AnimatePresence>
           {tasks.map((task, index) => (
             <KanbanTask
@@ -83,7 +93,7 @@ export default function KanbanColumn({
               ? "bg-primary/50"
               : "bg-transparent"
           }`}
-          style={{ minHeight: 16 }}
+          style={{ minHeight: 4 }}
           onDragOver={(e) => handleDragOver(e, tasks.length)}
           onDragEnter={(e) => handleDragOver(e, tasks.length)}
         />
