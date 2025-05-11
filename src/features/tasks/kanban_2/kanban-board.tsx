@@ -9,14 +9,13 @@ import {
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core";
-import { motion, AnimatePresence } from "framer-motion";
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-import KanbanColumn from "./kanban-column";
 import {
-  TaskStatusColumn,
-  PAYMENT,
-  Task,
-} from "@/shared/interfaces/task.interface";
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import KanbanColumn from "./kanban-column";
+import { TaskStatusColumn, Task } from "@/shared/interfaces/task.interface";
 import KanbanItem from "./kanban-item";
 import {
   useUpdateTaskMutation,
@@ -37,6 +36,7 @@ export default function KanbanBoard({
 
   const [columns, setColumns] = useState<TaskStatusColumn[]>(columns_1);
   const [tasks, setTasks] = useState<Task[]>(tasks_1);
+  const [displayTasks, setDisplayTasks] = useState<Task[]>(tasks);
 
   // Синхронизация локального состояния с props
   useEffect(() => {
@@ -72,49 +72,117 @@ export default function KanbanBoard({
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    // Определяем, над какой колонкой сейчас drag-over
-    const { over } = event;
-    if (over) {
-      setOverColumnId(over.id as string);
+const handleDragOver = (event: DragOverEvent) => {
+  const { active, over } = event;
+  if (!active || !over) {
+    setOverColumnId(null);
+    setDisplayTasks(tasks);
+    return;
+  }
+
+  const activeId = active.id as string;
+  const overId = over.id as string;
+
+  const activeTask = tasks.find((task) => task.task_id === activeId);
+  if (!activeTask) return;
+
+  // Если перетаскиваем на задачу
+  const overTask = tasks.find((task) => task.task_id === overId);
+
+  if (overTask) {
+    // Целевая колонка
+    const targetColumnId = overTask.taskStatus.taskStatusColumn.id;
+    // Массив задач в целевой колонке
+    const columnTasks = getTasksByColumn(targetColumnId).map(t => t.task_id);
+    const activeIndex = columnTasks.indexOf(activeId);
+    const overIndex = columnTasks.indexOf(overId);
+
+    let newOrder = columnTasks;
+    if (activeIndex === -1) {
+      // Перетаскиваем из другой колонки
+      newOrder = [...columnTasks];
+      newOrder.splice(overIndex, 0, activeId);
     } else {
-      setOverColumnId(null);
+      // Внутри одной колонки
+      newOrder = arrayMove(columnTasks, activeIndex, overIndex);
     }
-  };
+
+    // Собираем новый массив задач для отображения
+    const updatedTasks = tasks.map(task => {
+      if (task.task_id === activeId) {
+        // Временно меняем колонку
+        return {
+          ...task,
+          taskStatus: {
+            ...task.taskStatus,
+            taskStatusColumn: {
+              ...overTask.taskStatus.taskStatusColumn,
+            },
+          },
+        };
+      }
+      return task;
+    }).map(task => {
+      // Обновляем временный order для задач в целевой колонке
+      const idx = newOrder.indexOf(task.task_id);
+      if (task.taskStatus.taskStatusColumn.id === targetColumnId && idx !== -1) {
+        return { ...task, order: idx };
+      }
+      return task;
+    });
+
+    setDisplayTasks(updatedTasks);
+    setOverColumnId(targetColumnId);
+  } else {
+    // Если перетаскиваем на колонку
+    const column = columns.find(col => col.id === overId);
+    if (column) {
+      setOverColumnId(column.id);
+      // Можно добавить задачу в конец
+      const tasksInTarget = getTasksByColumn(column.id).map(t => t.task_id);
+      const newOrder = [...tasksInTarget, activeId];
+      const updatedTasks = tasks.map(task => {
+        if (task.task_id === activeId) {
+          return {
+            ...task,
+            taskStatus: {
+              ...task.taskStatus,
+              taskStatusColumn: { ...column },
+            },
+            order: newOrder.length - 1,
+          };
+        }
+        return task;
+      });
+      setDisplayTasks(updatedTasks as Task[]);
+    }
+  }
+};
+
+
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
     setOverColumnId(null);
 
     const { active, over } = event;
-    console.log("handleDragEnd вызван", { event, active, over });
+
     if (!over) {
-      console.log("over отсутствует");
       return;
     }
 
     const activeId = active.id as string;
     const overId = over.id as string;
     const activeTask = tasks.find((task) => task.task_id === activeId);
-    console.log(
-      "activeId:",
-      activeId,
-      "overId:",
-      overId,
-      "activeTask:",
-      activeTask
-    );
+
     if (!activeTask) {
-      console.log("activeTask не найден");
       return;
     }
 
     const isOverTask = tasks.some((task) => task.task_id === overId);
-    console.log("isOverTask:", isOverTask);
 
     if (isOverTask && activeId !== overId) {
       const overTask = tasks.find((task) => task.task_id === overId)!;
-      console.log("overTask:", overTask);
 
       // Если задачи в одной колонке, меняем их порядок
       if (
@@ -127,15 +195,6 @@ export default function KanbanBoard({
 
         const activeIndex = columnTasks.indexOf(activeId);
         const overIndex = columnTasks.indexOf(overId);
-
-        console.log(
-          "columnTasks:",
-          columnTasks,
-          "activeIndex:",
-          activeIndex,
-          "overIndex:",
-          overIndex
-        );
 
         if (activeIndex !== -1 && overIndex !== -1) {
           const newOrder = arrayMove(columnTasks, activeIndex, overIndex);
@@ -194,9 +253,6 @@ export default function KanbanBoard({
           });
           setTasks(updatedTasks);
 
-          console.log(
-            `Задача реально перемещена в новую колонку (через задачу), id новой колонки: ${column.id}`
-          );
           const updateDto = {
             task_id: activeTask.task_id,
             task_status_column_id: column.id,
@@ -236,9 +292,6 @@ export default function KanbanBoard({
         });
         setTasks(updatedTasks);
 
-        console.log(
-          `Задача реально перемещена в новую колонку (через колонку), id новой колонки: ${column.id}`
-        );
         const updateDto = {
           task_id: activeTask.task_id,
           task_status_column_id: column.id,
@@ -246,52 +299,6 @@ export default function KanbanBoard({
         updateTaskStatus(updateDto);
       }
     }
-  };
-
-  const handleAddTask = (columnId: string, taskName: string) => {
-    if (taskName.trim() === "") return;
-
-    const column = columns.find((col) => col.id === columnId);
-    if (!column) return;
-
-    const tasksInColumn = getTasksByColumn(columnId);
-    const highestOrder =
-      tasksInColumn.length > 0
-        ? Math.max(...tasksInColumn.map((t) => t.order)) + 1
-        : 0;
-
-    const newTask: Task = {
-      task_id: `task-${Date.now()}`,
-      name: taskName,
-      description: "",
-      is_paid: false,
-      payment_type: PAYMENT.FIXED,
-      project_id: "",
-      rate: 0,
-      created_at: new Date().toISOString(),
-      currency: {
-        symbol: "$",
-        name: "United States Dollar",
-        code: "USD",
-        currency_id: "1",
-      },
-      order: highestOrder,
-      project: {
-        project_id: "",
-        name: "",
-      },
-      taskStatus: {
-        id: `status-${Date.now()}`,
-        taskStatusColumn: {
-          id: columnId,
-          name: column.name,
-          color: column.color || "",
-        },
-      },
-      taskMembers: [],
-    };
-
-    setTasks([...tasks, newTask]);
   };
 
   const handleDeleteColumn = (columnId: string) => {
@@ -305,7 +312,6 @@ export default function KanbanBoard({
     setTasks(tasks.filter((task) => task.task_id !== taskId));
   };
 
-  console.log("KanbanBoard рендерится");
   return (
     <div className="space-y-4">
       <DndContext
@@ -335,14 +341,17 @@ export default function KanbanBoard({
               return (
                 <SortableContext
                   key={column.id}
-                  items={columnTasks.map((task) => task.task_id)}
+                  items={columnTasks.map((task) => ({
+                    id: task.task_id.toString(),
+                  }))}
+                  strategy={verticalListSortingStrategy}
                 >
                   <KanbanColumn
                     id={column.id}
                     title={column.name}
                     color={column.color}
                     tasks={columnTasks}
-                    onAddTask={(name) => handleAddTask(column.id, name)}
+                    onAddTask={() => {}}
                     onDeleteTask={handleDeleteTask}
                     onDeleteColumn={() => handleDeleteColumn(column.id)}
                     isOver={isOver}
@@ -353,28 +362,9 @@ export default function KanbanBoard({
             })}
         </div>
         <DragOverlay>
-          <AnimatePresence>
-            {activeTask && (
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0.7, boxShadow: "0 0 0 0 var(--primary)" }}
-                animate={{
-                  scale: 1.05,
-                  opacity: 1,
-                  boxShadow: "0 8px 8px 0 var(--primary)",
-                  transition: { type: "spring", stiffness: 300, damping: 25 },
-                }}
-                exit={{ scale: 0.95, opacity: 0.7, boxShadow: "0 0 0 0 var(--primary)" }}
-                style={{ borderRadius: 12, zIndex: 1000 }}
-              >
-                <div className=""></div>
-                <KanbanItem
-                  id={activeTask.task_id}
-                  task={activeTask}
-                  onDelete={() => handleDeleteTask(activeTask.task_id)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {activeTask && (
+            <KanbanItem id={activeTask.task_id} task={activeTask} />
+          )}
         </DragOverlay>
       </DndContext>
     </div>

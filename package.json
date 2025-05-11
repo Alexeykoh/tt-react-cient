@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@atlaskit/drag-and-drop": "^0.15.1",
-    "@atlaskit/pragmatic-drag-and-drop": "^1.5.3",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.6.1",
     "@atlaskit/pragmatic-drag-and-drop-hitbox": "^1.0.3",
     "@dnd-kit/core": "^5.0.2",
     "@dnd-kit/sortable": "^6.0.1",

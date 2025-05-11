@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { Card } from "@/components/ui/card";
 import KanbanItem from "./kanban-item";
 import { Task } from "@/shared/interfaces/task.interface";
@@ -24,7 +27,6 @@ export default function KanbanColumn({
   title,
   color,
   tasks,
-  onDeleteTask,
   isOver,
   isDragging,
 }: KanbanColumnProps) {
@@ -43,8 +45,8 @@ export default function KanbanColumn({
   const borderClass = isOver
     ? "border-2 border-primary/50"
     : isDragging
-    ? "border-2 border-primary/20"
-    : "border border-transparent";
+      ? "border-2 border-primary/20"
+      : "border-2 border-transparent";
 
   return (
     <Card
@@ -64,18 +66,17 @@ export default function KanbanColumn({
         <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
       </div>
       {/* Список задач в колонке */}
-      <div ref={setNodeRef} className="flex-1 overflow-y-auto min-h-[200px]">
-        <SortableContext items={tasks.map((task) => task.task_id)}>
-          <div className="space-y-2">
-            {tasks.map((task) => (
-              <KanbanItem
-                key={task.task_id}
-                id={task.task_id}
-                task={task}
-                onDelete={() => onDeleteTask(task.task_id)} // Удаление задачи
-              />
-            ))}
-          </div>
+      <div
+        ref={setNodeRef}
+        className="flex flex-col gap-2 overflow-y-auto overflow-x-hidden h-full"
+      >
+        <SortableContext
+          items={tasks.map((task) => ({ id: task.task_id.toString() }))}
+          strategy={verticalListSortingStrategy}
+        >
+          {tasks.map((task) => (
+            <KanbanItem key={task.task_id} id={task.task_id} task={task} />
+          ))}
         </SortableContext>
       </div>
     </Card>

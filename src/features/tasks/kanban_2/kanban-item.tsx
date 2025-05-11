@@ -15,12 +15,10 @@ import { ROUTES } from "@/app/router/routes.enum";
 import { CalendarDays, PanelTop } from "lucide-react";
 import TaskItem from "@/components/task-item";
 import TaskSharedUsers from "../shared-users/task-shared-users";
-import { motion } from "framer-motion";
 
 interface KanbanItemProps {
   id: string;
   task: Task;
-  onDelete?: () => void;
 }
 
 export default function KanbanItem({ id, task }: KanbanItemProps) {
@@ -36,9 +34,13 @@ export default function KanbanItem({ id, task }: KanbanItemProps) {
 
   // Применяем стили для перетаскивания задачи
   const style = {
+    border: "1px solid",
+    borderColor: isDragging ? "var(--primary)" : "transparent",
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 1 : 0,
+    opacity: isDragging ? 0.1 : 1,
+    borderRadius: "12px",
+    // zIndex: isDragging ? 1 : 0,
   };
 
   // Форматируем информацию об оплате задачи
@@ -50,28 +52,14 @@ export default function KanbanItem({ id, task }: KanbanItemProps) {
 
   // Анимация и подсветка рамки при перетаскивании
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
       style={style}
-      initial={false}
-      animate={
-        isDragging
-          ? {
-              boxShadow:
-                "0 0 0 2px var(--primary), 0 8px 32px 0 var(--primary)",
-              opacity: 0.7,
-            }
-          : {
-              boxShadow: "0 1px 4px 0 rgba(0,0,0,0.04)",
-              opacity: 1,
-            }
-      }
-      transition={{ type: "spring", stiffness: 350, damping: 30 }}
       className={`cursor-grab active:cursor-grabbing group p-0`}
       {...attributes}
       {...listeners}
     >
-      <Card className="border-0 shadow-none p-0">
+      <Card className="border-0 p-0 w-full max-h-32 h-32 overflow-clip">
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <CardTitle className="text-base font-semibold truncate break-words text-wrap">
@@ -110,6 +98,6 @@ export default function KanbanItem({ id, task }: KanbanItemProps) {
           </CardFooter>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

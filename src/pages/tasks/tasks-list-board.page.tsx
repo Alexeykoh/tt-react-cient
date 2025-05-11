@@ -5,6 +5,7 @@ import {
 import { useParams } from "react-router-dom";
 
 import KanbanBoard from "@/features/tasks/kanban_2/kanban-board";
+// import KanbanBoard_3 from "@/features/tasks/kanban_3/kanban-board";
 
 export function TasksListBoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,7 @@ export function TasksListBoardPage() {
   return (
     <div className="space-y-4 flex w-full h-full p-4">
       <KanbanBoard tasks={tasks} columns={columns} />
+      {/* <KanbanBoard_3 /> */}
     </div>
   );
 }
