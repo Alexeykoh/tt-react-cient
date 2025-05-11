@@ -83,7 +83,9 @@ export default function KanbanColumn({
               ? "bg-primary/50"
               : "bg-transparent"
           }`}
+          style={{ minHeight: 16 }}
           onDragOver={(e) => handleDragOver(e, tasks.length)}
+          onDragEnter={(e) => handleDragOver(e, tasks.length)}
         />
       </div>
     </motion.div>
