@@ -4,7 +4,9 @@ import {
 } from "@/shared/api/task.service";
 import { useParams } from "react-router-dom";
 
-import KanbanBoard from "@/features/tasks/kanban_2/kanban-board";
+// import KanbanBoard from "@/features/tasks/kanban_2/kanban-board";
+import { KanbanBoard_3 } from "@/features/tasks/kanban_3/KanbanBoard";
+// import { Task, TaskStatusColumn } from "@/shared/interfaces/task.interface";
 // import KanbanBoard_3 from "@/features/tasks/kanban_3/kanban-board";
 
 export function TasksListBoardPage() {
@@ -24,8 +26,12 @@ export function TasksListBoardPage() {
 
   return (
     <div className="space-y-4 flex w-full h-full p-4">
-      <KanbanBoard tasks={tasks} columns={columns} />
-      {/* <KanbanBoard_3 /> */}
+      {/* <KanbanBoard tasks={tasks} columns={columns} /> */}
+      <KanbanBoard_3
+        initialColumns={columns || []}
+        initialTasks={tasks || []}
+      />
     </div>
   );
 }
+
