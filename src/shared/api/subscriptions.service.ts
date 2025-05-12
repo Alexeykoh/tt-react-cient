@@ -1,7 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { Subscriptions } from "../interfaces/subscriptions.interface";
+import {
+  Subscriptions,
+  SubscriptionsSchema,
+} from "../interfaces/subscriptions.interface";
 import { SUBSCRIPTION } from "../enums/sunscriptions.enum";
+import {validateWithSchema} from "@/lib/validator";
 
 export const subscriptionsService = createApi({
   reducerPath: "subscriptions-service",
@@ -14,7 +18,13 @@ export const subscriptionsService = createApi({
         method: "GET",
       }),
       providesTags: ["subscriptions-service"],
-      transformResponse: (response: { data: Subscriptions }) => response.data,
+      transformResponse: (response: { data: Subscriptions }) => {
+        return validateWithSchema<Subscriptions>(
+          SubscriptionsSchema,
+          response.data,
+          "getSubscriptions"
+        );
+      },
     }),
     createSubscriptions: builder.mutation<SUBSCRIPTION, SUBSCRIPTION>({
       query: (plan) => ({

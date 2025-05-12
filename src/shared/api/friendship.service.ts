@@ -1,8 +1,17 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { Friendship, FriendshipMe, FriendshipPending } from "../interfaces/friends.interface";
+import {
+  Friendship,
+  FriendshipMe,
+  FriendshipMeSchema,
+  FriendshipPending,
+  FriendshipPendingSchema,
+} from "../interfaces/friends.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
 import { FriendshipStatus } from "../enums/friendship.enum";
+import { validatePaginatedResponse, validateWithSchema } from "@/lib/validator";
+import { FriendshipSchema } from "../interfaces/friends.interface";
+import { z } from "zod";
 
 export const friendshipService = createApi({
   reducerPath: "friendship-service",
@@ -22,6 +31,13 @@ export const friendshipService = createApi({
         url: `friendship/friends?page=${page || 1}${status ? "&status=" + status : ""}`,
         method: "GET",
       }),
+      transformResponse: (response: PaginatedResponse<Friendship>) => {
+        return validatePaginatedResponse(
+          FriendshipSchema,
+          response,
+          "getFriends"
+        );
+      },
       providesTags: ["Friend-service"],
     }),
     getFriendById: builder.query<Friendship, string>({
@@ -30,7 +46,13 @@ export const friendshipService = createApi({
         method: "GET",
       }),
       providesTags: ["Friend-id"],
-      transformResponse: (response: { data: Friendship }) => response.data,
+      transformResponse: (response: { data: Friendship }) => {
+        return validateWithSchema<Friendship>(
+          FriendshipSchema,
+          response.data,
+          "getFriendById"
+        );
+      },
     }),
     getFriendshipMe: builder.query<Array<FriendshipMe>, void>({
       query: () => ({
@@ -38,8 +60,13 @@ export const friendshipService = createApi({
         method: "GET",
       }),
       providesTags: ["Friend-me-service"],
-      transformResponse: (response: { data: Array<FriendshipMe> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<FriendshipMe> }) => {
+        return validateWithSchema<Array<FriendshipMe>>(
+          z.array(FriendshipMeSchema),
+          response.data,
+          "getFriendshipMe"
+        );
+      },
     }),
     getFriendshipPending: builder.query<Array<FriendshipPending>, void>({
       query: () => ({
@@ -47,8 +74,13 @@ export const friendshipService = createApi({
         method: "GET",
       }),
       providesTags: ["Friend-pending-service"],
-      transformResponse: (response: { data: Array<FriendshipPending> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<FriendshipPending> }) => {
+        return validateWithSchema<Array<FriendshipPending>>(
+          z.array(FriendshipPendingSchema),
+          response.data,
+          "getFriendshipMe"
+        );
+      },
     }),
     requestFriendship: builder.mutation<FriendshipPending, string>({
       query: (id) => ({

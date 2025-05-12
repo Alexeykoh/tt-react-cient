@@ -4,12 +4,12 @@ import {
   usePostTimeLogStartMutation,
   usePostTimeLogStopMutation,
 } from "@/shared/api/time-log.service";
-import { TIMELOGSTATUS } from "@/shared/interfaces/time-log.interface";
 import TimerComponent from "./timer";
 import { LoaderCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { startTimer, stopTimer } from "@/features/time/model/time.slice";
+import { TIMELOGSTATUS } from "@/shared/enums/time-logs.enum";
 
 interface Props {
   task_id: string;

@@ -34,8 +34,8 @@ export const TaskStatusColumnSchema = z.object({
   order: z.number(),
   color: z.string().nullable(),
   name: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
 // TaskStatusSchema (вложенный объект taskStatus)

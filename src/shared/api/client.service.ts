@@ -2,10 +2,12 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   Client,
+  ClientSchema,
   CreateClientDTO,
   EditClientDTO,
 } from "../interfaces/client.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
+import { validatePaginatedResponse, validateWithSchema } from "@/lib/validator";
 
 export const clientService = createApi({
   reducerPath: "client-service",
@@ -17,6 +19,9 @@ export const clientService = createApi({
         url: `clients/me?page=${page || 1}`,
         method: "GET",
       }),
+      transformResponse: (response: PaginatedResponse<Client>) => {
+        return validatePaginatedResponse(ClientSchema, response, "getClients");
+      },
       providesTags: ["client-pagiated"],
     }),
     getClientById: builder.query<Client, { client_id: string }>({
@@ -25,7 +30,13 @@ export const clientService = createApi({
         method: "GET",
       }),
       providesTags: ["client-id"],
-      transformResponse: (response: { data: Client }) => response.data,
+      transformResponse: (response: { data: Client }) => {
+        return validateWithSchema<Client>(
+          ClientSchema,
+          response.data,
+          "getClientById"
+        );
+      },
     }),
     createClient: builder.mutation<Client, CreateClientDTO>({
       query: (data) => ({

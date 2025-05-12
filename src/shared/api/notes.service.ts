@@ -5,7 +5,9 @@ import {
   CreateNotesDTO,
   EditNotesDTO,
   Notes,
+  NotesSchema,
 } from "../interfaces/notes.interface";
+import { validatePaginatedResponse, validateWithSchema } from "@/lib/validator";
 
 export const notesService = createApi({
   reducerPath: "notes-service",
@@ -17,6 +19,9 @@ export const notesService = createApi({
         url: `notes/me?page=${page || 1}`,
         method: "GET",
       }),
+      transformResponse: (response: PaginatedResponse<Notes>) => {
+        return validatePaginatedResponse(NotesSchema, response, "getNotes");
+      },
       providesTags: ["notes-pagiated"],
     }),
     getNotesById: builder.query<Notes, { note_id: string }>({
@@ -25,7 +30,13 @@ export const notesService = createApi({
         method: "GET",
       }),
       providesTags: ["notes-id"],
-      transformResponse: (response: { data: Notes }) => response.data,
+      transformResponse: (response: { data: Notes }) => {
+        return validateWithSchema<Notes>(
+          NotesSchema,
+          response.data,
+          "getNotesById"
+        );
+      },
     }),
     createNotes: builder.mutation<Notes, CreateNotesDTO>({
       query: (data) => ({

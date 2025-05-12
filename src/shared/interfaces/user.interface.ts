@@ -15,5 +15,13 @@ export const EditUserNameSchema = z.object({
     .regex(/^(?!.*\s\s)/, "Имя не должно содержать два пробела подряд"),
 });
 
+export const AuthResponseSchema = z.object({
+  user_id: z.string(),
+  name: z.string(),
+  email: z.string().optional(),
+  token: z.string(),
+});
+
+export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 export type User = z.infer<typeof UserSchema>;
 export type EditUserNameDTO = z.infer<typeof EditUserNameSchema>;

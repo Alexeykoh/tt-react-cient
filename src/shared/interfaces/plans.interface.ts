@@ -11,7 +11,7 @@ const PlansFeaturesSchema = z.object({
 
 // Схема PlansSchema
 export const PlansSchema = z.object({
-  id: z.literal(1), // поле id всегда равно 1
+  id: z.union([z.number(), z.string()]),
   code: z.nativeEnum(SUBSCRIPTION),
   name: z.string(),
   description: z.string(),
@@ -19,7 +19,7 @@ export const PlansSchema = z.object({
   billingPeriod: z.string(),
   isActive: z.boolean(),
   features: PlansFeaturesSchema,
-  trialDays: z.union([z.string(), z.number()]),
+  trialDays: z.union([z.string(), z.number(), z.null()]),
   currency: CurrencySchema,
 });
 

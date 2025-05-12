@@ -5,8 +5,10 @@ import {
   CreateProjectDTO,
   GetPeojectMeDTO,
   Project,
+  ProjectSchema,
   UpdateProjectDTO,
 } from "../interfaces/project.interface";
+import { validatePaginatedResponse, validateWithSchema } from "@/lib/validator";
 
 export const projectsService = createApi({
   reducerPath: "project-service",
@@ -18,7 +20,13 @@ export const projectsService = createApi({
         url: `projects/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Project }) => response.data,
+      transformResponse: (response: { data: Project }) => {
+        return validateWithSchema<Project>(
+          ProjectSchema,
+          response.data,
+          "getProjectById"
+        );
+      },
       providesTags: ["project-service"],
     }),
     getProjects: builder.query<PaginatedResponse<Project>, GetPeojectMeDTO>({
@@ -33,6 +41,13 @@ export const projectsService = createApi({
           url: `projects/me?page=${page || 1}${limit}${client_id}${role}${sortOrder}${sortBy}`,
           method: "GET",
         };
+      },
+      transformResponse: (response: { data: Project }) => {
+        return validatePaginatedResponse(
+          ProjectSchema,
+          response,
+          "getProjects"
+        );
       },
       providesTags: ["project-service"],
     }),

@@ -1,8 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { Search } from "../interfaces/search.interface";
+import { Search, SearchSchema } from "../interfaces/search.interface";
+import {validateWithSchema} from "@/lib/validator";
 
-type SearchLocation = "all" | "projects" | "tasks" | "clients" | 'users';
+
+type SearchLocation = "all" | "projects" | "tasks" | "clients" | "users";
 
 export const searchService = createApi({
   reducerPath: "search-service",
@@ -26,7 +28,13 @@ export const searchService = createApi({
           method: "GET",
         };
       },
-      transformResponse: (response: { data: Search }) => response.data,
+      transformResponse: (response: { data: Search }) => {
+        return validateWithSchema<Search>(
+          SearchSchema,
+          response.data,
+          "searcV2"
+        );
+      },
       providesTags: ["search-v2"],
     }),
   }),

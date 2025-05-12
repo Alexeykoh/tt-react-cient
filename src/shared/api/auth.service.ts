@@ -1,16 +1,17 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { User } from "../interfaces/user.interface";
+import {
+  AuthResponse,
+  AuthResponseSchema,
+  User,
+  UserSchema,
+} from "../interfaces/user.interface";
 import {
   RegisterRequest,
   RegisterResponse,
   registerResponseSchema,
 } from "../interfaces/register.interface";
-
-interface AuthResponse {
-  user: User;
-  token: string;
-}
+import {validateWithSchema} from "@/lib/validator";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -23,7 +24,12 @@ export const authApi = createApi({
         method: "POST",
         body: { email, password },
       }),
-      transformResponse: (response: { data: AuthResponse }) => response.data,
+      transformResponse: (response: { data: AuthResponse }) => {
+        return validateWithSchema<AuthResponse>(
+          AuthResponseSchema,
+          response.data
+        );
+      },
       invalidatesTags: ["User"],
     }),
     register: builder.mutation<RegisterResponse, RegisterRequest>({
@@ -33,15 +39,10 @@ export const authApi = createApi({
         body: { name, password, email },
       }),
       transformResponse: (response: { data: RegisterResponse }) => {
-        // Валидируем ответ
-        const result = registerResponseSchema.safeParse(response.data);
-
-        if (!result.success) {
-          console.error("Невалидный ответ сервера:", result.error);
-          throw new Error("Ошибка валидации ответа сервера");
-        }
-
-        return result.data;
+        return validateWithSchema<RegisterResponse>(
+          registerResponseSchema,
+          response.data
+        );
       },
     }),
     getCurrentUser: builder.query<User, void>({
@@ -49,7 +50,12 @@ export const authApi = createApi({
         url: "auth/me",
         method: "GET",
       }),
-      transformResponse: (response: { data: User }) => response.data,
+      transformResponse: (response: { data: User }) => {
+          return validateWithSchema<User>(
+          UserSchema,
+          response.data
+        );
+      },
       providesTags: ["User"],
     }),
   }),

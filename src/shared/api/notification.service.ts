@@ -3,9 +3,9 @@ import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   INotification,
   INotificationResponse,
-  notificationsSchema,
   notificationsSchemaResponse,
 } from "../interfaces/notifications.interface";
+import { validateWithSchema } from "@/lib/validator";
 
 export const notificationsService = createApi({
   reducerPath: "notifications-service",
@@ -18,16 +18,12 @@ export const notificationsService = createApi({
         method: "GET",
       }),
       providesTags: ["notifications"],
-      transformResponse: (response: INotificationResponse) => {
-        // Валидируем ответ
-        const result = notificationsSchemaResponse.safeParse(response);
-
-        if (!result.success) {
-          console.error("Невалидный ответ сервера:", result.error);
-          throw new Error("Ошибка валидации ответа сервера");
-        }
-
-        return result.data;
+      transformResponse: (response: { data: INotificationResponse }) => {
+        return validateWithSchema<unknown>(
+          notificationsSchemaResponse,
+          response,
+          "getNotifications"
+        ) as INotificationResponse
       },
     }),
     readNotifications: builder.mutation<INotification, string>({
@@ -35,17 +31,6 @@ export const notificationsService = createApi({
         url: "notifications/read/" + id,
         method: "PATCH",
       }),
-      transformResponse: (response: { data: INotification }) => {
-        // Валидируем ответ
-        const result = notificationsSchema.safeParse(response.data);
-
-        if (!result.success) {
-          console.error("Невалидный ответ сервера:", result.error);
-          throw new Error("Ошибка валидации ответа сервера");
-        }
-
-        return result.data;
-      },
       invalidatesTags: ["notifications"],
     }),
     readAllNotifications: builder.mutation<INotification, void>({

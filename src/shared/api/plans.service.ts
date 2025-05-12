@@ -1,6 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { Plans } from "../interfaces/plans.interface";
+import { Plans, PlansSchema } from "../interfaces/plans.interface";
+import { validateWithSchema } from "@/lib/validator";
+import { z } from "zod";
 
 export const plansService = createApi({
   reducerPath: "plans-service",
@@ -13,7 +15,13 @@ export const plansService = createApi({
         method: "GET",
       }),
       providesTags: ["plans-service"],
-      transformResponse: (response: { data: Array<Plans> }) => response.data,
+      transformResponse: (response: { data: Array<Plans> }) => {
+        return validateWithSchema<Array<Plans>>(
+          z.array(PlansSchema),
+          response.data,
+          "getPlans"
+        );
+      },
     }),
   }),
 });

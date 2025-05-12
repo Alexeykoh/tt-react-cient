@@ -2,13 +2,18 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
 import {
   FriendsOnProject,
+  FriendsOnProjectSchema,
   GetProjectSharedMembersDTO,
   ProjectInvitations,
+  ProjectInvitationsSchema,
   ProjectShared,
   ProjectSharedCreateDTO,
   ProjectSharedDeleteDTO,
   ProjectSharedPatchDTO,
+  ProjectSharedSchema,
 } from "../interfaces/project-shared.interface";
+import { validateWithSchema } from "@/lib/validator";
+import { z } from "zod";
 
 export interface CreateProjectRequest {
   name: string;
@@ -41,10 +46,16 @@ export const projectsSharedService = createApi({
         url: `projects/shared`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<ProjectShared> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<ProjectShared> }) => {
+        return validateWithSchema<Array<ProjectShared>>(
+          z.array(ProjectSharedSchema),
+          response.data,
+          "getProjectsShared"
+        );
+      },
       providesTags: ["project-shared-service"],
     }),
+
     getProjectsSharedByMemberId: builder.query<
       ProjectShared,
       { member_id: string }
@@ -53,7 +64,13 @@ export const projectsSharedService = createApi({
         url: `projects/shared/member/${member_id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: ProjectShared }) => response.data,
+      transformResponse: (response: { data: ProjectShared }) => {
+        return validateWithSchema<ProjectShared>(
+          ProjectSharedSchema,
+          response.data,
+          "getProjectsSharedByMemberId"
+        );
+      },
       providesTags: ["project-shared-member"],
     }),
 
@@ -65,8 +82,13 @@ export const projectsSharedService = createApi({
         url: `projects/shared/project-members/${project_id}?role=${role}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<ProjectShared> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<ProjectShared> }) => {
+        return validateWithSchema<Array<ProjectShared>>(
+          z.array(ProjectSharedSchema),
+          response.data,
+          "getProjectsShared"
+        );
+      },
       providesTags: ["project-shared-filter"],
     }),
 
@@ -75,8 +97,13 @@ export const projectsSharedService = createApi({
         url: `projects/shared/invitations`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<ProjectInvitations> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<ProjectInvitations> }) => {
+        return validateWithSchema<Array<ProjectInvitations>>(
+          z.array(ProjectInvitationsSchema),
+          response.data,
+          "getProjectsSharedInvations"
+        );
+      },
       providesTags: ["project-shared-invitations"],
     }),
 
@@ -88,8 +115,13 @@ export const projectsSharedService = createApi({
         url: `projects/shared/friends-on-project/${project_id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<FriendsOnProject> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<FriendsOnProject> }) => {
+        return validateWithSchema<Array<FriendsOnProject>>(
+          z.array(FriendsOnProjectSchema),
+          response.data,
+          "getFriendsOnProject"
+        );
+      },
       providesTags: ["friends-on-project"],
     }),
 
@@ -101,8 +133,13 @@ export const projectsSharedService = createApi({
         url: `projects/shared/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Array<ProjectShared> }) =>
-        response.data,
+      transformResponse: (response: { data: Array<ProjectShared> }) => {
+        return validateWithSchema<Array<ProjectShared>>(
+          z.array(ProjectSharedSchema),
+          response.data,
+          "getProjectSharedById"
+        );
+      },
       providesTags: ["project-shared-id-service"],
     }),
     createProjectShared: builder.mutation<

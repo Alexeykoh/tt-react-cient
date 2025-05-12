@@ -1,7 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithErrorHandling } from "./baseQueryWithErrorHandling";
-import { LatestLog, TimeLog } from "../interfaces/time-log.interface";
+import {
+  LatestLog,
+  LatestLogSchema,
+  TimeLog,
+  TimeLogSchema,
+} from "../interfaces/time-log.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
+import {validateWithSchema} from "@/lib/validator";
 
 export const timeLogService = createApi({
   reducerPath: "time-log-service",
@@ -19,7 +25,9 @@ export const timeLogService = createApi({
         url: `time-logs/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: TimeLog }) => response.data,
+      transformResponse: (response: { data: TimeLog }) => {
+        return validateWithSchema<TimeLog>(TimeLogSchema, response.data);
+      },
       providesTags: ["time-log-service"],
     }),
     getTimeLogLatestTask: builder.query<TimeLog, { task_id: string }>({
@@ -28,7 +36,13 @@ export const timeLogService = createApi({
         method: "GET",
       }),
       providesTags: ["time-log-service-lates-task"],
-      transformResponse: (response: { data: TimeLog }) => response.data,
+      transformResponse: (response: { data: TimeLog }) => {
+        return validateWithSchema<TimeLog>(
+          TimeLogSchema,
+          response.data,
+          "getTimeLogLatestTask"
+        );
+      },
     }),
     getTimeLogLogs: builder.query<
       PaginatedResponse<TimeLog>,
@@ -47,7 +61,13 @@ export const timeLogService = createApi({
         url: `time-logs/latest`,
         method: "GET",
       }),
-      transformResponse: (response: { data: LatestLog }) => response.data,
+      transformResponse: (response: { data: LatestLog }) => {
+        return validateWithSchema<LatestLog>(
+          LatestLogSchema,
+          response.data,
+          "getTimeLogLatest"
+        );
+      },
       providesTags: ["time-log-service-latest"],
     }),
     postTimeLogStart: builder.mutation<TimeLog, { task_id: string }>({
@@ -56,7 +76,13 @@ export const timeLogService = createApi({
         method: "POST",
         providesTags: ["ttime-log-service-lates-task"],
       }),
-      transformResponse: (response: { data: TimeLog }) => response.data,
+      transformResponse: (response: { data: TimeLog }) => {
+        return validateWithSchema<TimeLog>(
+          TimeLogSchema,
+          response.data,
+          "postTimeLogStart"
+        );
+      },
       invalidatesTags: [
         "time-log-service-lates-task",
         "time-log-service-latest",
@@ -68,7 +94,13 @@ export const timeLogService = createApi({
         method: "PATCH",
         providesTags: ["ttime-log-service-lates-task"],
       }),
-      transformResponse: (response: { data: TimeLog }) => response.data,
+      transformResponse: (response: { data: TimeLog }) => {
+        return validateWithSchema<TimeLog>(
+          TimeLogSchema,
+          response.data,
+          "postTimeLogStop"
+        );
+      },
       invalidatesTags: [
         "time-log-service-lates-task",
         "time-log-service-latest",

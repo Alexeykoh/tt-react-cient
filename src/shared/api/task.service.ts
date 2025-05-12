@@ -9,7 +9,11 @@ import {
   TaskStatusColumn,
   UpdateTaskStatusDto,
   UpdateTasksOrderDTO,
+  TaskStatusColumnSchema,
+  TaskSchema,
 } from "../interfaces/task.interface";
+import {validateWithSchema} from "@/lib/validator";
+import { z } from "zod";
 
 export const taskService = createApi({
   reducerPath: "task-service",
@@ -21,26 +25,46 @@ export const taskService = createApi({
         url: `task-status-column/${projectId}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: TaskStatusColumn[] }) =>
-        response.data,
+      transformResponse: (response: { data: TaskStatusColumn[] }) => {
+        return validateWithSchema<TaskStatusColumn[]>(
+          z.array(TaskStatusColumnSchema),
+          response.data,
+          "getTaskStatusColumn"
+        );
+      },
       providesTags: ["task-status-column"],
     }),
+
     getTasksByProject: builder.query<Task[], string>({
       query: (projectId) => ({
         url: `tasks/${projectId}/tasks`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Task[] }) => response.data,
+      transformResponse: (response: { data: Task[] }) => {
+        return validateWithSchema<Task[]>(
+          z.array(TaskSchema),
+          response.data,
+          "getTasksByProject"
+        );
+      },
       providesTags: ["task"],
     }),
+
     getTaskById: builder.query<Task, string>({
       query: (taskId) => ({
         url: `tasks/${taskId}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Task }) => response.data,
+      transformResponse: (response: { data: Task }) => {
+        return validateWithSchema<Task>(
+          TaskSchema,
+          response.data,
+          "getTaskById"
+        );
+      },
       providesTags: ["task"],
     }),
+
     updateTaskStatus: builder.mutation<
       UpdateTaskStatusDto,
       UpdateTaskStatusDto
@@ -50,45 +74,7 @@ export const taskService = createApi({
         method: "POST",
         body: dto,
       }),
-      invalidatesTags: ["task"], // отключаем, т.к. обновляем оптимистично
-      // async onQueryStarted(updateDto, { dispatch, queryFulfilled, getState }) {
-      //   // Предположим, что updateDto содержит taskId и новый статус
-      //   const { task_id, task_status_column_id } = updateDto;
-
-      //   // Оптимистично обновим кэш getTaskById
-      //   const patchResult = dispatch(
-      //     taskService.util.updateQueryData("getTaskById", task_id, (draft) => {
-      //       draft.taskStatus.id = task_status_column_id;
-      //     })
-      //   );
-
-      //   // Получаем projectId из кэша getTaskById через getState
-      //   const state = getState();
-      //   const getTaskByIdCache =
-      //     state["task-service"].queries?.[`getTaskById("${task_id}")`]?.data;
-      //   const projectId =
-      //     getTaskByIdCache &&
-      //     typeof getTaskByIdCache === "object" &&
-      //     "project_id" in getTaskByIdCache
-      //       ? getTaskByIdCache.project_id
-      //       : undefined;
-
-      //   if (typeof projectId === "string") {
-      //     dispatch(
-      //       taskService.util.updateQueryData("getTasksByProject", projectId, (draft) => {
-      //         const task = draft.find(t => t.task_id === task_id);
-      //         if (task) task.taskStatus.id = task_status_column_id;
-      //       })
-      //     );
-      //   }
-
-      //   try {
-      //     await queryFulfilled;
-      //   } catch {
-      //     // Если запрос не удался - откатим изменения
-      //     patchResult.undo();
-      //   }
-      // },
+      invalidatesTags: ["task"],
     }),
 
     createTask: builder.mutation<Task, CreateTaskDto>({
@@ -99,6 +85,7 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+
     updateTask: builder.mutation<
       Task,
       { taskId: string; updateData: UpdateTaskDto }
@@ -110,6 +97,7 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+
     deleteTask: builder.mutation<void, string>({
       query: (taskId) => ({
         url: `tasks/${taskId}`,
@@ -117,6 +105,7 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+
     assignUserToTask: builder.mutation<
       void,
       { taskId: string; userData: AssignUserDto }
@@ -128,6 +117,7 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+
     updateTasksOrder: builder.mutation<void, UpdateTasksOrderDTO>({
       query: (dto) => ({
         url: `tasks/order`,
@@ -136,6 +126,7 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+
     removeUserFromTask: builder.mutation<
       void,
       { taskId: string; userId: string }
@@ -159,5 +150,5 @@ export const {
   useRemoveUserFromTaskMutation,
   useGetTaskStatusColumnQuery,
   useUpdateTaskStatusMutation,
-  useUpdateTasksOrderMutation
+  useUpdateTasksOrderMutation,
 } = taskService;

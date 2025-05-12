@@ -4,7 +4,9 @@ import {
   EditUserNameDTO,
   EditUserNameSchema,
   User,
+  UserSchema,
 } from "../interfaces/user.interface";
+import {validateWithSchema} from "@/lib/validator";
 
 export const userService = createApi({
   reducerPath: "user-service",
@@ -16,7 +18,9 @@ export const userService = createApi({
         url: "users/me",
         method: "GET",
       }),
-      transformResponse: (response: { data: User }) => response.data,
+      transformResponse: (response: { data: User }) => {
+        return validateWithSchema<User>(UserSchema, response.data);
+      },
       providesTags: ["user-service"],
     }),
     getUserById: builder.query<User, string>({
@@ -24,7 +28,9 @@ export const userService = createApi({
         url: "users/" + id,
         method: "GET",
       }),
-      transformResponse: (response: { data: User }) => response.data,
+      transformResponse: (response: { data: User }) => {
+        return validateWithSchema<User>(UserSchema, response.data);
+      },
       providesTags: ["user-id-service"],
     }),
     editUserName: builder.mutation<User, EditUserNameDTO>({
@@ -33,7 +39,9 @@ export const userService = createApi({
         method: "PATCH",
         body: user,
       }),
-      transformResponse: (response: { data: User }) => response.data,
+      transformResponse: (response: { data: User }) => {
+        return validateWithSchema<User>(UserSchema, response.data);
+      },
       invalidatesTags: ["user-service"],
       async onQueryStarted(arg) {
         const validationResult = EditUserNameSchema.safeParse(arg);

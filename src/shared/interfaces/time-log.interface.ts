@@ -6,18 +6,21 @@ import { TIMELOGSTATUS } from "../enums/time-logs.enum";
 const TIMELOGSTATUSSchema = z.nativeEnum(TIMELOGSTATUS);
 
 // TimeLogSchema
-export const TimeLogSchema = z.object({
-  log_id: z.string(),
-  task_id: z.string(),
-  user_id: z.string(),
-  start_time: z.string(),
-  end_time: z.string(),
-  status: TIMELOGSTATUSSchema,
-  duration: z.union([z.number(), z.string()]),
-  common_duration: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
+export const TimeLogSchema = z.union([
+  z.object({
+    log_id: z.string(),
+    task_id: z.string(),
+    user_id: z.string(),
+    start_time: z.string(),
+    end_time: z.string(),
+    status: TIMELOGSTATUSSchema,
+    duration: z.union([z.number(), z.string()]),
+    common_duration: z.union([z.number(), z.string()]).optional().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
+  z.null(),
+]);
 
 // Вложенные схемы для LatestLog
 
