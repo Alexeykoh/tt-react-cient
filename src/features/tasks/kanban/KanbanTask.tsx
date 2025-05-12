@@ -1,7 +1,14 @@
 import { ROUTES } from "@/app/router/routes.enum";
 import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 import { Task } from "@/shared/interfaces/task.interface";
 import { motion } from "framer-motion";
@@ -29,8 +36,8 @@ export default function KanbanTask({
 }) {
   const navigate = useNavigate();
   const { data: projectUsers } = useGetProjectSharedByIdQuery({
-      project_id: task?.project_id || "",
-    });
+    project_id: task?.project_id || "",
+  });
 
   // --- TOUCH DND LOGIC ---
   const touchDragging = useRef(false);
@@ -93,7 +100,6 @@ export default function KanbanTask({
         initial={{ opacity: 0 }}
         animate={{
           opacity: isDragged ? 0.5 : 1,
-          scale: isDragged ? 0.95 : 1,
         }}
         exit={{ opacity: 0 }}
         className={`relative cursor-grab active:cursor-grabbing ${
@@ -116,6 +122,7 @@ export default function KanbanTask({
             className="w-full bg-primary rounded-full absolute top-[-6px]"
           />
         )}
+
         <Card className="border-0 p-0 w-full max-h-32 h-32 overflow-clip">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
