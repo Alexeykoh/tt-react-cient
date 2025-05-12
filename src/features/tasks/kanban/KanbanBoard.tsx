@@ -12,7 +12,7 @@ interface props {
   initialTasks: Task[];
 }
 
-export function KanbanBoard_3({ initialColumns, initialTasks }: props) {
+export function KanbanBoard({ initialColumns, initialTasks }: props) {
   const [columns, setColumns] = useState<TaskStatusColumn[]>(
     initialColumns || []
   );

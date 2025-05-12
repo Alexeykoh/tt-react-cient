@@ -54,7 +54,7 @@ export default function KanbanColumn({
         }
       }}
     >
-      <div className="flex justify-between items-center h-fit p-4">
+      <div className="flex justify-between items-center h-fit p-2">
         <div className="text-sm text-gray-500 flex items-center gap-3">
           <Badge
             style={{ backgroundColor: column.color || "" }}
@@ -66,7 +66,7 @@ export default function KanbanColumn({
         <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
       </div>
 
-      <div className="flex flex-col h-full gap-2 overflow-y-auto py-2 px-4">
+      <div className="flex flex-col h-full gap-2 overflow-y-auto py-1 px-2">
         <AnimatePresence>
           {tasks.map((task, index) => (
             <KanbanTask
