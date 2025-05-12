@@ -75,7 +75,7 @@ export default function KanbanColumn({
               index={index}
               onDragStart={onDragStart}
               onDragOver={handleDragOver}
-              onDragEnd={onDragEnd}
+              onDrop={() => onDragEnd(column.id, index)}
               isDragged={draggedTask?.task_id === task.task_id}
               showPlaceholder={
                 hoverState.position === index &&
