@@ -45,3 +45,12 @@ export interface ProjectMembersUser {
     status: SUBSCRIPTION_STATUS;
   }[];
 }
+
+export interface GetPeojectMeDTO {
+  page: number;
+  limit?: number;
+  client_id?: string;
+  role?: PROJECT_ROLE;
+  sortOrder?: "ASC" | "DESC";
+  sortBy?: "name" | "created_at";
+}

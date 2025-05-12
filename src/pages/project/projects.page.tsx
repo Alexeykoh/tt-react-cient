@@ -7,7 +7,7 @@ import {
   Table,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useGetProjectsQuery } from "@/shared/api/projects.service";
+import { useGetProjectsMeQuery } from "@/shared/api/projects.service";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,7 @@ const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const { data: userMe } = useGetUserQuery();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, refetch: refetchProjects } = useGetProjectsQuery({
+  const { data, refetch: refetchProjects } = useGetProjectsMeQuery({
     page: currentPage,
   });
   const [dialogIsOpen, setDialogIsOpen] = useState<
