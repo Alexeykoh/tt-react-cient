@@ -1,56 +1,81 @@
+import { z } from "zod";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import { PROJECT_ROLE } from "../enums/project-role.enum";
 import { SUBSCRIPTION, SUBSCRIPTION_STATUS } from "../enums/sunscriptions.enum";
-import { Client } from "./client.interface";
-import { Currency } from "./currency.interface";
+import { ClientSchema } from "./client.interface";
+import { CurrencySchema } from "./currency.interface";
 
-export interface Project {
-  project_id: string;
-  name: string;
-  created_at: string;
-  client: Client | null;
-  members: Array<ProjectMembers>;
-}
+// ENUM схемы
+const PROJECT_ROLESchema = z.nativeEnum(PROJECT_ROLE);
+const PAYMENTSchema = z.nativeEnum(PAYMENT);
+const SUBSCRIPTIONSchema = z.nativeEnum(SUBSCRIPTION);
+const SUBSCRIPTION_STATUSSchema = z.nativeEnum(SUBSCRIPTION_STATUS);
 
-export interface CreateProjectDTO {
-  name: string;
-  currency_id: string;
-  rate: number;
-  tag_ids: string[];
-  client_id: string | null;
-}
+// ProjectMembersUserSubscriptionsSchema
+const ProjectMembersUserSubscriptionSchema = z.object({
+  planId: SUBSCRIPTIONSchema,
+  status: SUBSCRIPTION_STATUSSchema,
+});
 
-export interface UpdateProjectDTO {
-  name?: string;
-  currency_id?: string;
-  rate?: number;
-}
+// ProjectMembersUserSchema
+export const ProjectMembersUserSchema = z.object({
+  user_id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  subscriptions: z.array(ProjectMembersUserSubscriptionSchema),
+});
 
-export interface ProjectMembers {
-  member_id: string;
-  role: PROJECT_ROLE;
-  approve: boolean;
-  rate: string;
-  currency: Currency;
-  payment_type: PAYMENT;
-  user: ProjectMembersUser;
-}
+// ProjectMembersSchema
+export const ProjectMembersSchema = z.object({
+  member_id: z.string(),
+  role: PROJECT_ROLESchema,
+  approve: z.boolean(),
+  rate: z.string(),
+  currency: CurrencySchema,
+  payment_type: PAYMENTSchema,
+  user: ProjectMembersUserSchema,
+});
 
-export interface ProjectMembersUser {
-  user_id: string;
-  name: string;
-  email: string;
-  subscriptions: {
-    planId: SUBSCRIPTION;
-    status: SUBSCRIPTION_STATUS;
-  }[];
-}
+// ProjectSchema
+export const ProjectSchema = z.object({
+  project_id: z.string(),
+  name: z.string(),
+  created_at: z.string(),
+  client: ClientSchema.nullable(),
+  members: z.array(ProjectMembersSchema),
+});
 
-export interface GetPeojectMeDTO {
-  page: number;
-  limit?: number;
-  client_id?: string;
-  role?: PROJECT_ROLE;
-  sortOrder?: "ASC" | "DESC";
-  sortBy?: "name" | "created_at";
-}
+// CreateProjectDTOSchema
+export const CreateProjectDTOSchema = z.object({
+  name: z.string(),
+  currency_id: z.string(),
+  rate: z.number(),
+  tag_ids: z.array(z.string()),
+  client_id: z.string().nullable(),
+});
+
+// UpdateProjectDTOSchema
+export const UpdateProjectDTOSchema = z.object({
+  name: z.string().optional(),
+  currency_id: z.string().optional(),
+  rate: z.number().optional(),
+});
+
+// GetPeojectMeDTOSchema
+export const GetPeojectMeDTOSchema = z.object({
+  page: z.number(),
+  limit: z.number().optional(),
+  client_id: z.string().optional(),
+  role: PROJECT_ROLESchema.optional(),
+  sortOrder: z.enum(["ASC", "DESC"]).optional(),
+  sortBy: z.enum(["name", "created_at"]).optional(),
+});
+
+// Типы (интерфейсы) внизу
+
+export type ProjectMembersUser = z.infer<typeof ProjectMembersUserSchema>;
+export type ProjectMembers = z.infer<typeof ProjectMembersSchema>;
+export type Project = z.infer<typeof ProjectSchema>;
+export type CreateProjectDTO = z.infer<typeof CreateProjectDTOSchema>;
+export type UpdateProjectDTO = z.infer<typeof UpdateProjectDTOSchema>;
+export type GetPeojectMeDTO = z.infer<typeof GetPeojectMeDTOSchema>;

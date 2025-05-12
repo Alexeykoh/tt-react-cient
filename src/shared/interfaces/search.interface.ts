@@ -1,11 +1,14 @@
-import { Client } from "./client.interface";
-import { Project } from "./project.interface";
-import { Task } from "./task.interface";
-import { User } from "./user.interface";
+import { z } from "zod";
+import { ClientSchema } from "./client.interface";
+import { ProjectSchema } from "./project.interface";
+import { TaskSchema } from "./task.interface";
+import { UserSchema } from "./user.interface";
 
-export interface Search {
-  projects: Array<Project>;
-  tasks: Array<Task>;
-  clients: Array<Client>;
-  users: Array<User>;
-}
+export const SearchSchema = z.object({
+  projects: z.array(ProjectSchema),
+  tasks: z.array(TaskSchema),
+  clients: z.array(ClientSchema),
+  users: z.array(UserSchema),
+});
+
+export type Search = z.infer<typeof SearchSchema>;

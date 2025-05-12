@@ -1,19 +1,26 @@
+import { z } from "zod";
 import { SUBSCRIPTION } from "../enums/sunscriptions.enum";
-import { Currency } from "./currency.interface";
+import { CurrencySchema } from "./currency.interface";
 
-export interface Plans {
-  id: 1;
-  code: SUBSCRIPTION;
-  name: string;
-  description: string;
-  price: string;
-  billingPeriod: string;
-  isActive: boolean;
-  features: {
-    maxProjects: number | string;
-    storageGB: number | string;
-    prioritySupport: boolean;
-  };
-  trialDays: string | number;
-  currency: Currency;
-}
+// Схема для features внутри Plans
+const PlansFeaturesSchema = z.object({
+  maxProjects: z.union([z.number(), z.string()]),
+  storageGB: z.union([z.number(), z.string()]),
+  prioritySupport: z.boolean(),
+});
+
+// Схема PlansSchema
+export const PlansSchema = z.object({
+  id: z.literal(1), // поле id всегда равно 1
+  code: z.nativeEnum(SUBSCRIPTION),
+  name: z.string(),
+  description: z.string(),
+  price: z.string(),
+  billingPeriod: z.string(),
+  isActive: z.boolean(),
+  features: PlansFeaturesSchema,
+  trialDays: z.union([z.string(), z.number()]),
+  currency: CurrencySchema,
+});
+
+export type Plans = z.infer<typeof PlansSchema>;
