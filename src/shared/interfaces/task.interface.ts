@@ -83,3 +83,12 @@ export interface UpdateTaskStatusDto {
   task_id: string;
   task_status_column_id: string;
 }
+
+export interface UpdateTasksOrderDTO {
+  project_id: string;
+  column_id: string;
+  task_orders: Array<{
+    task_id: string;
+    order: number;
+  }>;
+}

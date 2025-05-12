@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Task, TaskStatusColumn } from "@/shared/interfaces/task.interface";
 import KanbanColumn from "./KanbanColumn";
+import {
+  useUpdateTasksOrderMutation,
+  useUpdateTaskStatusMutation,
+} from "@/shared/api/task.service";
 
 interface props {
   initialColumns: TaskStatusColumn[];
@@ -18,6 +22,9 @@ export function KanbanBoard_3({ initialColumns, initialTasks }: props) {
     columnId: string | null;
     position: number | null;
   }>({ columnId: null, position: null });
+
+  const [updateTasksOrder] = useUpdateTasksOrderMutation();
+  const [updateStatus] = useUpdateTaskStatusMutation();
 
   // Загрузка данных (пример)
   useEffect(() => {
@@ -56,7 +63,6 @@ export function KanbanBoard_3({ initialColumns, initialTasks }: props) {
         },
       },
     };
-    console.log("targetColumnId", targetColumnId);
 
     // Вставляем в новую позицию
     newTasks.splice(targetPosition ?? 0, 0, updatedTask);
@@ -71,7 +77,30 @@ export function KanbanBoard_3({ initialColumns, initialTasks }: props) {
       (t) => t.taskStatus.taskStatusColumn.id !== targetColumnId
     );
 
-    setTasks([...otherTasks, ...targetTasks]);
+    // Обновляем локальный стейт
+    setTasks(() => {
+      const newState = [...otherTasks, ...targetTasks];
+      const tasksForUpdate = newState.map((t) => ({
+        task_id: t.task_id,
+        order: t.order,
+      }));
+
+      updateTasksOrder({
+        project_id: draggedTask.project_id,
+        column_id: targetColumnId,
+        task_orders: tasksForUpdate,
+      });
+
+      return newState;
+    });
+
+    // обновлять только если статус задачи изменился
+    if (draggedTask.taskStatus.taskStatusColumn.id !== targetColumnId) {
+      updateStatus({
+        task_id: updatedTask.task_id,
+        task_status_column_id: targetColumnId,
+      });
+    }
 
     setDraggedTask(null);
     setHoverState({ columnId: null, position: null });

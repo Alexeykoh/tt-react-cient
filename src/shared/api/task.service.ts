@@ -8,6 +8,7 @@ import {
   Task,
   TaskStatusColumn,
   UpdateTaskStatusDto,
+  UpdateTasksOrderDTO,
 } from "../interfaces/task.interface";
 
 export const taskService = createApi({
@@ -127,6 +128,14 @@ export const taskService = createApi({
       }),
       invalidatesTags: ["task"],
     }),
+    updateTasksOrder: builder.mutation<void, UpdateTasksOrderDTO>({
+      query: (dto) => ({
+        url: `tasks/order`,
+        method: "PATCH",
+        body: dto,
+      }),
+      invalidatesTags: ["task"],
+    }),
     removeUserFromTask: builder.mutation<
       void,
       { taskId: string; userId: string }
@@ -150,4 +159,5 @@ export const {
   useRemoveUserFromTaskMutation,
   useGetTaskStatusColumnQuery,
   useUpdateTaskStatusMutation,
+  useUpdateTasksOrderMutation
 } = taskService;
