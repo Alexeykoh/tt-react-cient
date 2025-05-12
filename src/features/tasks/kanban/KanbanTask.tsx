@@ -95,7 +95,12 @@ export default function KanbanTask({
       <motion.div
         layout
         layoutId={`kanban-task-${task.task_id}`}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 35,
+          duration: 10,
+        }}
         draggable
         initial={{ opacity: 0 }}
         animate={{

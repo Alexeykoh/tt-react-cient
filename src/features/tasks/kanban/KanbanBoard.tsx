@@ -107,7 +107,7 @@ export function KanbanBoard({ initialColumns, initialTasks }: props) {
   };
 
   return (
-    <div className="flex gap-4 p-4 overflow-x-auto">
+    <div className="flex gap-4  overflow-x-auto">
       <AnimatePresence>
         {columns.map((column) => (
           <KanbanColumn
