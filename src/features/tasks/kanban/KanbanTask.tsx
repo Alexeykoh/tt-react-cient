@@ -87,8 +87,9 @@ export default function KanbanTask({
     <>
       <motion.div
         layout
+        layoutId={`kanban-task-${task.task_id}`}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
         draggable
-        transition={{ duration: 0.1 }}
         initial={{ opacity: 0 }}
         animate={{
           opacity: isDragged ? 0.5 : 1,
