@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { CalendarDays, PanelTop } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TaskSharedUsers from "../shared-users/task-shared-users";
+import { useRef } from "react";
 
 export default function KanbanTask({
   task,
@@ -31,6 +32,57 @@ export default function KanbanTask({
       project_id: task?.project_id || "",
     });
 
+  // --- TOUCH DND LOGIC ---
+  const touchDragging = useRef(false);
+
+  // Автоскролл для touch
+  const handleTouchAutoScroll = (clientY: number) => {
+    // Ищем ближайший scrollable родитель (overflow-y-auto)
+    let el = (event?.target as HTMLElement)?.parentElement;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      if (style.overflowY === "auto" || style.overflowY === "scroll") break;
+      el = el.parentElement;
+    }
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const threshold = 40;
+    const scrollSpeed = 16;
+    if (clientY - rect.top < threshold) {
+      el.scrollBy({ top: -scrollSpeed, behavior: "auto" });
+    } else if (rect.bottom - clientY < threshold) {
+      el.scrollBy({ top: scrollSpeed, behavior: "auto" });
+    }
+  };
+
+  // Touch события
+  const handleTouchStart = () => {
+    touchDragging.current = true;
+    onDragStart(task);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDragging.current) return;
+    const touch = e.touches[0];
+    // Эмулируем dragOver
+    onDragOver(
+      {
+        ...e,
+        preventDefault: () => {},
+        clientY: touch.clientY,
+        nativeEvent: e.nativeEvent,
+      } as unknown as React.DragEvent,
+      index
+    );
+    handleTouchAutoScroll(touch.clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchDragging.current) return;
+    touchDragging.current = false;
+    onDrop();
+  };
+
   return (
     <>
       <motion.div
@@ -49,6 +101,10 @@ export default function KanbanTask({
         onDragStart={() => onDragStart(task)}
         onDragOver={(e) => onDragOver(e, index)}
         onDrop={onDrop}
+        // TOUCH EVENTS
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {showPlaceholder && (
           <motion.div

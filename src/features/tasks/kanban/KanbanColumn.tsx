@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import KanbanTask from "./KanbanTask";
 import { Badge } from "@/components/ui/badge";
 import { convertToRgba } from "@/lib/convert-to-rgba";
+import { useRef } from "react";
 
 export default function KanbanColumn({
   column,
@@ -27,12 +28,43 @@ export default function KanbanColumn({
   const backgroundColor = column.color
     ? convertToRgba(column.color, "0.04")
     : "";
+
+  // --- AUTOSCROLL LOGIC ---
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Автоскролл при dragover
+  const handleAutoScroll = (clientY: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const threshold = 40; // px от края
+    const scrollSpeed = 16; // px за событие
+
+    if (clientY - rect.top < threshold) {
+      // вверх
+      el.scrollBy({ top: -scrollSpeed, behavior: "auto" });
+    } else if (rect.bottom - clientY < threshold) {
+      // вниз
+      el.scrollBy({ top: scrollSpeed, behavior: "auto" });
+    }
+  };
+
   const handleDragOver = (e: React.DragEvent, position: number) => {
     e.preventDefault();
     setHoverState({
       columnId: column.id,
       position,
     });
+    handleAutoScroll(e.clientY);
+  };
+
+  // Для dragover на scrollable div
+  const handleScrollAreaDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    handleAutoScroll(e.clientY);
+    if (tasks.length === 0) {
+      setHoverState({ columnId: column.id, position: 0 });
+    }
   };
 
   return (
@@ -66,7 +98,11 @@ export default function KanbanColumn({
         <span className="text-sm text-gray-500">{tasks?.length || 0}</span>
       </div>
 
-      <div className="flex flex-col h-full gap-2 overflow-y-auto py-1 px-2">
+      <div
+        ref={scrollRef}
+        className="flex flex-col h-full gap-2 overflow-y-auto py-1 px-2"
+        onDragOver={handleScrollAreaDragOver}
+      >
         <AnimatePresence>
           {tasks.map((task, index) => (
             <KanbanTask
