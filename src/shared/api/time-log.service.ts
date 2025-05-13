@@ -84,8 +84,11 @@ export const timeLogService = createApi({
         );
       },
       invalidatesTags: [
-        "time-log-service-lates-task",
+        "time-log-service",
+        "time-log-service-logs",
+        "time-log-service-list",
         "time-log-service-latest",
+        "time-log-service-lates-task",
       ],
     }),
     postTimeLogStop: builder.mutation<
@@ -105,8 +108,11 @@ export const timeLogService = createApi({
         );
       },
       invalidatesTags: [
-        "time-log-service-lates-task",
+        "time-log-service",
+        "time-log-service-logs",
+        "time-log-service-list",
         "time-log-service-latest",
+        "time-log-service-lates-task",
       ],
     }),
   }),
