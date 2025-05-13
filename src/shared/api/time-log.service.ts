@@ -7,7 +7,7 @@ import {
   TimeLogSchema,
 } from "../interfaces/time-log.interface";
 import { PaginatedResponse } from "../interfaces/api.interface";
-import {validateWithSchema} from "@/lib/validator";
+import { validateWithSchema } from "@/lib/validator";
 
 export const timeLogService = createApi({
   reducerPath: "time-log-service",
@@ -88,9 +88,12 @@ export const timeLogService = createApi({
         "time-log-service-latest",
       ],
     }),
-    postTimeLogStop: builder.mutation<TimeLog, { task_id: string }>({
-      query: ({ task_id }) => ({
-        url: `time-logs/${task_id}/stop`,
+    postTimeLogStop: builder.mutation<
+      TimeLog,
+      { task_id: string; client_time: string }
+    >({
+      query: ({ task_id, client_time }) => ({
+        url: `time-logs/${task_id}/stop?client_time=${client_time}`,
         method: "PATCH",
         providesTags: ["ttime-log-service-lates-task"],
       }),
