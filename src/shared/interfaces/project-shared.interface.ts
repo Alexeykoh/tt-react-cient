@@ -81,17 +81,17 @@ export const FriendsOnProjectSchema = z.object({
   user_id: z.string(),
   name: z.string(),
   email: z.string(),
-  in_project: FriendsOnProjectInProjectSchema,
+  in_project: z.union([FriendsOnProjectInProjectSchema, z.null()]),
 });
 
 export const ProjectInvitationsSchema = z.object({
   member_id: z.string(),
   project_id: z.string(),
   role: PROJECT_ROLESchema,
-  currency: CurrencySchema,
   rate: z.string(),
   payment_type: PAYMENTSchema,
-  project: ProjectInvitationsProjectSchema,
+  project: z.union([ProjectInvitationsProjectSchema, z.null()]),
+  currency: CurrencySchema,
 });
 
 // Типы (интерфейсы) внизу

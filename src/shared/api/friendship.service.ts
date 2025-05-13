@@ -41,10 +41,15 @@ export const friendshipService = createApi({
       providesTags: ["Friend-service"],
     }),
     getFriendById: builder.query<Friendship, string>({
-      query: (user_id) => ({
-        url: "friendship/" + user_id,
-        method: "GET",
-      }),
+      query: (user_id) => {
+        if (!user_id) {
+          throw new Error("user_id is required");
+        }
+        return {
+          url: "friendship/" + user_id,
+          method: "GET",
+        };
+      },
       providesTags: ["Friend-id"],
       transformResponse: (response: { data: Friendship }) => {
         return validateWithSchema<Friendship>(
