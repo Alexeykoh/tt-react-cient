@@ -30,13 +30,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Card } from "@/components/ui/card";
 import { useGetTimeLogLogsQuery } from "@/shared/api/time-log.service";
 import TaskItem from "@/components/task-item";
-import { GanttChart } from "@/shared/ui/gantt-chart";
-import { GanttTask } from "@/shared/types/gantt.types";
 import TaskSharedUsers from "@/features/tasks/shared-users/task-shared-users";
 import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
+import { LogsTable } from "../../features/time-logs/logs-table";
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
@@ -203,26 +201,8 @@ export default function TaskDetailPage() {
         </div>
 
         <div className="flex overflow-hidden p-4 w-full h-full gap-4">
-          <div className="flex w-full">
-            <Card className="w-full h-96 p-4">
-              <h3 className="text-lg font-semibold mb-2">Диаграмма Ганта</h3>
-              <GanttChart
-                tasks={
-                  (timeLogs?.data?.map((log) => ({
-                    id: log?.log_id,
-                    label: (
-                      <div className="text-xs flex gap-1 items-center">
-                        {log?.duration}
-                      </div>
-                    ),
-                    start: log?.start_time,
-                    end: log?.end_time,
-                  })) as GanttTask[]) || []
-                }
-                height={32}
-                className="w-full h-64"
-              />
-            </Card>
+          <div className="w-full ">
+            {timeLogs && <LogsTable logs={timeLogs} />}
           </div>
         </div>
       </div>
