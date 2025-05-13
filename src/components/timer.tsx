@@ -35,9 +35,13 @@ function TimerComponent({ task_id, fallbackTime = 0 }: Props) {
     milliseconds = fallbackTime;
   }
 
+  const timerData = formatMilliseconds(milliseconds);
+
   return (
     <div>
-      <p className="text-xl">{formatMilliseconds(milliseconds)}</p>
+      <p className="text-xl">
+        {`${timerData.hours}:${timerData.minutes}:${timerData.seconds}`}
+      </p>
     </div>
   );
 }

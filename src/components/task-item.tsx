@@ -26,12 +26,9 @@ export default function TaskItem({
 }: Props) {
   const dispatch = useDispatch();
   const { data: latestLog, isLoading: logIsLoading } =
-    useGetTimeLogLatestTaskQuery(
-      { task_id },
-      { skip: !task_id, refetchOnMountOrArgChange: true }
-    );
-  const [start, { isLoading: startIsLoading }] = usePostTimeLogStartMutation();
-  const [stop, { isLoading: stopIsLoading }] = usePostTimeLogStopMutation();
+    useGetTimeLogLatestTaskQuery({ task_id }, { skip: !task_id });
+  const [start] = usePostTimeLogStartMutation();
+  const [stop] = usePostTimeLogStopMutation();
 
   // Синхронизация состояния таймера в redux при изменении latestLog
   useEffect(() => {
@@ -84,7 +81,7 @@ export default function TaskItem({
       <PlayPauseButton
         onClick={logToggleHandler}
         isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
-        isLoading={logIsLoading || startIsLoading || stopIsLoading}
+        isLoading={logIsLoading}
         variant={variant}
       />
       {logIsLoading ? (

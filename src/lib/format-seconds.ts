@@ -10,7 +10,7 @@ export function formatSeconds(totalSeconds: number): string {
   ].join(":");
 }
 
-export function formatMilliseconds(ms: number): string {
+export function formatMilliseconds(ms: number) {
   // 1. Переводим миллисекунды в секунды
   const totalSeconds = Math.floor(ms / 1000);
 
@@ -22,5 +22,9 @@ export function formatMilliseconds(ms: number): string {
   // 3. Форматируем с ведущими нулями
   const pad = (num: number) => num.toString().padStart(2, "0");
 
-  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  return {
+    hours: pad(hours),
+    minutes: pad(minutes),
+    seconds: pad(seconds),
+  };
 }
