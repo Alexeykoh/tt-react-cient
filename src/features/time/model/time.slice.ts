@@ -36,6 +36,7 @@ const timeSlice = createSlice({
     },
     stopTimer(state, action: PayloadAction<StopPayload>) {
       const { task_id, accumulated } = action.payload;
+      console.log("stopTimer", task_id, accumulated);
       if (state.timers[task_id]) {
         state.timers[task_id].status = TimerStatus.IDLE;
         state.timers[task_id].startTime = null;
@@ -53,13 +54,19 @@ const timeSlice = createSlice({
     tick(state) {
       state.tick = Date.now();
     },
-    setAccumulated(state, action: PayloadAction<{ task_id: string; accumulated: number }>) {
+    setAccumulated(
+      state,
+      action: PayloadAction<{ task_id: string; accumulated: number }>
+    ) {
       const { task_id, accumulated } = action.payload;
       if (state.timers[task_id]) {
         state.timers[task_id].accumulated = accumulated;
       }
     },
-    setStatus(state, action: PayloadAction<{ task_id: string; status: TimerStatus }>) {
+    setStatus(
+      state,
+      action: PayloadAction<{ task_id: string; status: TimerStatus }>
+    ) {
       const { task_id, status } = action.payload;
       if (state.timers[task_id]) {
         state.timers[task_id].status = status;

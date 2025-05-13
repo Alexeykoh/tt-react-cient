@@ -40,14 +40,14 @@ export default function TaskItem({
           startTime: latestLog.start_time
             ? new Date(latestLog.start_time).getTime()
             : Date.now(),
-          accumulated: Number(latestLog.common_duration) || 0,
+          accumulated: Number(latestLog.common_duration),
         })
       );
     } else {
       dispatch(
         stopTimer({
           task_id,
-          accumulated: Number(latestLog.common_duration) || 0,
+          accumulated: Number(latestLog.common_duration),
         })
       );
     }
@@ -56,21 +56,21 @@ export default function TaskItem({
   function logToggleHandler() {
     if (latestLog && latestLog?.status === TIMELOGSTATUS.PROGRESS) {
       stop({ task_id });
-      dispatch(
-        stopTimer({
-          task_id,
-          accumulated: Number(latestLog?.common_duration) || 0,
-        })
-      );
+      // dispatch(
+      //   stopTimer({
+      //     task_id,
+      //     accumulated: Number(latestLog?.common_duration) || 0,
+      //   })
+      // );
     } else {
       start({ task_id });
-      dispatch(
-        startTimer({
-          task_id,
-          startTime: Date.now(),
-          accumulated: Number(latestLog?.common_duration) || 0,
-        })
-      );
+      // dispatch(
+      //   startTimer({
+      //     task_id,
+      //     startTime: Date.now(),
+      //     accumulated: Number(latestLog?.common_duration) || 0,
+      //   })
+      // );
     }
   }
 
