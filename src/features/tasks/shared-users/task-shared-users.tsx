@@ -3,7 +3,7 @@ import { TaskMember } from "@/shared/interfaces/task.interface";
 import UserAvatar from "@/components/user-avatar";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import { Button } from "@/components/ui/button";
-import { UserRoundPlus, UserRoundX } from "lucide-react";
+import { Plus, Trash, UserRoundPlus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAssignUserToTaskMutation } from "@/shared/api/task.service";
 import { useGetUserQuery } from "@/shared/api/user.service";
@@ -66,7 +66,9 @@ export default function TaskSharedUsers({
                   metaText={
                     projectMembers.find(
                       (_el) => _el.user_id === el.user.user_id
-                    )?.approve === false ? "Снят с проекта" : ''
+                    )?.approve === false
+                      ? "Снят с проекта"
+                      : ""
                   }
                 />
               </div>
@@ -115,7 +117,7 @@ export default function TaskSharedUsers({
                               disabled={isLoadingAssign}
                               isLoading={isLoadingAssign}
                             >
-                              <UserRoundX className="size-4" />
+                              <Trash className="size-4 " />
                             </Button>
                           )}
                         </>
@@ -133,7 +135,7 @@ export default function TaskSharedUsers({
                             });
                           }}
                         >
-                          <UserRoundPlus className="size-4" />
+                          <Plus className="size-4" />
                         </Button>
                       )}
 

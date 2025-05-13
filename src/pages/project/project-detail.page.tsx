@@ -20,7 +20,6 @@ import {
   LogOut,
   MoreVerticalIcon,
   PencilIcon,
-  ShieldUser,
   Table,
   TrashIcon,
   User,
@@ -247,6 +246,15 @@ const ProjectDetailPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex gap-4 flex-wrap text-gray-400 text-xs items-center">
+                    <div className="flex items-center gap-2">
+                      <RoleBadge
+                        role={
+                          project?.members.find(
+                            (el) => el.user?.user_id === userMe?.user_id
+                          )?.role
+                        }
+                      />
+                    </div>
                     <RoleComponent
                       roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
                       userRole={
@@ -291,17 +299,6 @@ const ProjectDetailPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <CalendarDays className="w-4 h-4" />
                       <p>{formatDate(project?.created_at || "")}</p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <ShieldUser className="w-4 h-4" />
-                      <RoleBadge
-                        role={
-                          project?.members.find(
-                            (el) => el.user?.user_id === userMe?.user_id
-                          )?.role
-                        }
-                      />
                     </div>
                   </div>
                 </div>

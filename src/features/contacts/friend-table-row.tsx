@@ -18,8 +18,8 @@ import { Badge } from "@/components/ui/badge";
 function FriendTableRow({
   sender,
   recipient,
-  status,
   friendship_id,
+  status,
 }: Friendship) {
   const navigate = useNavigate();
   const { data: userData } = useGetUserQuery();

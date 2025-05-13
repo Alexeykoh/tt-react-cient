@@ -49,7 +49,7 @@ export default function RoleComponent({
       <div
         onClick={accessHandler}
         {...props}
-        style={{ cursor: access ? "pointer" : "default" }}
+        style={{ cursor: access ? "unset" : "default" }}
       >
         <div
           className={`relative ${
