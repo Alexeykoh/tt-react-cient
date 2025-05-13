@@ -41,6 +41,7 @@ export const ProjectSchema = z.object({
   project_id: z.string(),
   name: z.string(),
   created_at: z.string(),
+  updated_at: z.string().optional(),
   client: ClientSchema.nullable(),
   members: z.array(ProjectMembersSchema),
 });

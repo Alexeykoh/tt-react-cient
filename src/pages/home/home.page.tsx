@@ -139,7 +139,8 @@ function AdvantageCarousel({ items }: { items: Advantage[] }) {
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { data: searchData } = useSearcV2Query({ searchLocation: "all" });
+  const { data: projectsData } = useSearcV2Query({ searchLocation: "projects" });
+  const { data: tasksData } = useSearcV2Query({ searchLocation: "tasks" });
   return (
     <div className="w-full h-full flex flex-col p-4">
       <div className="flex flex-wrap justify-between gap-2">
@@ -152,10 +153,10 @@ const HomePage: React.FC = () => {
             <Button>Создать</Button>
           </div>
           <div className="w-full flex flex-wrap gap-4">
-            {searchData?.tasks?.length === 0 && (
+            {tasksData?.tasks?.length === 0 && (
               <AdvantageCarousel items={TASK_ADVANTAGES} />
             )}
-            {searchData?.tasks?.map((el) => (
+            {tasksData?.tasks?.map((el) => (
               <Card key={el?.task_id} className="min-w-64 w-full md:w-fit">
                 <CardHeader>
                   <div className="flex items-center gap-2">
@@ -204,10 +205,10 @@ const HomePage: React.FC = () => {
             <Button>Создать</Button>
           </div>
           <div className="w-full">
-            {searchData?.projects?.length === 0 && (
+            {projectsData?.projects?.length === 0 && (
               <AdvantageCarousel items={PROJECT_ADVANTAGES} />
             )}
-            {searchData?.projects?.map((el) => (
+            {projectsData?.projects?.map((el) => (
               <Card key={el?.project_id} className="min-w-64 w-96 md:w-fit">
                 <CardHeader>
                   <CardTitle>{el?.name}</CardTitle>

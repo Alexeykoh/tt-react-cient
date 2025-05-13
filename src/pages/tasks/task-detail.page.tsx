@@ -47,10 +47,15 @@ export default function TaskDetailPage() {
     { task_id: id || "" },
     { skip: !id }
   );
-  const { data: projectUsers } = useGetProjectSharedByIdQuery({
-    project_id: task?.project_id || "",
-  });
-  console.log("task", task);
+  const { data: projectUsers } = useGetProjectSharedByIdQuery(
+    {
+      project_id: task?.project_id || "",
+    },
+    {
+      skip: !task,
+    }
+  );
+  console.log("task", id, task);
 
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [editDialogIsOpen, setEditDialogIsOpen] = useState<boolean>(false);
@@ -204,14 +209,14 @@ export default function TaskDetailPage() {
               <GanttChart
                 tasks={
                   (timeLogs?.data?.map((log) => ({
-                    id: log.log_id,
+                    id: log?.log_id,
                     label: (
                       <div className="text-xs flex gap-1 items-center">
-                        {log.duration}
+                        {log?.duration}
                       </div>
                     ),
-                    start: log.start_time,
-                    end: log.end_time,
+                    start: log?.start_time,
+                    end: log?.end_time,
                   })) as GanttTask[]) || []
                 }
                 height={32}

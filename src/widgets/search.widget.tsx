@@ -18,6 +18,7 @@ import { formatDate } from "@/lib/dateUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserAvatar from "@/components/user-avatar";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 
 interface props {
   searchLocationList: Array<"all" | "projects" | "tasks" | "clients" | "users">;
@@ -73,7 +74,7 @@ export default function SearchWidget({ searchLocationList }: props) {
         side="right"
         className={cn(
           "mx-auto max-w-md rounded-b-lg",
-          "bg-background/90 backdrop-blur-lg",
+          "bg-background/90 backdrop-blur-lg"
           // "fixed inset-x-0 top-0 h-[80vh]"
         )}
       >
@@ -145,22 +146,28 @@ export default function SearchWidget({ searchLocationList }: props) {
                     <div>
                       <h3 className="text-sm font-medium mb-2">Проекты</h3>
                       <div className="space-y-2">
-                        {data.projects.map((project) => (
-                          <div
-                            key={project.project_id}
-                            className="p-3 rounded-md border hover:bg-accent cursor-pointer"
-                            onClick={() =>
-                              navigateToItem("projects", project.project_id)
-                            }
-                          >
-                            <p className="font-medium">{project.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {project?.client?.name} •{" "}
-                              {project.currency.symbol}
-                              {project?.rate} • {formatDate(project.created_at)}
-                            </p>
-                          </div>
-                        ))}
+                        {data.projects.map((project) => {
+                          const owner = project.members.find(
+                            (el) => el.role === PROJECT_ROLE.OWNER
+                          );
+                          return (
+                            <div
+                              key={project.project_id}
+                              className="p-3 rounded-md border hover:bg-accent cursor-pointer"
+                              onClick={() =>
+                                navigateToItem("projects", project.project_id)
+                              }
+                            >
+                              <p className="font-medium">{project.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {project?.client?.name}
+                              </p>
+
+                              <p className="text-xs text-muted-foreground">{owner?.user.name}</p>
+                              <p className="text-xs text-muted-foreground">{owner?.user.email}</p>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
