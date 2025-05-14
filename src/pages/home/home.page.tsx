@@ -1,7 +1,5 @@
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import ClientItem from "@/components/client-item";
-import RateItem from "@/components/rate-item";
-import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,8 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSearcV2Query } from "@/shared/api/search.service";
-import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
-import PrivateComponent from "@/widgets/private-component";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AdvantageCard } from "@/shared/ui/AdvantageCard";
@@ -21,8 +17,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-
 import { useRef, useEffect, useState } from "react";
+import TaskCardMain from "@/features/tasks/task-cards/task-card-main.root";
 
 const TASK_ADVANTAGES = [
   {
@@ -139,7 +135,9 @@ function AdvantageCarousel({ items }: { items: Advantage[] }) {
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { data: projectsData } = useSearcV2Query({ searchLocation: "projects" });
+  const { data: projectsData } = useSearcV2Query({
+    searchLocation: "projects",
+  });
   const { data: tasksData } = useSearcV2Query({ searchLocation: "tasks" });
   return (
     <div className="w-full h-full flex flex-col p-4">
@@ -152,50 +150,26 @@ const HomePage: React.FC = () => {
             <h2 className="text-xl">Последние задачи</h2>
             <Button>Создать</Button>
           </div>
+
           <div className="w-full flex flex-wrap gap-4">
             {tasksData?.tasks?.length === 0 && (
               <AdvantageCarousel items={TASK_ADVANTAGES} />
             )}
             {tasksData?.tasks?.map((el) => (
-              <Card key={el?.task_id} className="min-w-64 w-full md:w-fit">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <TaskItem showTime={false} task_id={el?.task_id || ""} />
-                    <CardTitle>{el?.name}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <RateItem
-                    symbol={el?.currency?.symbol}
-                    rate={el?.rate}
-                    payment_type={el?.payment_type}
-                  />
-                </CardContent>
-                <CardFooter className="space-x-2">
-                  <Button
-                    variant={"default"}
-                    onClick={() =>
-                      navigate(
-                        `/${ROUTES.PROJECTS}/${TASKS_VIEW.TABLE}/${el?.project?.project_id}`
-                      )
-                    }
-                  >
-                    Перейти
-                  </Button>
-                  <PrivateComponent
-                    subscriptions={[SUBSCRIPTION.BASIC, SUBSCRIPTION.PREMIUM]}
-                  >
-                    <Button
-                      variant={"outline"}
-                      onClick={() =>
-                        navigate(`/${ROUTES.TASKS}/${el?.task_id}`)
-                      }
-                    >
-                      Статистика
-                    </Button>
-                  </PrivateComponent>
-                </CardFooter>
-              </Card>
+              <>
+                <TaskCardMain.Root
+                  project_id={el.project_id || ""}
+                  task_id={el.task_id || ""}
+                  name={el.name || ""}
+                  symbol={el.currency.symbol}
+                  rate={Number(el.rate) || 0}
+                  payment_type={el.payment_type}
+                >
+                  <TaskCardMain.Header />
+                  <TaskCardMain.Body />
+                  <TaskCardMain.Footer />
+                </TaskCardMain.Root>
+              </>
             ))}
           </div>
         </div>

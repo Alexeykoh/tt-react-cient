@@ -10,20 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TaskTableRowFeature from "@/features/tasks/view-mod/task-table-row.feature";
+import TaskCardTable from "@/features/tasks/task-cards/task-card-table.root";
 
 export function TasksListTablePage() {
   const { id } = useParams<{ id: string }>();
   const { data: tasks } = useGetTasksByProjectQuery(id || "", {
     skip: !id,
     pollingInterval: 5000,
-    refetchOnFocus: true,
-    refetchOnMountOrArgChange: true,
-    refetchOnReconnect: true,
   });
   const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
     skip: !id,
-    refetchOnMountOrArgChange: true,
   });
 
   return (
@@ -34,18 +30,22 @@ export function TasksListTablePage() {
             <TableHead className="w-[1/6]"></TableHead>
             <TableHead className="w-[1/6]">Наименование</TableHead>
             <TableHead className="w-[1/6]">Статус</TableHead>
-            <TableHead className="w-[1/6]">Ставка</TableHead>
             <TableHead className="w-[1/6]">Дата</TableHead>
-            <TableHead className="w-[1/6]">Пользователи</TableHead>
+            <TableHead className="w-[1/8]">Пользователи</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="flex-1">
           {tasks &&
             tasks?.map((el) => {
               return (
-                <TableRow key={el.task_id}>
-                  <TaskTableRowFeature task={el} statusColumns={columns} />
-                </TableRow>
+                <TaskCardTable.Root task={el} statusColumns={columns}>
+                  <TaskCardTable.Items />
+                  <TaskCardTable.Title />
+                  <TaskCardTable.Status />
+                  <TaskCardTable.Date />
+                  <TaskCardTable.Users />
+                  <TaskCardTable.DropdownMenu />
+                </TaskCardTable.Root>
               );
             })}
         </TableBody>
