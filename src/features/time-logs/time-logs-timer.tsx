@@ -11,6 +11,12 @@ import {
   usePostTimeLogStartMutation,
   usePostTimeLogStopMutation,
 } from "@/shared/api/time-log.service";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TIMELOGSTATUS } from "@/shared/enums/time-logs.enum";
 import { startTimer, stopTimer } from "../time/model/time.slice";
 import { TimeLog } from "@/shared/interfaces/time-log.interface";
@@ -33,8 +39,8 @@ const TimeLogsTimerContext = createContext<ITimeLogsTimerContext | null>(null);
 
 interface ITimeLogsTimerProviderProps {
   task_id: string;
-  children: ReactNode;
-  isReverse: boolean;
+  children?: ReactNode;
+  isReverse?: boolean;
   variant: "button" | "icon";
   showTime?: boolean;
 }
@@ -53,6 +59,10 @@ function TimeLogsTimerRoot({
   const [start, { isLoading: startIsLoading }] = usePostTimeLogStartMutation();
   const [stop, { isLoading: stopIsLoading }] = usePostTimeLogStopMutation();
 
+  const isActive =
+    userMe?.user_id !== latestLog?.user_id &&
+    latestLog?.status === TIMELOGSTATUS.PROGRESS;
+
   function startHandler(task_id: string) {
     start({
       task_id: task_id,
@@ -64,6 +74,10 @@ function TimeLogsTimerRoot({
   }
 
   function logToggleHandler() {
+    if (isActive) {
+      return;
+    }
+
     const client_time = new Date().toISOString();
     if (latestLog && latestLog?.status === TIMELOGSTATUS.PROGRESS) {
       stopHandler(props.task_id, client_time);
@@ -72,19 +86,15 @@ function TimeLogsTimerRoot({
     }
   }
 
-  const isActive =
-    userMe?.user_id !== latestLog?.user_id &&
-    latestLog?.status === TIMELOGSTATUS.PROGRESS;
-
   // TODO: заполнить реальные значения
   const contextProps: ITimeLogsTimerContext = {
     task_id: props.task_id,
-    isReverse: props.isReverse,
+    isReverse: props?.isReverse || false,
     variant: props.variant,
     showTime: props.showTime,
     latestLog: latestLog,
     isActive: isActive,
-    isPlay: false,
+    isPlay: latestLog?.status === TIMELOGSTATUS.PROGRESS,
     isLoading: logIsLoading || startIsLoading || stopIsLoading,
     logToggleHandler: logToggleHandler,
   };
@@ -183,28 +193,46 @@ function ButtonUI(props: { isActive: boolean }) {
   const context = useContext(TimeLogsTimerContext);
 
   return (
-    <Button
-      size={"icon"}
-      variant={"outline"}
-      className={`${!context?.isPlay ? "text-emerald-400" : "text-orange-400"} ${context?.variant === "icon" && "size-6"} active:scale-90 duration-150 ${props.isActive ? "pointer-events-none grayscale-100" : ""}`}
-      onClick={() => {
-        if (!context?.isLoading) {
-          context?.logToggleHandler();
-        }
-      }}
-    >
-      {context?.isLoading ? (
-        <LoaderCircle
-          className={`animate-spin ${context?.variant === "icon" && "size-3"}`}
-        />
-      ) : !context?.isPlay ? (
-        <Play className={`${context?.variant === "icon" && "size-3"}`} />
-      ) : (
-        <Pause
-          className={`animate-pulse ${context?.variant === "icon" && "size-3"}`}
-        />
+    <div className={`relative`}>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size={"icon"}
+              variant={"outline"}
+              className={`${!context?.isPlay ? "text-emerald-400" : "text-orange-400"} ${context?.variant === "icon" && "size-6"} active:scale-90 duration-150 ${props.isActive ? "pointer-events-none grayscale-100" : ""}`}
+              onClick={() => {
+                if (!context?.isLoading) {
+                  context?.logToggleHandler();
+                }
+              }}
+            >
+              {context?.isLoading ? (
+                <LoaderCircle
+                  className={`animate-spin ${context?.variant === "icon" && "size-3"}`}
+                />
+              ) : !context?.isPlay ? (
+                <Play
+                  className={`${context?.variant === "icon" && "size-3"}`}
+                />
+              ) : (
+                <Pause
+                  className={`animate-pulse ${context?.variant === "icon" && "size-3"}`}
+                />
+              )}
+            </Button>
+          </TooltipTrigger>
+          {context?.isActive && (
+            <TooltipContent>
+              <p>Эта задача уже выполняется другим пользователем</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
+      {context?.isActive && (
+        <div className="absolute -bottom-0.5 -right-0.5 bg-rose-400 size-2.5 rounded-full"></div>
       )}
-    </Button>
+    </div>
   );
 }
 

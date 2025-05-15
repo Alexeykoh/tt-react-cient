@@ -1,5 +1,4 @@
 import { ROUTES } from "@/app/router/routes.enum";
-import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,6 +15,7 @@ import { CalendarDays, PanelTop } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import TaskSharedUsers from "../shared-users/task-shared-users";
 import { useRef } from "react";
+import TimeLogsTimer from "@/features/time-logs/time-logs-timer";
 
 export default function KanbanTask({
   task,
@@ -146,11 +146,13 @@ export default function KanbanTask({
                 >
                   <PanelTop className="size-3" />
                 </Button>
-                <TaskItem
+                <TimeLogsTimer.Root task_id={task.task_id} variant="icon" />
+
+                {/* <TaskItem
                   variant="icon"
                   task_id={task.task_id}
                   showTime={false}
-                />
+                /> */}
               </div>
             </div>
             <CardDescription className="py-2 line-clamp-2 text-sm text-muted-foreground">
