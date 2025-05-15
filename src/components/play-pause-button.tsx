@@ -6,6 +6,7 @@ interface Props {
   isLoading: boolean;
   onClick: () => void;
   variant: "button" | "icon";
+  className?: string;
 }
 
 export default function PlayPauseButton({
@@ -13,12 +14,13 @@ export default function PlayPauseButton({
   isLoading,
   onClick,
   variant,
+  className,
 }: Props) {
   return (
     <Button
       size={"icon"}
       variant={"outline"}
-      className={`${!isPlay ? "text-emerald-400" : "text-orange-400"} ${variant === "icon" && "size-6"} active:scale-90 duration-150`}
+      className={`${!isPlay ? "text-emerald-400" : "text-orange-400"} ${variant === "icon" && "size-6"} active:scale-90 duration-150 ${className ?? ""}`}
       onClick={() => {
         if (!isLoading) {
           onClick();
