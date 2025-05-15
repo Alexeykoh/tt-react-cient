@@ -8,7 +8,7 @@ const ProjectDetailPage: React.FC = () => {
     <ProjectDetail.Root>
       <ProjectDetail.Header.Root>
         <ProjectDetail.Header.Top />
-        <ProjectDetail.Header.Bottom />
+        {/* <ProjectDetail.Header.Bottom /> */}
       </ProjectDetail.Header.Root>
       <ProjectDetail.ViewSection />
     </ProjectDetail.Root>

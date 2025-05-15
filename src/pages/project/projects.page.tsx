@@ -98,7 +98,7 @@ const ProjectsPage: React.FC = () => {
                           className="mr-2"
                           onClick={() =>
                             navigate(
-                              `/${ROUTES.PROJECTS}/${TASKS_VIEW.BOARD}/${el.project_id}`
+                              `/${ROUTES.PROJECTS}/${el.project_id}`
                             )
                           }
                         >

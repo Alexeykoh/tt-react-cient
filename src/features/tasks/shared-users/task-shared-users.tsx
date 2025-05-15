@@ -57,6 +57,7 @@ export default function TaskSharedUsers({
             {taskMembers.length === 0 && <UserRoundPlus className="size-4" />}
             {taskMembers.slice(0, max).map((el) => (
               <div
+                key={el.member_id}
                 className={`${projectMembers.find((_el) => _el.user_id === el.user.user_id)?.approve === false && "grayscale-100"}`}
               >
                 <UserAvatar

@@ -98,6 +98,7 @@ export default function InvitedUsers({
               .slice(0, max)
               .map((el) => (
                 <div
+                  key={el.user_id}
                   className={`${el.in_project?.approve ? "" : "opacity-50 grayscale-100"}`}
                 >
                   <UserAvatar
@@ -177,7 +178,7 @@ export default function InvitedUsers({
                                             <DropdownMenuItem
                                               onClick={() => {
                                                 setMemberToEdit(
-                                                  el.in_project.member_id
+                                                  el?.in_project?.member_id ? el.in_project.member_id : null
                                                 );
                                                 setDialogIsOpen("edit");
                                               }}

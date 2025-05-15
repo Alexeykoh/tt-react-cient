@@ -4,7 +4,7 @@ import PrivateRoute from "./PrivateRoute";
 import AuthLayout from "@/layouts/AuthLayout";
 import MainLayout from "@/layouts/MainLayout";
 import NoAccessPage from "@/pages/no-access.page";
-import { CONTACTS_VIEW, ROUTES, TASKS_VIEW } from "./routes.enum";
+import { CONTACTS_VIEW, ROUTES } from "./routes.enum";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 import {
   HomePage,
@@ -20,9 +20,6 @@ import {
   TaskDetailPage,
   UserPage,
 } from "@/pages";
-import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
-import { TasksListListPage } from "@/pages/tasks/tasks-list-list.page";
-import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
 import ContactsPage from "@/pages/contacts/contacts.page";
 import ClientsPage from "@/pages/contacts/clients.page";
 import FriendsPage from "@/pages/contacts/friends.page";
@@ -113,7 +110,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: ROUTES.PROJECTS,
+        path: ROUTES.PROJECTS + "/:id",
         element: (
           <PrivateRoute
             roles={[
@@ -125,23 +122,6 @@ const router = createBrowserRouter([
             <ProjectDetailPage />
           </PrivateRoute>
         ),
-        children: [
-          {
-            // table
-            path: TASKS_VIEW.TABLE + "/:id",
-            element: <TasksListTablePage />,
-          },
-          {
-            // list
-            path: TASKS_VIEW.LIST + "/:id",
-            element: <TasksListListPage />,
-          },
-          {
-            // board
-            path: TASKS_VIEW.BOARD + "/:id",
-            element: <TasksListBoardPage />,
-          },
-        ],
       },
       {
         path: ROUTES.TASKS + "/:id",

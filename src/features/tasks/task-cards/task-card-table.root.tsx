@@ -214,11 +214,12 @@ function Users() {
   });
   return (
     <TableCell className="w-[1/8]">
-      <TaskSharedUsers
+      {/* // todo */}
+      {/* <TaskSharedUsers
         taskMembers={context.task.taskMembers}
         projectMembers={projectUsers || []}
         taskId={""}
-      />
+      /> */}
     </TableCell>
   );
 }
@@ -234,104 +235,106 @@ function Dropdown() {
   }
 
   return (
-    <div className="flex justify-end pr-2">
-      <Dialog
-        open={dialog === "edit"}
-        onOpenChange={(date) => setDialogHandler(date ? "edit" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Обновить задачу</DialogTitle>
-          </DialogHeader>
-          <UpdateTaskForm
-            onSuccess={() => setDialogHandler(null)}
-            onClose={() => setDialogHandler(null)}
-            defaults={{
-              name: context.name,
-              description: context.description,
-              is_paid: context.is_paid,
-              payment_type: context.payment_type,
-              rate: String(context.rate),
-              currency_id: String(context.currency.currency_id || ""),
-            }}
-            taskId={context.task_id}
-            currency={context.currency}
-          />
-        </DialogContent>
-      </Dialog>
-      <Dialog
-        open={dialog === "delete"}
-        onOpenChange={(date) => setDialogHandler(date ? "delete" : null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Подтверждение удаления</DialogTitle>
-          </DialogHeader>
-          <p>Вы уверены, что хотите удалить этот проект?</p>
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setDialogHandler(null)}>
-              Отмена
-            </Button>
+    <TableCell className="w-[1/8]">
+      <div className="flex justify-end pr-2">
+        <Dialog
+          open={dialog === "edit"}
+          onOpenChange={(date) => setDialogHandler(date ? "edit" : null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Обновить задачу</DialogTitle>
+            </DialogHeader>
+            <UpdateTaskForm
+              onSuccess={() => setDialogHandler(null)}
+              onClose={() => setDialogHandler(null)}
+              defaults={{
+                name: context.name,
+                description: context.description,
+                is_paid: context.is_paid,
+                payment_type: context.payment_type,
+                rate: String(context.rate),
+                currency_id: String(context.currency.currency_id || ""),
+              }}
+              taskId={context.task_id}
+              currency={context.currency}
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={dialog === "delete"}
+          onOpenChange={(date) => setDialogHandler(date ? "delete" : null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Подтверждение удаления</DialogTitle>
+            </DialogHeader>
+            <p>Вы уверены, что хотите удалить этот проект?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button variant="outline" onClick={() => setDialogHandler(null)}>
+                Отмена
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={async () => {
+                  await deleteTask(context.task_id);
+                  setDialogHandler(null);
+                }}
+              >
+                Удалить
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
-              variant="destructive"
-              onClick={async () => {
-                await deleteTask(context.task_id);
-                setDialogHandler(null);
+              variant="outline"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
+              size="icon"
+            >
+              <MoreVerticalIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem
+              onClick={() => {
+                setDialogHandler("edit");
               }}
             >
-              Удалить
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted ml-auto"
-            size="icon"
-          >
-            <MoreVerticalIcon />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem
-            onClick={() => {
-              setDialogHandler("edit");
-            }}
-          >
-            <PencilIcon className="mr-2 size-4" />
-            <span>Редактировать</span>
-          </DropdownMenuItem>
-
-          <PrivateComponent
-            subscriptions={[
-              SUBSCRIPTION.FREE,
-              SUBSCRIPTION.BASIC,
-              SUBSCRIPTION.PREMIUM,
-            ]}
-          >
-            <DropdownMenuItem
-              onClick={() => navigate(`/tasks/${context.task_id}`)}
-            >
-              <ChartBar className="mr-2 size-4" />
-              <span>Статистика</span>
+              <PencilIcon className="mr-2 size-4" />
+              <span>Редактировать</span>
             </DropdownMenuItem>
-          </PrivateComponent>
 
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-destructive focus:text-destructive"
-            onClick={() => setDialogHandler("delete")}
-          >
-            <TrashIcon className="mr-2 size-4" />
-            <span>Удалить</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+            <PrivateComponent
+              subscriptions={[
+                SUBSCRIPTION.FREE,
+                SUBSCRIPTION.BASIC,
+                SUBSCRIPTION.PREMIUM,
+              ]}
+            >
+              <DropdownMenuItem
+                onClick={() => navigate(`/tasks/${context.task_id}`)}
+              >
+                <ChartBar className="mr-2 size-4" />
+                <span>Статистика</span>
+              </DropdownMenuItem>
+            </PrivateComponent>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => setDialogHandler("delete")}
+            >
+              <TrashIcon className="mr-2 size-4" />
+              <span>Удалить</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </TableCell>
   );
 }
 

@@ -13,25 +13,37 @@ export function TasksListBoardPage() {
   const { id } = useParams<{ id: string }>();
 
   // Получаем колонки и задачи
-  const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
+  const {
+    data: columns = [],
+    isLoading: isColumnsLoading,
+  } = useGetTaskStatusColumnQuery(id || "", {
     skip: !id,
-    refetchOnMountOrArgChange: true,
-    pollingInterval: 5000,
-    refetchOnFocus: true,
+    pollingInterval: 15000,
   });
-  const { data: tasks = [] } = useGetTasksByProjectQuery(id || "", {
+  const {
+    data: tasks = [],
+    isLoading: isTasksLoading,
+  } = useGetTasksByProjectQuery(id || "", {
     skip: !id,
-    pollingInterval: 5000,
+    pollingInterval: 15000,
   });
+
+  const isLoading = isColumnsLoading || isTasksLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <span>Загрузка доски...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 flex w-full h-full p-4">
-      {/* <KanbanBoard tasks={tasks} columns={columns} /> */}
       <KanbanBoard
-        initialColumns={columns || []}
-        initialTasks={tasks || []}
+        initialColumns={columns}
+        initialTasks={tasks}
       />
     </div>
   );
 }
-

@@ -1,4 +1,10 @@
-import { createContext, useContext, ReactNode, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  Suspense,
+} from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +34,6 @@ import {
 } from "@/shared/api/projects.service";
 import { User } from "@/shared/interfaces/user.interface";
 import { useGetUserQuery } from "@/shared/api/user.service";
-import extractLetterFromPath from "@/lib/extractPageView";
 import InvitedUsers from "@/features/project/invited-users/invited-users";
 import LeaveProjectDialog from "@/features/project/leave-project.dialog";
 import EditProjectForm from "@/features/project/forms/edit-project.form";
@@ -36,13 +41,7 @@ import RoleComponent from "@/widgets/role-component";
 import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import CreateTaskForm from "@/features/tasks/forms/create-task.form";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
 import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
 
@@ -60,6 +59,7 @@ interface props {
 }
 
 function Root({ children }: props) {
+  console.log("TaskCardMainContext / root / re-render");
   const { data: userMe } = useGetUserQuery();
   const { id } = useParams<{ id: string }>();
 
@@ -334,7 +334,6 @@ function ViewSection() {
           <Kanban />
           <span>Доска</span>
         </Button>
-
         <Button
           onClick={() => setView(TASKS_VIEW.TABLE)}
           size={"sm"}
@@ -345,10 +344,10 @@ function ViewSection() {
         </Button>
       </div>
       <div className="flex-1 overflow-hidden">
-        {/* Рендер списка задач в зависимости от выбранного вида представления */}
-        {/* <Outlet /> */}
-        {view === TASKS_VIEW.BOARD && <TasksListBoardPage />}
-        {/* {view === TASKS_VIEW.TABLE && <TasksListTablePage />} */}
+        <Suspense fallback={<div>Загрузка...</div>}>
+          {view === TASKS_VIEW.BOARD && <TasksListBoardPage />}
+          {view === TASKS_VIEW.TABLE && <TasksListTablePage />}
+        </Suspense>
       </div>
     </>
   );

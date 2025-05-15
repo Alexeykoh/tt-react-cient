@@ -14,13 +14,25 @@ import TaskCardTable from "@/features/tasks/task-cards/task-card-table.root";
 
 export function TasksListTablePage() {
   const { id } = useParams<{ id: string }>();
-  const { data: tasks } = useGetTasksByProjectQuery(id || "", {
-    skip: !id,
-    pollingInterval: 5000,
-  });
-  const { data: columns = [] } = useGetTaskStatusColumnQuery(id || "", {
-    skip: !id,
-  });
+  const { data: tasks = [], isLoading: isTasksLoading } =
+    useGetTasksByProjectQuery(id || "", {
+      skip: !id,
+      pollingInterval: 15000,
+    });
+  const { data: columns = [], isLoading: isColumnsLoading } =
+    useGetTaskStatusColumnQuery(id || "", {
+      skip: !id,
+    });
+
+  const isLoading = isTasksLoading || isColumnsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <span>Загрузка таблицы...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex p-4">
@@ -36,9 +48,13 @@ export function TasksListTablePage() {
         </TableHeader>
         <TableBody className="flex-1">
           {tasks &&
-            tasks?.map((el) => {
+            tasks.map((el) => {
               return (
-                <TaskCardTable.Root task={el} statusColumns={columns}>
+                <TaskCardTable.Root
+                  key={el.task_id}
+                  task={el}
+                  statusColumns={columns}
+                >
                   <TaskCardTable.Items />
                   <TaskCardTable.Title />
                   <TaskCardTable.Status />
