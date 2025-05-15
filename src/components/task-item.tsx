@@ -86,17 +86,14 @@ export default function TaskItem({
       <div className={`relative  ${isActive && ""}`}>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
-              <div
-                className={`${isActive && "pointer-events-none grayscale-100"}`}
-              >
-                <PlayPauseButton
-                  onClick={logToggleHandler}
-                  isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
-                  isLoading={logIsLoading || startIsLoading || stopIsLoading}
-                  variant={variant}
-                />
-              </div>
+            <TooltipTrigger asChild>
+              <PlayPauseButton
+                onClick={logToggleHandler}
+                isPlay={latestLog?.status === TIMELOGSTATUS.PROGRESS}
+                isLoading={logIsLoading || startIsLoading || stopIsLoading}
+                variant={variant}
+                className={isActive ? "pointer-events-none grayscale-100" : ""}
+              />
             </TooltipTrigger>
             {isActive && (
               <TooltipContent>
