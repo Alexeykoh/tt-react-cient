@@ -50,7 +50,11 @@ export function KanbanBoard({ initialColumns, initialTasks }: props) {
       return;
     }
 
+    // Удаляем задачу из старого места
     const newTasks = tasks.filter((t) => t.task_id !== draggedTask.task_id);
+
+    // Гарантируем, что targetColumnId — string
+    const safeTargetColumnId = targetColumnId!;
 
     // Обновляем статус задачи
     const updatedTask = {
@@ -59,7 +63,7 @@ export function KanbanBoard({ initialColumns, initialTasks }: props) {
         ...draggedTask.taskStatus,
         taskStatusColumn: {
           ...draggedTask.taskStatus.taskStatusColumn,
-          id: targetColumnId,
+          id: safeTargetColumnId,
         },
       },
     };
@@ -67,38 +71,44 @@ export function KanbanBoard({ initialColumns, initialTasks }: props) {
     // Вставляем в новую позицию
     newTasks.splice(targetPosition ?? 0, 0, updatedTask);
 
-    // Пересчитываем order для задач в целевой колонке
+    // Пересчитываем order только для задач в целевой колонке
     const targetTasks = newTasks
-      .filter((t) => t.taskStatus.taskStatusColumn.id === targetColumnId)
+      .filter((t) => t.taskStatus.taskStatusColumn.id === safeTargetColumnId)
       .map((t, idx) => ({ ...t, order: idx }));
 
     // Остальные задачи
     const otherTasks = newTasks.filter(
-      (t) => t.taskStatus.taskStatusColumn.id !== targetColumnId
+      (t) => t.taskStatus.taskStatusColumn.id !== safeTargetColumnId
     );
 
-    // Обновляем локальный стейт
-    setTasks(() => {
-      const newState = [...otherTasks, ...targetTasks];
-      const tasksForUpdate = newState.map((t) => ({
-        task_id: t.task_id,
-        order: t.order,
-      }));
+    // Новый массив задач для локального стейта
+    const newState = [...otherTasks, ...targetTasks];
 
-      updateTasksOrder({
-        project_id: draggedTask.project_id,
-        column_id: targetColumnId,
-        task_orders: tasksForUpdate,
-      });
+    // Оптимистичное обновление UI
+    setTasks(newState);
 
-      return newState;
+    // Только задачи целевой колонки для обновления порядка на сервере
+    const tasksForUpdate = targetTasks.map((t) => ({
+      task_id: t.task_id,
+      order: t.order,
+    }));
+
+    // Асинхронно обновляем порядок на сервере
+    updateTasksOrder({
+      project_id: draggedTask.project_id || '',
+      column_id: safeTargetColumnId,
+      task_orders: tasksForUpdate,
     });
 
     // обновлять только если статус задачи изменился
-    if (draggedTask.taskStatus.taskStatusColumn.id !== targetColumnId) {
+    if (
+      draggedTask.taskStatus.taskStatusColumn.id &&
+      safeTargetColumnId &&
+      draggedTask.taskStatus.taskStatusColumn.id !== safeTargetColumnId
+    ) {
       updateStatus({
         task_id: updatedTask.task_id,
-        task_status_column_id: targetColumnId,
+        task_status_column_id: safeTargetColumnId as string,
       });
     }
 
