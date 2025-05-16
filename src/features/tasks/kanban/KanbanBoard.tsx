@@ -109,6 +109,7 @@ export function KanbanBoard({ initialColumns, initialTasks }: props) {
       updateStatus({
         task_id: updatedTask.task_id,
         task_status_column_id: safeTargetColumnId as string,
+        projectId: draggedTask.project_id || '',
       });
     }
 

@@ -153,6 +153,7 @@ function Status() {
           updateStatus({
             task_id: context.task_id,
             task_status_column_id: value,
+            projectId: context.project_id,
           });
         }}
       >

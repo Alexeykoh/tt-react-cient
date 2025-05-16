@@ -96,10 +96,7 @@ export default function KanbanTask({
         layout
         layoutId={`kanban-task-${task.task_id}`}
         transition={{
-          type: "spring",
-          stiffness: 500,
-          damping: 35,
-          duration: 10,
+          duration: 0,
         }}
         draggable
         initial={{ opacity: 0 }}

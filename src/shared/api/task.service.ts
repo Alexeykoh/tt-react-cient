@@ -67,14 +67,31 @@ export const taskService = createApi({
 
     updateTaskStatus: builder.mutation<
       UpdateTaskStatusDto,
-      UpdateTaskStatusDto
+      { task_id: string; task_status_column_id: string; projectId: string }
     >({
-      query: (dto) => ({
+      query: ({ task_id, task_status_column_id }) => ({
         url: "task-status",
         method: "POST",
-        body: dto,
+        body: { task_id, task_status_column_id },
       }),
-      invalidatesTags: ["task"],
+      // Оптимистичное обновление статуса задачи
+      async onQueryStarted({ task_id, task_status_column_id, projectId }, { dispatch, queryFulfilled }) {
+        // Обновляем кэш getTasksByProject
+        const patchResult = dispatch(
+          taskService.util.updateQueryData('getTasksByProject', projectId, (draft: Task[]) => {
+            const task = draft.find(t => t.task_id === task_id);
+            if (task && task.taskStatus && task.taskStatus.taskStatusColumn) {
+              task.taskStatus.taskStatusColumn.id = task_status_column_id;
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      // invalidatesTags: ["task"],
     }),
 
     createTask: builder.mutation<Task, CreateTaskDto>({
@@ -88,14 +105,31 @@ export const taskService = createApi({
 
     updateTask: builder.mutation<
       Task,
-      { taskId: string; updateData: UpdateTaskDto }
+      { taskId: string; updateData: UpdateTaskDto; projectId: string }
     >({
       query: ({ taskId, updateData }) => ({
         url: `tasks/${taskId}`,
         method: "PATCH",
         body: updateData,
       }),
-      invalidatesTags: ["task"],
+      // Оптимистичное обновление задачи
+      async onQueryStarted({ taskId, updateData, projectId }, { dispatch, queryFulfilled }) {
+        // Обновляем кэш getTasksByProject
+        const patchResult = dispatch(
+          taskService.util.updateQueryData('getTasksByProject', projectId, (draft: Task[]) => {
+            const task = draft.find(t => t.task_id === taskId);
+            if (task) {
+              Object.assign(task, updateData);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+      // invalidatesTags: ["task"],
     }),
 
     deleteTask: builder.mutation<void, string>({
@@ -124,7 +158,29 @@ export const taskService = createApi({
         method: "PATCH",
         body: dto,
       }),
-      invalidatesTags: ["task"],
+      // Оптимистичное обновление порядка задач
+      async onQueryStarted(dto, { dispatch, queryFulfilled }) {
+        // dto: { project_id, column_id, task_orders }
+        // Обновляем кэш getTasksByProject
+        const patchResult = dispatch(
+          taskService.util.updateQueryData('getTasksByProject', dto.project_id, (draft: Task[]) => {
+            // Обновляем order только для задач в нужной колонке
+            draft
+              .filter(task => task.taskStatus.taskStatusColumn.id === dto.column_id)
+              .forEach(task => {
+                const found = dto.task_orders.find(t => t.task_id === task.task_id);
+                if (found) {
+                  task.order = found.order;
+                }
+              });
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
     }),
 
     removeUserFromTask: builder.mutation<

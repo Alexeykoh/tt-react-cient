@@ -70,7 +70,7 @@ export default function KanbanColumn({
   return (
     <motion.div
       layout
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0}}
       style={{ backgroundColor }}
       className={`min-w-72 max-w-72 h-full flex flex-col rounded-lg border transition-colors
         ${draggedTask && hoverState.columnId === column.id ? "border-primary/50 bg-accent/20" : "border-border"}`}
