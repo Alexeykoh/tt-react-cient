@@ -4,12 +4,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import { PAYMENT } from "@/shared/interfaces/task.interface";
 import { useNavigate } from "react-router-dom";
 import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import { CheckSquare } from "lucide-react";
+import TimeLogsTimer from "@/features/time-logs/time-logs-timer";
 
 export default function TaskFloatBarWidget() {
   const navigate = useNavigate();
@@ -22,10 +22,7 @@ export default function TaskFloatBarWidget() {
           <div className="flex items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex gap-2 cursor-pointer"
-                >
+                <Button variant="outline" className="flex gap-2 cursor-pointer">
                   <CheckSquare />
                   <h6 className="text-md/3 font-semibold">
                     {latestTaskLog?.task?.name}
@@ -70,9 +67,10 @@ export default function TaskFloatBarWidget() {
               </PopoverContent>
             </Popover>
             <div className="pl-2 border-l-2  ">
-              <TaskItem
-                showTime={true}
+              <TimeLogsTimer.Root
                 task_id={latestTaskLog?.task?.task_id || ""}
+                variant="button"
+                showTime={true}
                 isReverse
               />
             </div>

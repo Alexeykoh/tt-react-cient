@@ -1,5 +1,4 @@
 import { createContext, useContext, ReactNode } from "react";
-import TaskItem from "@/components/task-item";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -45,9 +44,10 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import UpdateTaskForm from "../forms/update-task.form";
-import TaskSharedUsers from "../shared-users/task-shared-users";
 import { Currency } from "@/shared/interfaces/currency.interface";
 import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
+import TimeLogsTimer from "@/features/time-logs/time-logs-timer";
+import TaskSharedUsers from "../shared-users/task-shared-users";
 
 type dialogType = "edit" | "delete" | null;
 
@@ -119,7 +119,7 @@ function Items() {
   const { task_id } = useContextRoot();
   return (
     <TableCell className="font-medium w-[1/6] flex items-center gap-4">
-      <TaskItem task_id={task_id} showTime={false} />
+      <TimeLogsTimer.Root task_id={task_id} variant="button" />
     </TableCell>
   );
 }
@@ -214,12 +214,11 @@ function Users() {
   });
   return (
     <TableCell className="w-[1/8]">
-      {/* // todo */}
-      {/* <TaskSharedUsers
+      <TaskSharedUsers
         taskMembers={context.task.taskMembers}
         projectMembers={projectUsers || []}
         taskId={""}
-      /> */}
+      />
     </TableCell>
   );
 }

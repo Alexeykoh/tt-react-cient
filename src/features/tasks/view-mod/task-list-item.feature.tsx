@@ -37,8 +37,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RateItem from "@/components/rate-item";
-import TaskItem from "@/components/task-item";
 import UpdateTaskForm from "../forms/update-task.form";
+import TimeLogsTimer from "@/features/time-logs/time-logs-timer";
 
 export default function TaskListItemFeature(task: Task) {
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ export default function TaskListItemFeature(task: Task) {
         <CardHeader className="relative">
           <div className="flex justify-between items-start">
             <div className="flex gap-4 items-center">
-              <TaskItem task_id={task.task_id} />
+              <TimeLogsTimer.Root task_id={task.task_id} variant="icon" />
               <CardTitle className="text-lg">{task.name}</CardTitle>
             </div>
 

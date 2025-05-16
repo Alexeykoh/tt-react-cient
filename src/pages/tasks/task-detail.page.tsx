@@ -31,10 +31,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { useGetTimeLogLogsQuery } from "@/shared/api/time-log.service";
-import TaskItem from "@/components/task-item";
 import TaskSharedUsers from "@/features/tasks/shared-users/task-shared-users";
 import { useGetProjectSharedByIdQuery } from "@/shared/api/projects-shared.service";
 import { LogsTable } from "../../features/time-logs/logs-table";
+import TimeLogsTimer from "@/features/time-logs/time-logs-timer";
 
 export default function TaskDetailPage() {
   const navigate = useNavigate();
@@ -127,11 +127,12 @@ export default function TaskDetailPage() {
                       <ChevronLeft />
                     </Button>
                     <div className="flex gap-4 text-xl font-bold items-center">
-                      <TaskItem
-                        task_id={task?.task_id || ""}
+                      <TimeLogsTimer.Root
+                        task_id={task?.task_id || ''}
+                        variant="icon"
                         showTime={true}
-                        variant={"icon"}
                       />
+
                       <Separator
                         orientation="vertical"
                         className="border-1 min-h-5"

@@ -147,12 +147,6 @@ export default function KanbanTask({
                   <PanelTop className="size-3" />
                 </Button>
                 <TimeLogsTimer.Root task_id={task.task_id} variant="icon" />
-
-                {/* <TaskItem
-                  variant="icon"
-                  task_id={task.task_id}
-                  showTime={false}
-                /> */}
               </div>
             </div>
             <CardDescription className="py-2 line-clamp-2 text-sm text-muted-foreground">
