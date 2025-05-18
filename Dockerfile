@@ -1,5 +1,5 @@
 # Используем официальный образ Node.js
-FROM node:16
+FROM node:20-alpine
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm install
+RUN npm ci --omit=dev
 
 # Копируем остальные файлы проекта
 COPY . .

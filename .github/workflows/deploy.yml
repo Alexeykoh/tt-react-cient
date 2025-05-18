@@ -8,6 +8,8 @@ jobs:
     steps:
       - name: Update code
         run: |
+          ls -la /home/mezabizon/projects/time_tracker/frontend/Dockerfile
+          ls -la /home/mezabizon/projects/time_tracker/docker-compose.yml
           cd /home/mezabizon/projects/time_tracker/frontend/
           git pull origin main
           cd ..
