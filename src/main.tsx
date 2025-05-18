@@ -7,7 +7,7 @@ import "./index.css";
 import App from "./App";
 import { ThemeProvider } from "./providers/theme-provider";
 
-// ci-cd test v2
+// ci-cd test v3
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
