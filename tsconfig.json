@@ -12,5 +12,11 @@
     "jsx": "react-jsx" // Добавьте эту строку
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/__tests__", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": [
+    "node_modules",
+    "**/__tests__",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/setupTests.ts"
+  ]
 }
