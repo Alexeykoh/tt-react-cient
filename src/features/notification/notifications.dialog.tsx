@@ -13,13 +13,13 @@ import FriendshipInvitationDialog from "./dialogs/friendship_invitation.dialog";
 interface props {
   children: JSX.Element;
   notificationType: NOTIFICATION_TYPE;
-  meta: string | null;
+  metaDataProp: string | null;
 }
 
 export default function NotificationsDialog({
   children,
   notificationType,
-  meta,
+  metaDataProp: meta,
 }: props) {
   return (
     <>

@@ -33,7 +33,7 @@ export function NotificationCard({ notification }: NotificationCardProps) {
       notificationType={
         notification.type || NOTIFICATION_TYPE.FRIENDSHIP_INVITATION
       }
-      meta={notification.data}
+      metaDataProp={notification?.data || null}
     >
       <div
         onClick={() => {

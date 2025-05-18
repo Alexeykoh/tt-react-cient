@@ -43,6 +43,7 @@ function CreateClientForm({ onSuccess, onClose }: CreateClientFormProps) {
       await createProject({
         name: values.name,
         contact_info: values.contact_info,
+        client_id: ""
       }).unwrap();
 
       form.reset();
