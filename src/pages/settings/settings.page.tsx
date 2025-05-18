@@ -1,5 +1,4 @@
 import { AccountTab } from "@/components/settings-tab/account-tab";
-import { PeoplesTab } from "@/components/settings-tab/peoples-tab";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,11 +10,11 @@ export default function SettingsPage() {
       title: "Аккаунт",
       component: AccountTab,
     },
-    {
-      value: "peoples",
-      title: "Пользователи",
-      component: PeoplesTab,
-    },
+    // {
+    //   value: "peoples",
+    //   title: "Пользователи",
+    //   component: PeoplesTab,
+    // },
     // {
     //   value: "teams",
     //   title: "Комманды",

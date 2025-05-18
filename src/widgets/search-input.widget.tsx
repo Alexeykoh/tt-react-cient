@@ -139,8 +139,8 @@ export default function SearchInputWidget({ searchLocationList }: Props) {
                         >
                           <p className="font-medium">{project.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {project?.client?.name} • {project.currency.symbol}
-                            {project?.rate} • {formatDate(project.created_at)}
+                            {project?.client?.name} •{" "}
+                            {formatDate(project.created_at)}
                           </p>
                         </div>
                       ))}

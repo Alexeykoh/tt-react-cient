@@ -80,6 +80,7 @@ function UpdateTaskForm({
           ...values,
           rate: values.rate.toString(), // Явное преобразование в строку
         },
+        projectId: '',
       }).unwrap();
       form.reset();
       onSuccess();

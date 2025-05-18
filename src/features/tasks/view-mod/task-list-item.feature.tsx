@@ -149,6 +149,7 @@ export default function TaskListItemFeature(task: Task) {
                   updateTask({
                     taskId: task.task_id,
                     updateData: { is_paid: !task?.is_paid },
+                    projectId: task?.project_id || "",
                   });
                 }}
                 variant={task?.is_paid ? "default" : "destructive"}

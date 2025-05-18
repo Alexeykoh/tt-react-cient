@@ -71,10 +71,10 @@ export default function ProjectInvitationDialog({
                           <div className="flex items-center flex-wrap gap-1">
                             <UserAvatar
                               size="xs"
-                              name={el.project.user.name}
+                              name={el?.project?.user?.name || ''}
                               planId={SUBSCRIPTION.FREE}
                             />
-                            <span>{el.project.user.name}</span>
+                            <span>{el?.project?.user?.name || ''}</span>
                           </div>
                         </div>
                         <div className="flex flex-col flex-wrap gap-1">
@@ -95,7 +95,7 @@ export default function ProjectInvitationDialog({
                         <div className="flex flex-col flex-wrap gap-1">
                           <h3 className="text-xs text-gray-400">{`Проект:`}</h3>
                           <div className="flex items-center flex-wrap gap-1">
-                            <span>{el.project.name}</span>
+                            <span>{el?.project?.user?.name || ''}</span>
                           </div>
                         </div>
                       </div>
