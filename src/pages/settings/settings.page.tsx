@@ -10,21 +10,6 @@ export default function SettingsPage() {
       title: "Аккаунт",
       component: AccountTab,
     },
-    // {
-    //   value: "peoples",
-    //   title: "Пользователи",
-    //   component: PeoplesTab,
-    // },
-    // {
-    //   value: "teams",
-    //   title: "Комманды",
-    //   component: AccountTab,
-    // },
-    // {
-    //   value: "appearance",
-    //   title: "Внешний вид",
-    //   component: AccountTab,
-    // },
   ];
 
   return (
