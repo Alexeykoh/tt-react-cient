@@ -1,23 +1,23 @@
-# Используем официальный образ Node.js
-FROM node:20-alpine
+# Stage 1: Build
+FROM node:20-alpine AS builder
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
 COPY package*.json ./
+RUN npm ci
 
-# Устанавливаем зависимости
-RUN npm ci --omit=dev
-
-# Копируем остальные файлы проекта
 COPY . .
-
-# Собираем проект
 RUN npm run build
 
-# Указываем порт, который будет использоваться
-EXPOSE 3000
+# Stage 2: Production image with Nginx
+FROM nginx:alpine
 
-# Запускаем приложение
-CMD ["npm", "start"]
+# Копируем собранную статику в стандартную директорию nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Копируем кастомный конфиг nginx, если потребуется (опционально)
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
