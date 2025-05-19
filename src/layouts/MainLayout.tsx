@@ -45,7 +45,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         open={notificationIsOpen}
         onOpenChange={(data) => sheetHandler(data)}
       >
-        <SheetContent className="w-[400px] sm:w-[540px]">
+        <SheetContent className="w-[400px] sm:w-[540px] p-4">
           <SheetHeader>
             <SheetTitle>Уведомления</SheetTitle>
             <NotificationsFeature/>

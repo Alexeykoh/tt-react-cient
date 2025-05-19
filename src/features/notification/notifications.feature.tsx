@@ -55,7 +55,7 @@ export default function NotificationsFeature() {
             <p>У вас пока нет уведомлений</p>
           </div>
         ) : (
-          <ScrollArea className="h-full w-full rounded-md border p-4">
+          <ScrollArea className="h-full w-full rounded-md">
             <div className="flex flex-col gap-4 ">
               {notifications.map((notification: INotification) => (
                 <NotificationCard

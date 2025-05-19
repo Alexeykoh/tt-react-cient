@@ -42,7 +42,10 @@ export const clientService = createApi({
       query: (data) => ({
         url: `clients`,
         method: "POST",
-        body: data,
+        body: {
+          name: data.name,
+          contact_info: data.contact_info,
+        },
       }),
       invalidatesTags: ["client-pagiated"],
     }),

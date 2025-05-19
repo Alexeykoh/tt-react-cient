@@ -9,6 +9,5 @@ export { default as ContactsPage } from "./contacts/contacts.page";
 export { default as NotesPage } from "./notes/notes.page";
 export { default as UserPage } from "./user/user.page";
 export { default as SettingsPage } from "./settings/settings.page";
-export { default as NotificationsPage } from "./notifations/notifications.page";
 export { default as NoAccessPage } from "./no-access.page";
 export { default as PlansPage } from "./plans/plans.page";

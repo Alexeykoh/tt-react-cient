@@ -11,7 +11,6 @@ import {
   LoginPage,
   NotesDetailPage,
   NotesPage,
-  NotificationsPage,
   PlansPage,
   ProjectDetailPage,
   ProjectsPage,
@@ -176,20 +175,6 @@ const router = createBrowserRouter([
             ]}
           >
             <SettingsPage />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: ROUTES.NOTIFICATIONS,
-        element: (
-          <PrivateRoute
-            roles={[
-              SUBSCRIPTION.BASIC,
-              SUBSCRIPTION.FREE,
-              SUBSCRIPTION.PREMIUM,
-            ]}
-          >
-            <NotificationsPage />
           </PrivateRoute>
         ),
       },
