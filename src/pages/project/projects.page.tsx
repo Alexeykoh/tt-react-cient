@@ -6,6 +6,13 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useGetProjectsMeQuery } from "@/shared/api/projects.service";
 import {
@@ -16,27 +23,37 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateProjectForm from "@/features/project/forms/create-project.form";
-import { PanelTop } from "lucide-react";
-import React, { useState } from "react";
+import { PanelTop, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { formatDate } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";
-import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
+import { ROUTES } from "@/app/router/routes.enum";
 import UserAvatar from "@/components/user-avatar";
 import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { useGetUserQuery } from "@/shared/api/user.service";
-import { Badge } from "@/components/ui/badge";
 import ProjectInvitationDialog from "@/features/project/project-invitation/project-invitation.dialog";
+import OwnerUi from "@/shared/ui/owner.ui";
+import { GetPeojectMeDTO } from "@/shared/interfaces/project.interface";
 
 const ProjectsPage: React.FC = () => {
   const navigate = useNavigate();
   const { data: userMe } = useGetUserQuery();
-  const [currentPage, setCurrentPage] = useState(1);
-  const { data, refetch: refetchProjects } = useGetProjectsMeQuery({
-    page: currentPage,
+  const [filter, setFilter] = useState<GetPeojectMeDTO>({
+    page: 1,
+    limit: undefined,
+    client_id: undefined,
+    role: undefined,
+    sortOrder: undefined,
+    sortBy: undefined,
   });
+  const { data, refetch: refetchProjects } = useGetProjectsMeQuery(filter);
   const [dialogIsOpen, setDialogIsOpen] = useState<
     "create" | "invitations" | null
   >(null);
+
+  useEffect(() => {
+    refetchProjects();
+  }, [filter, refetchProjects]);
 
   return (
     <div className="w-full flex flex-col p-4">
@@ -75,8 +92,107 @@ const ProjectsPage: React.FC = () => {
       <div className="flex-1 flex flex-col">
         <div className="flex-1 flex flex-col">
           <Table className="flex-1 w-full">
-            <TableHeader>
-              <TableHead></TableHead>
+            <TableHeader className="">
+              <TableHead className="flex items-center gap-2 h-16">
+                <div className="flex gap-2">
+                  {/* Select для сортировки по типу */}
+                  <Select
+                    onValueChange={(el) =>
+                      setFilter({
+                        ...filter,
+                        sortBy:
+                          el === "reset"
+                            ? undefined
+                            : (el as "name" | "created_at"),
+                      })
+                    }
+                    value={filter.sortBy}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Тип" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value="reset"
+                        key="reset"
+                        className="bg-primary/50 border-2"
+                      >
+                        Сбросить
+                      </SelectItem>
+                      {["name", "created_at"].map((el) => (
+                        <SelectItem key={el} value={el}>
+                          {el === "name" ? "Наименование" : "Дата"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Select для порядка сортировки */}
+                  <Select
+                    onValueChange={(el) =>
+                      setFilter({
+                        ...filter,
+                        sortOrder:
+                          el === "reset" ? undefined : (el as "ASC" | "DESC"),
+                      })
+                    }
+                    value={filter.sortOrder}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="По дате" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value="reset"
+                        key="reset"
+                        className="bg-primary/50 border-2"
+                      >
+                        Сбросить
+                      </SelectItem>
+                      {["ASC", "DESC"].map((el) => (
+                        <SelectItem key={el} value={el}>
+                          {el === "ASC"
+                            ? "Дата по возрастанию"
+                            : "Дата по убыванию"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Select для роли */}
+                  <Select
+                    onValueChange={(el) =>
+                      setFilter({
+                        ...filter,
+                        role: el === "reset" ? undefined : (el as PROJECT_ROLE),
+                      })
+                    }
+                    value={filter.role}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Роль" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem
+                        value="reset"
+                        key="reset"
+                        className="bg-primary/50 border-2"
+                      >
+                        Сбросить
+                      </SelectItem>
+                      {Object.entries(PROJECT_ROLE).map(([key, value]) => (
+                        <SelectItem key={key} value={value}>
+                          {value === PROJECT_ROLE.OWNER && "Владелец"}
+                          {value === PROJECT_ROLE.EXECUTOR && "Исполнитель"}
+                          {value === PROJECT_ROLE.GUEST && "Гость"}
+                          {value === PROJECT_ROLE.MANAGER && "Менеджер"}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </TableHead>
+
               <TableRow>
                 <TableHead className="w-1/6">Наименование</TableHead>
                 <TableHead className="w-1/6">Пользователи</TableHead>
@@ -97,9 +213,7 @@ const ProjectsPage: React.FC = () => {
                           variant="ghost"
                           className="mr-2"
                           onClick={() =>
-                            navigate(
-                              `/${ROUTES.PROJECTS}/${el.project_id}`
-                            )
+                            navigate(`/${ROUTES.PROJECTS}/${el.project_id}`)
                           }
                         >
                           <span className="sr-only">Перейти к проекту</span>
@@ -108,16 +222,16 @@ const ProjectsPage: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <div className="flex flex-col">
                             <p> {el?.name}</p>
-                            <p>
+                            <div>
                               <span className="text-xs text-gray-400">
                                 Владелец:{" "}
                               </span>
-                              {userMe?.user_id === owner?.user.user_id ? (
-                                <Badge>Вы</Badge>
-                              ) : (
-                                owner?.user.name
-                              )}
-                            </p>
+                              <OwnerUi
+                                isOwner={
+                                  userMe?.user_id === owner?.user.user_id
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
                       </TableCell>
@@ -155,9 +269,12 @@ const ProjectsPage: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    setFilter((prev) => ({
+                      ...prev,
+                      page: Math.max(prev.page - 1, 1),
+                    }))
                   }
-                  disabled={currentPage <= 1}
+                  disabled={filter.page <= 1}
                 >
                   Назад
                 </Button>
@@ -165,11 +282,12 @@ const ProjectsPage: React.FC = () => {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    setCurrentPage((prev) =>
-                      Math.min(prev + 1, data.meta.totalPages)
-                    )
+                    setFilter((prev) => ({
+                      ...prev,
+                      page: Math.min(prev.page + 1, data.meta.totalPages),
+                    }))
                   }
-                  disabled={currentPage >= data.meta.totalPages}
+                  disabled={filter.page >= data.meta.totalPages}
                 >
                   Вперед
                 </Button>

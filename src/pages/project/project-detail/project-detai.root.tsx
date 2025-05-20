@@ -21,18 +21,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   ChevronLeft,
+  CoinsIcon,
   Kanban,
   LogOut,
   MoreVerticalIcon,
   PencilIcon,
   Table,
   TrashIcon,
+  User2Icon,
 } from "lucide-react";
 import {
   useDeleteProjectMutation,
   useGetProjectByIdQuery,
 } from "@/shared/api/projects.service";
-import { User } from "@/shared/interfaces/user.interface";
 import { useGetUserQuery } from "@/shared/api/user.service";
 import InvitedUsers from "@/features/project/invited-users/invited-users";
 import LeaveProjectDialog from "@/features/project/leave-project.dialog";
@@ -44,6 +45,11 @@ import { ROUTES, TASKS_VIEW } from "@/app/router/routes.enum";
 import { useNavigate, useParams } from "react-router-dom";
 import { TasksListBoardPage } from "@/pages/tasks/tasks-list-board.page";
 import { TasksListTablePage } from "@/pages/tasks/tasks-list-table.page";
+import { Separator } from "@radix-ui/react-separator";
+import { User } from "@/shared/interfaces/user.interface";
+import RoleBadge from "@/components/role-badge";
+import UserAvatar from "@/components/user-avatar";
+import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
 
 // Определяем тип значения контекста
 interface context {
@@ -77,10 +83,7 @@ function HeaderRoot({ children }: { children: ReactNode }) {
     <div className="w-full">
       <div className="flex justify-between w-full">
         <div className="flex flex-col w-full">
-          <div className="flex flex-row border-b-2 w-full p-4 justify-between items-center">
-            {children}
-          </div>
-          {/* <HeaderBottom /> */}
+          <div className="flex flex-col w-full p-4 gap-2">{children}</div>
         </div>
       </div>
     </div>
@@ -88,16 +91,33 @@ function HeaderRoot({ children }: { children: ReactNode }) {
 }
 
 function HeaderTop() {
-  console.log("HeaderTop / re-render");
+  return (
+    <div className="flex items-center gap-4 border-b-2 py-2 justify-between w-full">
+      <ProjectTitle />
+      <div className="flex items-center gap-4">
+        <UsersOnProject />
+        <CreateTaskBtn />
+      </div>
+    </div>
+  );
+}
 
+function ProjectTitle() {
   const context = useContext(TaskCardMainContext);
-  const navigate = useNavigate();
-  const { data: project } = useGetProjectByIdQuery({ id: context?.id || "" });
   const [deleteProject] = useDeleteProjectMutation();
 
   const [dialogIsOpen, setDialogIsOpen] = useState<
     "edit" | "delete" | "leave" | null
   >(null);
+  const navigate = useNavigate();
+
+  const project_id: string | undefined = context?.id;
+
+  const { data: projectData } = useGetProjectByIdQuery({
+    id: project_id || "",
+  });
+
+  const project = projectData?.project || null;
 
   return (
     <>
@@ -258,18 +278,25 @@ function HeaderTop() {
   );
 }
 
-function HeaderBottom() {
+function CreateTaskBtn() {
   const context = useContext(TaskCardMainContext);
   const project_id: string | undefined = context?.id;
 
-  const { data: project } = useGetProjectByIdQuery({ id: project_id || "" });
+  const { data: projectData } = useGetProjectByIdQuery({
+    id: project_id || "",
+  });
 
   const [dialogIsOpen, setDialogIsOpen] = useState<
     "create" | "edit" | "delete" | "invite" | "leave" | null
   >(null);
 
+  const project = projectData?.project || null;
+
   return (
-    <div className="flex items-center gap-4">
+    <Dialog
+      open={dialogIsOpen === "create"}
+      onOpenChange={(data) => setDialogIsOpen(data ? "create" : null)}
+    >
       <RoleComponent
         roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
         userRole={
@@ -279,44 +306,98 @@ function HeaderBottom() {
         }
         showChildren={false}
       >
-        <div className="flex flex-row gap-1">
-          <InvitedUsers
-            members={project?.members || []}
-            project_id={project?.project_id || ""}
-          />
-        </div>
+        <DialogTrigger asChild>
+          <Button size={"sm"} className="w-fit">
+            Добавить задачу
+          </Button>
+        </DialogTrigger>
       </RoleComponent>
-      <Dialog
-        open={dialogIsOpen === "create"}
-        onOpenChange={(data) => setDialogIsOpen(data ? "create" : null)}
-      >
-        <RoleComponent
-          roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
-          userRole={
-            project?.members.find(
-              (m) => m.user?.user_id === context?.userMe?.user_id
-            )?.role as PROJECT_ROLE
-          }
-          showChildren={false}
-        >
-          <DialogTrigger asChild>
-            <Button size={"sm"} className="w-fit">
-              Добавить задачу
-            </Button>
-          </DialogTrigger>
-        </RoleComponent>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Создать новую задачу</DialogTitle>
-          </DialogHeader>
-          <CreateTaskForm
-            onSuccess={() => setDialogIsOpen(null)}
-            onClose={() => setDialogIsOpen(null)}
-            projectId={project_id || ""}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Создать новую задачу</DialogTitle>
+        </DialogHeader>
+        <CreateTaskForm
+          onSuccess={() => setDialogIsOpen(null)}
+          onClose={() => setDialogIsOpen(null)}
+          projectId={project_id || ""}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function UsersOnProject() {
+  const context = useContext(TaskCardMainContext);
+  const project_id: string | undefined = context?.id;
+
+  const { data: projectData } = useGetProjectByIdQuery({
+    id: project_id || "",
+  });
+
+  const project = projectData?.project || null;
+
+  return (
+    <RoleComponent
+      roles={[PROJECT_ROLE.OWNER, PROJECT_ROLE.MANAGER]}
+      userRole={
+        project?.members.find(
+          (m) => m.user?.user_id === context?.userMe?.user_id
+        )?.role as PROJECT_ROLE
+      }
+      showChildren={false}
+    >
+      <div className="flex flex-row gap-1">
+        <InvitedUsers
+          members={project?.members || []}
+          project_id={project?.project_id || ""}
+        />
+      </div>
+    </RoleComponent>
+  );
+}
+
+function HeaderBottom() {
+  const context = useContext(TaskCardMainContext);
+  const project_id: string | undefined = context?.id;
+
+  const { data: projectData } = useGetProjectByIdQuery({
+    id: project_id || "",
+  });
+
+  const info = projectData?.info || null;
+
+  return (
+    <>
+      <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-1 items-center">
+          <RoleBadge role={info?.myRole} />
+        </div>
+        <Separator orientation="vertical" className="min-h-4 border-1" />
+        <div className="flex flex-row gap-1 items-center">
+          <UserAvatar
+            name={info?.owner?.user?.name || ""}
+            planId={SUBSCRIPTION.FREE}
+            size={"xs"}
           />
-        </DialogContent>
-      </Dialog>
-    </div>
+          <p className="text-sm text-muted-foreground">
+            {info?.owner?.user?.name}
+          </p>
+        </div>
+        <Separator orientation="vertical" className="min-h-4 border-1" />
+        <div className="flex flex-row gap-1 items-center">
+          <CoinsIcon className="size-3.5" />
+          <p className="text-sm text-muted-foreground">
+            {info?.myPaymentType} {"/"} {info?.myCurrency.symbol}
+            {info?.myRate}
+          </p>
+        </div>
+        <Separator orientation="vertical" className="min-h-4 border-1" />
+        <div className="flex flex-row gap-1 items-center">
+          <User2Icon className="size-3.5" />
+          <p className="text-sm text-muted-foreground">{info?.client?.name}</p>
+        </div>
+      </div>
+    </>
   );
 }
 

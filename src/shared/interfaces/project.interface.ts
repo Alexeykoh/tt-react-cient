@@ -72,7 +72,19 @@ export const GetPeojectMeDTOSchema = z.object({
   sortBy: z.enum(["name", "created_at"]).optional(),
 });
 
-// Типы (интерфейсы) внизу
+export const ProjectByIdSchema = z.object({
+  project: ProjectSchema,
+  info: z.object({
+    owner: ProjectMembersSchema,
+    isUserOwner: z.boolean(),
+    invitedUsers: z.array(ProjectMembersSchema),
+    myRate: z.union([z.number(), z.string()]),
+    myRole: PROJECT_ROLESchema,
+    myPaymentType: PAYMENTSchema,
+    myCurrency: CurrencySchema,
+    client: ClientSchema.nullable(),
+  }),
+});
 
 export type ProjectMembersUser = z.infer<typeof ProjectMembersUserSchema>;
 export type ProjectMembers = z.infer<typeof ProjectMembersSchema>;
@@ -80,3 +92,4 @@ export type Project = z.infer<typeof ProjectSchema>;
 export type CreateProjectDTO = z.infer<typeof CreateProjectDTOSchema>;
 export type UpdateProjectDTO = z.infer<typeof UpdateProjectDTOSchema>;
 export type GetPeojectMeDTO = z.infer<typeof GetPeojectMeDTOSchema>;
+export type ProjectById = z.infer<typeof ProjectByIdSchema>;

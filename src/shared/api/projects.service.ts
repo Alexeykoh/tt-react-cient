@@ -5,6 +5,8 @@ import {
   CreateProjectDTO,
   GetPeojectMeDTO,
   Project,
+  ProjectById,
+  ProjectByIdSchema,
   ProjectSchema,
   UpdateProjectDTO,
 } from "../interfaces/project.interface";
@@ -15,14 +17,14 @@ export const projectsService = createApi({
   baseQuery: baseQueryWithErrorHandling,
   tagTypes: ["project-service"],
   endpoints: (builder) => ({
-    getProjectById: builder.query<Project, { id: string }>({
+    getProjectById: builder.query<ProjectById, { id: string }>({
       query: ({ id }) => ({
         url: `projects/${id}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: Project }) => {
-        return validateWithSchema<Project>(
-          ProjectSchema,
+      transformResponse: (response: { data: ProjectById }) => {
+        return validateWithSchema<ProjectById>(
+          ProjectByIdSchema,
           response.data,
           "getProjectById"
         );

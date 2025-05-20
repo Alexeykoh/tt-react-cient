@@ -1,6 +1,6 @@
 import { PROJECT_ROLE } from "@/shared/enums/project-role.enum";
 import { Badge } from "./ui/badge";
-import { BriefcaseBusiness, CircleCheck, Crown, User } from "lucide-react";
+import { BriefcaseBusiness, CircleCheck, Star, User } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -23,24 +23,24 @@ const roleMap: Record<
   }
 > = {
   [PROJECT_ROLE.OWNER]: {
-    icon: <Crown className="size-5" />,
+    icon: <Star className="size-7" />,
     text: "Владелец",
-    border: "border-primary/60",
+    border: "bg-primary/20",
   },
   [PROJECT_ROLE.EXECUTOR]: {
-    icon: <CircleCheck className="size-5" />,
+    icon: <CircleCheck className="size-7" />,
     text: "Исполнитель",
-    border: "border-orange-400/40",
+    border: "bg-orange-400/20",
   },
   [PROJECT_ROLE.MANAGER]: {
-    icon: <BriefcaseBusiness className="size-5" />,
+    icon: <BriefcaseBusiness className="size-7" />,
     text: "Менеджер",
-    border: "border-sky-400/40",
+    border: "bg-sky-400/20",
   },
   [PROJECT_ROLE.GUEST]: {
-    icon: <User className="size-5" />,
+    icon: <User className="size-7" />,
     text: "Гость",
-    border: "border-gray-400/40",
+    border: "bg-gray-400/20",
   },
 };
 
@@ -51,7 +51,7 @@ export default function RoleBadge({
 }: props) {
   if (showText && role) {
     return (
-      <Badge variant={"outline"} className={roleMap[role].border}>
+      <Badge variant={"default"} className={roleMap[role].border}>
         {showIcon && roleMap[role].icon}
         {showText && roleMap[role].text}
       </Badge>
@@ -64,7 +64,7 @@ export default function RoleBadge({
         <Tooltip>
           <TooltipTrigger>
             {role && (
-              <Badge variant={"outline"} className={roleMap[role].border}>
+              <Badge variant={"default"} className={roleMap[role].border}>
                 {showIcon && roleMap[role].icon}
                 {showText && roleMap[role].text}
               </Badge>
