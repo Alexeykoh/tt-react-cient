@@ -125,7 +125,7 @@ export default function KanbanTask({
           />
         )}
 
-        <Card className="border-0 p-0 w-full max-h-32 h-32 overflow-clip">
+        <Card className="border-0 p-0 w-full min-h-32">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
               <CardTitle className="text-base font-semibold truncate break-words text-wrap">
