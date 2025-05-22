@@ -27,6 +27,7 @@ import {
   MoreVerticalIcon,
   PencilIcon,
   Table,
+  Timer,
   TrashIcon,
   User2Icon,
 } from "lucide-react";
@@ -50,6 +51,7 @@ import { User } from "@/shared/interfaces/user.interface";
 import RoleBadge from "@/components/role-badge";
 import UserAvatar from "@/components/user-avatar";
 import { SUBSCRIPTION } from "@/shared/enums/sunscriptions.enum";
+import { formatMilliseconds } from "@/lib/format-seconds";
 
 // Определяем тип значения контекста
 interface context {
@@ -365,6 +367,9 @@ function HeaderBottom() {
   });
 
   const info = projectData?.info || null;
+  const { hours, minutes, seconds } = formatMilliseconds(
+    info?.projectDuration || 0
+  );
 
   return (
     <>
@@ -395,6 +400,13 @@ function HeaderBottom() {
         <div className="flex flex-row gap-1 items-center">
           <User2Icon className="size-3.5" />
           <p className="text-sm text-muted-foreground">{info?.client?.name}</p>
+        </div>
+        <Separator orientation="vertical" className="min-h-4 border-1" />
+        <div className="flex flex-row gap-1 items-center">
+          <Timer className="size-3.5" />
+          <p className="text-sm text-muted-foreground">
+            {hours}:{minutes}:{seconds}
+          </p>
         </div>
       </div>
     </>

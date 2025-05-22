@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateProjectForm from "@/features/project/forms/create-project.form";
-import { PanelTop, X } from "lucide-react";
+import { PanelTop } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { formatDate } from "@/lib/dateUtils";
 import { useNavigate } from "react-router-dom";

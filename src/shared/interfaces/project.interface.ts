@@ -83,6 +83,7 @@ export const ProjectByIdSchema = z.object({
     myPaymentType: PAYMENTSchema,
     myCurrency: CurrencySchema,
     client: ClientSchema.nullable(),
+    projectDuration: z.number(),
   }),
 });
 
