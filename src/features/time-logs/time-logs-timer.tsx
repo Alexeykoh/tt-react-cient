@@ -18,7 +18,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TIMELOGSTATUS } from "@/shared/enums/time-logs.enum";
-import { startTimer, stopTimer } from "../time/model/time.slice";
+import {
+  startTimer,
+  stopTimer,
+} from "../time/model/time.slice";
 import { TimeLog } from "@/shared/interfaces/time-log.interface";
 
 // Определяем тип значения контекста
@@ -111,17 +114,19 @@ function TimeLogsTimerRoot({
   );
 }
 
+const DEFAULT_TIMER = {
+  accumulated: 0,
+  startTime: null,
+  status: TimerStatus.IDLE,
+};
+
 function TimeUI({ fallbackTime = 0 }: { fallbackTime?: number }) {
   const context = useContext(TimeLogsTimerContext);
 
   // Получаем данные таймера и глобальный тик из redux
   const { accumulated, startTime, status } = useSelector(
     (state: RootState) =>
-      state.time.timers[context?.task_id as string] || {
-        accumulated: 0,
-        startTime: null,
-        status: TimerStatus.IDLE,
-      }
+      state.time.timers[context?.task_id as string] || DEFAULT_TIMER
   );
   // Подписка на глобальный тик для форс-обновления компонента
   useSelector((state: RootState) => state.time.tick);
@@ -159,9 +164,11 @@ function TimerFeature() {
   // Синхронизация состояния таймера в redux при изменении latestLog
   useEffect(() => {
     if (!context?.latestLog) {
+      // Если latestLog не задан, то отключаем таймер
       return;
     }
     if (context?.latestLog.status === TIMELOGSTATUS.PROGRESS) {
+      // Если latestLog есть и статус его задан как выполняется, то запускаем таймер
       dispatch(
         startTimer({
           task_id,
@@ -172,6 +179,7 @@ function TimerFeature() {
         })
       );
     } else {
+      // Если latestLog есть и статус его задан как не выполняется, то останавливаем таймер
       dispatch(
         stopTimer({
           task_id,
@@ -181,10 +189,13 @@ function TimerFeature() {
     }
   }, [dispatch, task_id, context?.latestLog]);
 
+  // Передаём common_duration с сервера как fallbackTime
+  const fallbackTime = Number(context?.latestLog?.common_duration) || 0;
+
   return (
     <>
       <ButtonUI isActive={false} />
-      {context?.showTime && <TimeUI />}
+      {context?.showTime && <TimeUI fallbackTime={fallbackTime} />}
     </>
   );
 }

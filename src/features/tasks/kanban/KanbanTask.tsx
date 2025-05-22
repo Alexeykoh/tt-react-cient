@@ -128,10 +128,8 @@ export default function KanbanTask({
         <Card className="border-0 p-0 w-full min-h-32">
           <CardContent className="p-4">
             <div className="flex items-start justify-between">
-              <CardTitle className="text-base font-semibold truncate break-words text-wrap">
-                {task.name}
-              </CardTitle>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center justify-between w-full space-x-1">
+                <TimeLogsTimer.Root task_id={task.task_id} variant="icon" showTime  />
                 <Button
                   onClickCapture={() => {
                     navigate(`/${ROUTES.TASKS}/${task.task_id}`);
@@ -143,9 +141,11 @@ export default function KanbanTask({
                 >
                   <PanelTop className="size-3" />
                 </Button>
-                <TimeLogsTimer.Root task_id={task.task_id} variant="icon" />
               </div>
             </div>
+              <CardTitle className="text-base font-semibold truncate break-words text-wrap">
+                {task.name}
+              </CardTitle>
             <CardDescription className="py-2 line-clamp-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <CalendarDays className="w-4 h-4" />
