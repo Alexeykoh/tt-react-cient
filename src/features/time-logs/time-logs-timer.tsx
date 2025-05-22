@@ -1,4 +1,5 @@
 import { RootState } from "@/app/store";
+import "@/shared/types/window.types";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, Play, Pause } from "lucide-react";
 import { createContext, ReactNode, useContext, useEffect } from "react";
@@ -160,6 +161,62 @@ function TimerFeature() {
   const dispatch = useDispatch();
 
   const task_id = context?.task_id || "";
+
+  // Получаем данные таймера из redux
+  const { accumulated, startTime, status } = useSelector(
+    (state: RootState) =>
+      state.time.timers[task_id] || { accumulated: 0, startTime: null, status: TimerStatus.IDLE }
+  );
+  // Подписка на глобальный тик для обновления title
+  useSelector((state: RootState) => state.time.tick);
+
+  // Смена favicon при активном таймере
+  useEffect(() => {
+    const faviconEl = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (!faviconEl) return;
+
+    // Сохраняем стандартный favicon при первом рендере
+    if (!window.__defaultFavicon) {
+      window.__defaultFavicon = faviconEl.href;
+    }
+    const defaultFavicon = window.__defaultFavicon;
+
+    if (context?.latestLog?.status === TIMELOGSTATUS.PROGRESS) {
+      faviconEl.href = "/icon-active.svg";
+    } else {
+      faviconEl.href = defaultFavicon;
+    }
+  }, [context?.latestLog?.status]);
+
+  // Обновление document.title с текущим временем задачи (реальное обновление каждую секунду)
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    function updateTitle() {
+      let milliseconds: number = accumulated;
+      if (status === TimerStatus.PROGRESS && startTime) {
+        milliseconds = accumulated + (Date.now() - startTime);
+      }
+      const timerData = formatMilliseconds(milliseconds);
+      if (context?.latestLog?.status === TIMELOGSTATUS.PROGRESS) {
+        document.title = `${timerData.hours}:${timerData.minutes}:${timerData.seconds} — Таймер задачи`;
+      } else {
+        document.title = "TimeTracker";
+      }
+    }
+
+    if (context?.latestLog?.status === TIMELOGSTATUS.PROGRESS) {
+      updateTitle();
+      intervalId = setInterval(updateTitle, 1000);
+    } else {
+      document.title = "TimeTracker";
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      document.title = "TimeTracker";
+    };
+  }, [accumulated, startTime, status, context?.latestLog?.status]);
 
   // Синхронизация состояния таймера в redux при изменении latestLog
   useEffect(() => {
